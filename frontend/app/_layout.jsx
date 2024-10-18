@@ -1,4 +1,3 @@
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -16,6 +15,7 @@ export default function RootLayout() {
     'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
     'Poppins-SemiBold': require('../assets/fonts/Poppins-SemiBold.ttf'),
     'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
+    'Roboto-Medium': require('../assets/fonts/Roboto-Medium.ttf'),
   });
 
   const [isSplashReady, setSplashReady] = useState(false);
@@ -43,9 +43,22 @@ export default function RootLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      {/* Aquí puedes añadir más pantallas */}
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="screens/login" options={{ headerShown: false }} />
     </Stack>
   );
 }
 //<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+  /*return (
+    <Stack
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      {/* Aquí puedes añadir más pantallas *//*
+    </Stack>
+  );*/
+
+  /*<Stack.Screen name="Login" component={Login} />*/

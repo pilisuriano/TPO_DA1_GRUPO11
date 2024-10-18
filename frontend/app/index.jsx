@@ -1,7 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, Image, Pressable, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 const StartScreen = () => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.inicio}>
       <Text style={[styles.conectaConAmigos, styles.comparteFotosYPosition]}>Conecta con amigos y familia</Text>
@@ -9,7 +14,7 @@ const StartScreen = () => {
       <Pressable style={[styles.inicioChild, styles.inicioLayout]} onPress={() => {}}>
         <Text style={[styles.registrarme, styles.registrarmeTypo]}>Registrarme</Text>
       </Pressable>
-      <Pressable style={[styles.inicioItem, styles.inicioLayout]} onPress={() => {}}>
+      <Pressable style={[styles.inicioItem, styles.inicioLayout]} onPress={() => navigation.navigate('screens/login')}>
         <Text style={[styles.iniciarSesin, styles.registrarmeTypo]}>Iniciar Sesión</Text>
       </Pressable>
       <View style={styles.inicioInner} />
@@ -67,6 +72,9 @@ const styles = StyleSheet.create({
   left: 35
   },
   inicioChild: {
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "row",
   top: 617,
   backgroundColor: "#fde6b2"
   },
@@ -76,6 +84,9 @@ const styles = StyleSheet.create({
   color: "#7e5f5b"
   },
   inicioItem: {
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "row",
   top: 685,
   backgroundColor: "#bb4426",
   borderStyle: "solid",
@@ -88,8 +99,8 @@ const styles = StyleSheet.create({
   color: "#fff"
   },
   inicioInner: {
-  top: 830,
-  left: 117,
+  top: (height -14),
+  left: (width - 165)/2,
   backgroundColor: "#000",
   width: 165,
   height: 4,
@@ -98,15 +109,15 @@ const styles = StyleSheet.create({
   },
   logo2Icon: {
   top: 198,
-  left: 94,
+  left: (width - 202)/2,
   borderRadius: 183,
   width: 202,
   height: 194,
   position: "absolute"
   },
   marca2Icon: {
-  top: 110,
-  left: 54,
+  top: 100,
+  left: (width - 291)/2,
   width: 291,
   height: 54,
   position: "absolute"
