@@ -14,7 +14,7 @@ const StartScreen = () => {
       <Pressable style={[styles.inicioChild, styles.inicioLayout]} onPress={() => {}}>
         <Text style={[styles.registrarme, styles.registrarmeTypo]}>Registrarme</Text>
       </Pressable>
-      <Pressable style={[styles.inicioItem, styles.inicioLayout]} onPress={() => navigation.navigate('screens/login')}>
+      <Pressable style={[styles.inicioItem, styles.inicioLayout]} onPress={() => navigation.navigate('screens/login/login')}>
         <Text style={[styles.iniciarSesin, styles.registrarmeTypo]}>Iniciar Sesión</Text>
       </Pressable>
       <View style={styles.inicioInner} />
