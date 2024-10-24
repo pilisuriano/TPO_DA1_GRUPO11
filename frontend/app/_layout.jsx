@@ -3,47 +3,12 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useCallback, useState } from 'react';
 import 'react-native-reanimated';
-import {Tabs} from 'expo-router';
+
 import React from 'react';
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
-function TabNavigator() {
-  const colorScheme = useColorScheme();
-
-  return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
-      <Tabs.Screen
-        name="Home"
-        component={Home}
-        options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="Perfil"
-        component={Perfil}
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
-          ),
-        }}
-      />
-    </Tabs>
-  );
-}
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -51,6 +16,7 @@ export default function RootLayout() {
     'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
     'Poppins-SemiBold': require('../assets/fonts/Poppins-SemiBold.ttf'),
     'Poppins-Medium': require('../assets/fonts/Poppins-Medium.ttf'),
+    'Poppins-Regular': require('../assets/fonts/Poppins-Regular.ttf'),
     'Roboto-Medium': require('../assets/fonts/Roboto-Medium.ttf'),
     'Roboto-Regular': require('../assets/fonts/Roboto-Regular.ttf'),
     'Roboto-Bold': require('../assets/fonts/Roboto-Bold.ttf'),
