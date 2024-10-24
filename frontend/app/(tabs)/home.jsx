@@ -10,7 +10,7 @@ const Home = () => {
       			<Pressable style={styles.wrapper} onPress={()=>{}}>
         				<Image style={[styles.icon, styles.iconLayout4]} resizeMode="cover" source={require("../../assets/images/Group 12.png")} />
       			</Pressable>
-      			<Pressable style={[styles.timelinePublicidadChild, styles.unsplash4Qfycgpc4cBorder]} onPress={() => navigation.navigate('screens/search')} />
+      			<Pressable style={[styles.timelinePublicidadChild, styles.unsplash4Qfycgpc4cBorder]} onPress={() => navigation.navigate('search')} />
       			<Image style={[styles.iconlybrokensearch, styles.iconLayout4]} resizeMode="cover" source={require("../../assets/images/Search.png")} />
       			<Text style={styles.buscar}>Buscar...</Text>
       			<Image style={styles.marca2Icon} resizeMode="cover" source={require("../../assets/images/Marca 2.png")}/>

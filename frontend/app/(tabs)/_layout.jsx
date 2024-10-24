@@ -32,6 +32,11 @@ export default function basetab() {
           ),
         }}
       />
+       <Tabs.Screen
+        name="search"
+        options={{
+          href: null, }}
+      />
     </Tabs>
   );
 }
