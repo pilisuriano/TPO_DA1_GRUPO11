@@ -1,17 +1,22 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const PERSONALINFORMATION = () => {
+	const navigation = useNavigation();
   	
   	return (
     		<View style={styles.personalInformation}>
+				<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('screens/register/otp')}>
+                    <Image style={styles.icon} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')} />
+                </Pressable>
       			<View style={[styles.personalInformationChild, styles.childLayout]} />
       			<Text style={[styles.informacinPersonal, styles.siguienteTypo]}>Información Personal</Text>
       			<Text style={[styles.porFavorComplete, styles.gneroPosition]}>Por favor, complete lo siguiente</Text>
       			<Text style={[styles.nombreCompleto, styles.textTypo]}>Nombre completo</Text>
       			<Text style={[styles.gnero, styles.textTypo]}>Género</Text>
       			<Text style={[styles.sobreMi, styles.textTypo]}>Sobre mi</Text>
-      			<Pressable style={styles.rectangleParent} onPress={()=>{}}>
+      			<Pressable style={styles.rectangleParent} onPress={() => navigation.navigate('screens/register/chooseuser')}>
         				<View style={[styles.groupChild, styles.childLayout]} />
         				<Text style={[styles.siguiente, styles.siguienteTypo]}>Siguiente</Text>
       			</Pressable>
@@ -21,9 +26,6 @@ const PERSONALINFORMATION = () => {
       			<View style={[styles.rectangleView, styles.personalPosition]} />
       			<Text style={[styles.soyUnaPersona, styles.soyUnaPersonaTypo]}>Soy una persona positiva. Me encanta viajar y probar nuevas comidas.</Text>
       			<Image style={[styles.iconlyboldarrowDown2, styles.iconLayout]} resizeMode="cover" source="Iconly/Bold/Arrow---Down-2.png" />
-      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source="Iconly/Light-Outline/Arrow---Left-2.png" />
-      			</Pressable>
       			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
         				<Text style={[styles.text, styles.textTypo]}>
           					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>

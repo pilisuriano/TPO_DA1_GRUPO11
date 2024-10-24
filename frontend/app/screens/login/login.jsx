@@ -8,7 +8,7 @@ const SIGNIN = () => {
   	return (
     		<View style={[styles.signIn, styles.iconLayout]}>
                 <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('index')}>
-                    <Image style={styles.icon} resizeMode="cover" source={require('../../assets/images/Arrow---Left-2.png')} />
+                    <Image style={styles.icon} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')} />
                 </Pressable>
       			<View style={styles.signInChild} />
       			<Text style={[styles.iniciaSesin, styles.listoTypo1]}>Inicia sesión</Text>

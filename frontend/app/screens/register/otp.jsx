@@ -1,10 +1,14 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const VERIFICACION = () => {
-  	
+	const navigation = useNavigation();
   	return (
     		<View style={[styles.verificacion, styles.iconLayout]}>
+				<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('screens/register/register')}>
+                    <Image style={styles.icon} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')} />
+                </Pressable>
       			<View style={styles.verificacionChild} />
       			<Text style={[styles.otpEnviado, styles.siguienteTypo]}>OTP enviado</Text>
       			<Text style={styles.ingresaElCdigo}>Ingresa el código OTP que te enviamos</Text>
@@ -19,12 +23,9 @@ const VERIFICACION = () => {
         				<View style={[styles.groupInner, styles.groupLayout1]} />
         				<View style={[styles.rectangleView, styles.groupLayout1]} />
       			</Pressable>
-      			<Pressable style={[styles.rectangleGroup, styles.groupLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.rectangleGroup, styles.groupLayout]} onPress={() => navigation.navigate('screens/register/personalinfo')}>
         				<View style={[styles.groupChild1, styles.groupLayout]} />
         				<Text style={[styles.siguiente, styles.siguienteTypo]}>Siguiente</Text>
-      			</Pressable>
-      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source="Iconly/Light-Outline/Arrow---Left-2.png" />
       			</Pressable>
       			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
         				<Text style={[styles.text, styles.textTypo]}>

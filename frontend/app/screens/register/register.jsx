@@ -1,23 +1,25 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const SIGNUP = () => {
+	const navigation = useNavigation();
   	
   	return (
     		<View style={[styles.signUp, styles.iconLayout]}>
+				<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('index')}>
+                    <Image style={styles.icon} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')} />
+                </Pressable>
       			<View style={styles.signUpChild} />
       			<Text style={[styles.ingreseSuCorreo, styles.listoTypo]}>Ingrese su correo electrónico</Text>
       			<Text style={[styles.correoElectrnico, styles.paraComenzarLaTypo]}>Correo electrónico</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={() => navigation.navigate('screens/register/otp')}>
         				<View style={[styles.groupChild, styles.groupChildLayout]} />
         				<Text style={[styles.listo, styles.listoTypo]}>Listo</Text>
       			</Pressable>
       			<View style={[styles.signUpItem, styles.groupChildLayout]} />
       			<Text style={styles.martinsuarezhotmailcom}>martinsuarez@hotmail.com</Text>
       			<Text style={[styles.paraComenzarLa, styles.paraComenzarLaTypo]}>Para comenzar la creación de tu cuenta necesitamos tu correo</Text>
-      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source="Iconly/Light-Outline/Arrow---Left-2.png" />
-      			</Pressable>
       			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
         				<Text style={[styles.text, styles.textTypo]}>
           					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>

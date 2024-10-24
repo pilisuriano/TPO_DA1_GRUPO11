@@ -1,16 +1,21 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const PERSONALINFORMATION2 = () => {
-  	
+	const navigation = useNavigation();
+
   	return (
     		<View style={[styles.personalInformation, styles.iconLayout]}>
+				<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('screens/register/personalinfo')}>
+                    <Image style={styles.icon} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')} />
+                </Pressable>
       			<View style={styles.personalInformationChild} />
       			<Text style={[styles.eligeUnUsuario, styles.listoTypo]}>Elige un usuario</Text>
       			<Text style={[styles.usuario, styles.contraseaTypo]}>Usuario</Text>
       			<Text style={[styles.contrasea, styles.contraseaTypo]}>Contraseña</Text>
       			<Text style={[styles.confirmarContrasea, styles.contraseaTypo]}>Confirmar contraseña</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={() => navigation.navigate('screens/register/welcome')}>
         				<View style={[styles.groupChild, styles.groupChildLayout]} />
         				<Text style={[styles.listo, styles.listoTypo]}>Listo</Text>
       			</Pressable>
@@ -20,9 +25,6 @@ const PERSONALINFORMATION2 = () => {
       			<Text style={[styles.text, styles.textTypo]}>**********</Text>
       			<View style={[styles.rectangleView, styles.personalLayout]} />
       			<Text style={[styles.tusAmigosPodrn, styles.contraseaTypo]}>Tus amigos podrán buscarte con el</Text>
-      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source="Iconly/Light-Outline/Arrow---Left-2.png" />
-      			</Pressable>
       			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
         				<Text style={styles.text1}>
           					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
