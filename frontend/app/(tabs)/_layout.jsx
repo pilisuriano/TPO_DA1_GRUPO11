@@ -19,7 +19,7 @@ export default function basetab() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={focused ? '#bb4426' : color} />
           ),
         }}
       />
@@ -28,7 +28,7 @@ export default function basetab() {
         options={{
           title: 'Crear Post',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'add-circle' : 'add-circle-outline'} color={color} />
+            <TabBarIcon name={focused ? 'add-circle' : 'add-circle-outline'} color={focused ? '#bb4426' : color} />
           ),
         }}
       />
@@ -37,7 +37,7 @@ export default function basetab() {
         options={{
           title: 'Perfil',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={color} />
+            <TabBarIcon name={focused ? 'person' : 'person-outline'} color={focused ? '#bb4426' : color} />
           ),
         }}
       />
