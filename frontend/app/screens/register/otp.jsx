@@ -27,12 +27,6 @@ const VERIFICACION = () => {
         				<View style={[styles.groupChild1, styles.groupLayout]} />
         				<Text style={[styles.siguiente, styles.siguienteTypo]}>Siguiente</Text>
       			</Pressable>
-      			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
-        				<Text style={[styles.text, styles.textTypo]}>
-          					<Text style={styles.noLoRecibiste}>{`¿Ya tienes una cuenta? `}</Text>
-          					<Text style={styles.iniciaSesin}>Inicia Sesión</Text>
-        				</Text>
-      			</Pressable>
     		</View>);
 };
 

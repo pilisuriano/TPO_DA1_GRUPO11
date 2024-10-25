@@ -26,12 +26,6 @@ const PERSONALINFORMATION = () => {
       			<View style={[styles.rectangleView, styles.personalPosition]} />
       			<Text style={[styles.soyUnaPersona, styles.soyUnaPersonaTypo]}>Soy una persona positiva. Me encanta viajar y probar nuevas comidas.</Text>
       			<Image style={[styles.iconlyboldarrowDown2, styles.iconLayout]} resizeMode="cover" source="Iconly/Bold/Arrow---Down-2.png" />
-      			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
-        				<Text style={[styles.text, styles.textTypo]}>
-          					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
-          					<Text style={styles.iniciaSesin}>Inicia Sesión</Text>
-        				</Text>
-      			</Pressable>
       			<Text style={[styles.masculino, styles.masculinoTypo]}>Masculino</Text>
     		</View>);
 };

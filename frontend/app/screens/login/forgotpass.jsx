@@ -1,24 +1,25 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const FORGOTPASSWORD = () => {
-  	
+	const navigation = useNavigation();
   	return (
     		<View style={[styles.forgotPassword, styles.iconLayout]}>
       			<View style={styles.forgotPasswordChild} />
       			<Text style={[styles.olvidoDeContrasea, styles.enviarTypo]}>Olvido de contraseña</Text>
       			<Text style={[styles.correoElectrnico, styles.teAyudaremosATypo]}>Correo electrónico</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={() => navigation.navigate('screens/login/loginotp')}>
         				<View style={[styles.groupChild, styles.groupChildLayout]} />
         				<Text style={[styles.enviar, styles.enviarTypo]}>Enviar</Text>
       			</Pressable>
       			<View style={[styles.forgotPasswordItem, styles.groupChildLayout]} />
       			<Text style={styles.martinsuarezhotmailcom}>martinsuarez@hotmail.com</Text>
       			<Text style={[styles.teAyudaremosA, styles.teAyudaremosATypo]}>Te ayudaremos a recuperar tu cuenta</Text>
-      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source="Iconly/Light-Outline/Arrow---Left-2.png" />
+      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('screens/login/login')}>
+        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')} />
       			</Pressable>
-      			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
+      			<Pressable style={styles.yaTienesUnaContainer} onPress={() => navigation.navigate('screens/login/login')}>
         				<Text style={styles.text}>
           					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
           					<Text style={styles.iniciaSesin}>Inicia Sesión</Text>

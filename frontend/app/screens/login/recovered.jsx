@@ -1,15 +1,16 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const RECUPERADA = () => {
-  	
+	const navigation = useNavigation();
+
   	return (
     		<View style={styles.recuperada}>
       			<View style={styles.recuperadaChild} />
-      			<Image style={[styles.recuperadaItem, styles.logo2IconPosition]} resizeMode="cover" source="Ellipse 8.png" />
-      			<Image style={[styles.logo2Icon, styles.logo2IconPosition]} resizeMode="cover" source="Logo 2.png" />
+      			<Image style={[styles.logo2Icon, styles.logo2IconPosition]} resizeMode="cover" source={require('../../../assets/images/Logo 2.png')} />
       			<Text style={[styles.cuentaRecuperada, styles.continuarTypo]}>Cuenta recuperada</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={() => navigation.navigate('(tabs)')}>
         				<View style={[styles.groupChild, styles.groupChildLayout]} />
         				<Text style={[styles.continuar, styles.continuarTypo]}>Continuar</Text>
       			</Pressable>

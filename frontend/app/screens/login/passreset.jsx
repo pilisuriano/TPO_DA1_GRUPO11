@@ -1,15 +1,17 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const PASSWORDRESET = () => {
-  	
+	const navigation = useNavigation();
+
   	return (
     		<View style={[styles.passwordReset, styles.iconLayout]}>
       			<View style={styles.passwordResetChild} />
       			<Text style={[styles.eligeUnaNueva, styles.listoTypo]}>Elige una nueva contraseña</Text>
       			<Text style={styles.nuevaContrasea}>Nueva contraseña</Text>
       			<Text style={[styles.confirmarNuevaContrasea, styles.aseguraTuCuentaTypo]}>Confirmar nueva contraseña</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={() => navigation.navigate('screens/login/recovered')}>
         				<View style={[styles.groupChild, styles.groupChildLayout]} />
         				<Text style={[styles.listo, styles.listoTypo]}>Listo</Text>
       			</Pressable>
@@ -18,14 +20,8 @@ const PASSWORDRESET = () => {
       			<Pressable style={[styles.passwordResetInner, styles.passwordLayout]} onPress={()=>{}} />
       			<Text style={[styles.text1, styles.textTypo]}>**********</Text>
       			<Text style={[styles.aseguraTuCuenta, styles.aseguraTuCuentaTypo]}>Asegura tu cuenta</Text>
-      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source="Iconly/Light-Outline/Arrow---Left-2.png" />
-      			</Pressable>
-      			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
-        				<Text style={styles.text2}>
-          					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
-          					<Text style={styles.iniciaSesin}>Inicia Sesión</Text>
-        				</Text>
+      			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('screens/login/loginotp')}>
+        				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require('../../../assets/images/Arrow---Left-2.png')}/>
       			</Pressable>
     		</View>);
 };

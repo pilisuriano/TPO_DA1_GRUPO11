@@ -25,12 +25,6 @@ const PERSONALINFORMATION2 = () => {
       			<Text style={[styles.text, styles.textTypo]}>**********</Text>
       			<View style={[styles.rectangleView, styles.personalLayout]} />
       			<Text style={[styles.tusAmigosPodrn, styles.contraseaTypo]}>Tus amigos podrán buscarte con el</Text>
-      			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
-        				<Text style={styles.text1}>
-          					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
-          					<Text style={styles.iniciaSesin}>Inicia Sesión</Text>
-        				</Text>
-      			</Pressable>
       			<Text style={[styles.text2, styles.textTypo]}>**********</Text>
     		</View>);
 };

@@ -20,7 +20,7 @@ const SIGNUP = () => {
       			<View style={[styles.signUpItem, styles.groupChildLayout]} />
       			<Text style={styles.martinsuarezhotmailcom}>martinsuarez@hotmail.com</Text>
       			<Text style={[styles.paraComenzarLa, styles.paraComenzarLaTypo]}>Para comenzar la creación de tu cuenta necesitamos tu correo</Text>
-      			<Pressable style={styles.yaTienesUnaContainer} onPress={()=>{}}>
+      			<Pressable style={styles.yaTienesUnaContainer} onPress={() => navigation.navigate("screens/login/login")}>
         				<Text style={[styles.text, styles.textTypo]}>
           					<Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
           					<Text style={styles.iniciaSesin}>Inicia Sesión</Text>

@@ -1,7 +1,9 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
+import { useNavigation } from '@react-navigation/native';
 
 const MYPROFILE = () => {
+	const navigation = useNavigation();
   	
   	return (
     		<View style={styles.myProfile}>
@@ -18,19 +20,20 @@ const MYPROFILE = () => {
       			<Text style={[styles.martinSurez, styles.miPerfilTypo]}>Martin Suárez</Text>
       			<Text style={[styles.soyUnaPersona, styles.editarPostsTypo]}>Soy una persona positiva. Me encanta viajar y probar nuevas comidas.</Text>
       			<Text style={[styles.nivel4, styles.text2Typo]}>Nivel 4</Text>
-      			<Pressable style={styles.iconlylightOutlinesetting} onPress={()=>{}}>
+      			<Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
         				<Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")}/>
       			</Pressable>
-      			<Pressable style={styles.myProfileItem} onPress={()=>{}} />
-      			<Text style={[styles.editarPerfil, styles.nivel4Typo]}>Editar Perfil</Text>
+      			<Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile')}>
+      				<Text style={[styles.editarPerfil, styles.nivel4Typo]}>Editar Perfil</Text>
+				</Pressable>
       			<Text style={[styles.text, styles.textTypo]}>87</Text>
       			<Text style={[styles.text1, styles.textTypo]}>870</Text>
       			<Text style={[styles.k, styles.textTypo]}>15k</Text>
       			<Text style={[styles.posts, styles.postsTypo]}>Posts</Text>
-      			<Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={()=>{}}>
+      			<Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
         				<Text style={styles.postsTypo}>Siguiendo</Text>
       			</Pressable>
-      			<Pressable style={[styles.seguidores, styles.postsPosition]} onPress={()=>{}}>
+      			<Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
         				<Text style={styles.postsTypo}>Seguidores</Text>
       			</Pressable>
       			<View style={[styles.myProfileInner, styles.lineViewLayout]} />
@@ -39,7 +42,7 @@ const MYPROFILE = () => {
       			<Image style={[styles.unsplashqbf59tu077qIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_qbf59TU077Q.png")} />
       			<Image style={[styles.rectangleIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Rectangle 276.png")} />
       			<Text style={[styles.posts1, styles.textTypo]}>Posts</Text>
-      			<Pressable style={[styles.unsplashig7vn6okgne, styles.iconPosition]} onPress={()=>{}}>
+      			<Pressable style={[styles.unsplashig7vn6okgne, styles.iconPosition]} onPress={() => navigation.navigate('postpublicado')}>
         				<Image style={[styles.icon2, styles.iconLayout3]} resizeMode="cover" source={require("../../assets/images/unsplash_ig7vN6OkGNE.png")} />
       			</Pressable>
       			<Image style={[styles.unsplashclv9dfjlwacIcon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_Clv9DfJLwac.png")} />
@@ -48,7 +51,7 @@ const MYPROFILE = () => {
       			<Image style={[styles.unsplashq2b08qyxkc4Icon, styles.iconPosition]} resizeMode="cover" source={require("../../assets/images/unsplash_Q2B08QyXKC4.png")} />
       			<Image style={[styles.unsplashl4v4t5adtneIcon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_L4v4T5aDtnE.png")} />
       			<Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
-      			<Pressable style={[styles.editarPostsParent, styles.image13IconLayout]} onPress={()=>{}}>
+      			<Pressable style={[styles.editarPostsParent, styles.image13IconLayout]} onPress={() => navigation.navigate('editarpost')}>
         				<Text style={[styles.editarPosts, styles.editarPostsTypo]}>Editar Posts</Text>
         				<Image style={[styles.image13Icon, styles.image13IconLayout]} resizeMode="cover" source={require("../../assets/images/image 13.png")} />
       			</Pressable>
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
   	},
   	nivel4Typo: {
     		fontSize: 12,
-    		textAlign: "left"
+    		textAlign: "left",
   	},
   	textTypo: {
     		fontSize: 14,
@@ -259,7 +262,7 @@ const styles = StyleSheet.create({
   	editarPerfil: {
     		top: 305,
     		left: 169,
-    		color: "#fff",
+    		color: "#ffffff",
     		fontFamily: "Poppins-SemiBold",
     		fontWeight: "600",
     		fontSize: 12,
