@@ -29,5 +29,4 @@ usersRoutes.delete("/:userId/unfollow", (req, res) => {
   res.send("Connected to '/users/{userId}/unfollow'")
 })
 
-
 export default usersRoutes;

@@ -4,7 +4,11 @@ import User from "../models/user.model.js"
 // agregar authToken a bd (User) para compararlo 
 export const protectRoute = async (req, res, next) => {
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const authHeader = req.header('Authorization');
+    if (!authHeader) {
+      return res.status(401).json({ error: "Unauthorized: No token provided" });
+    }
+    const token = authHeader.replace('Bearer ', '');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded || !token) {
 			return res.status(401).json({ error: "Unauthorized: Invalid Token" });
