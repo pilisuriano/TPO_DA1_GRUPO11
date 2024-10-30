@@ -81,7 +81,7 @@ export const login = async (req, res) => {
   }
 }
 
-// este endpoint me sirve si guardo el token en bd, sino se podria hacer logout desde el front
+
 export const logout = async (req, res) => {
   try {
 
@@ -109,13 +109,11 @@ export const verifyEmail = async (req, res) => {
 
     let user;
     if (flow === "signup") {
-      console.log("signup")
       user = await User.findOne({ email });
       if (user) {
         return res.status(409).json({ error: "Email already registered" });
       }
     } else if (flow === "reset_password") {
-      console.log("reset_password")
       user = await User.findOne({ email });
       if (!user) {
         return res.status(404).json({ error: "User not found" });
@@ -193,7 +191,6 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ error: "Passwords don't match" });
     }
 
-    // Actualizar la contraseña del usuario
     user.password = newPassword;
     await user.save();
 

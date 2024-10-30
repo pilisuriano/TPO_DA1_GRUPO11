@@ -9,7 +9,6 @@ export const searchUser = async (req, res) => {
       return res.status(400).json({ error: "The 'name' parameter is required" });
     }
 
-    // Criterio de busqueda por `fullName` o `nickname`
     const searchCriteria = {
       $or: [
         { fullName: { $regex: name, $options: "i" } },
@@ -17,21 +16,18 @@ export const searchUser = async (req, res) => {
       ]
     };
 
-    // Convertir `limit` y `page` en enteros
     const limitInt = parseInt(limit, 10);
     const pageInt = parseInt(page, 10);
     const skip = (pageInt - 1) * limitInt;
 
-    // Consultar usuarios y contar el total de resultados
     const users = await User.find(searchCriteria)
-      .select("_id fullName nickname profileImage") // Seleccionar solo los campos necesarios
+      .select("_id fullName nickname profileImage")
       .limit(limitInt)
       .skip(skip);
 
     const total = await User.countDocuments(searchCriteria);
     const hasMore = total > pageInt * limitInt;
 
-    // Formato de respuesta
     res.status(200).json({
       users,
       total,
@@ -45,7 +41,7 @@ export const searchUser = async (req, res) => {
 
 export const getMe = async (req, res) => {
   try {
-    const userId = req.user._id; // El ID del usuario obtenido del JWT
+    const userId = req.user._id;
     const user = await User.findById(userId).select('-password -email -createdAt');
 
     if (!user) {
@@ -61,9 +57,6 @@ export const getMe = async (req, res) => {
 // TODO
 export const updateMe = async (req, res) => {
   try {
-    const { fullName, gender, profileImage, coverImage, description } = req.body
-
-
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -79,8 +72,7 @@ export const deleteMe = async (req, res) => {
 
 export const getOtherUserProfile = async (req, res) => {
   try {
-
-    const { userId } = req.params; // El ID del usuario obtenido de params
+    const { userId } = req.params;
     const loggedInUserId = req.user._id;
 
     // Encontrar el perfil del usuario objetivo
@@ -89,7 +81,7 @@ export const getOtherUserProfile = async (req, res) => {
         return res.status(404).json({ error: 'User not found' });
     }
 
-    // Comprobar si el usuario autenticado sigue al usuario objetivo
+    // Compruebo si el usuario autenticado sigue al usuario objetivo
     const isFollowing = await Follower.findOne({
         userId,
         followerId: loggedInUserId
@@ -100,7 +92,6 @@ export const getOtherUserProfile = async (req, res) => {
         isFollowed: !!isFollowing
     });
   } catch (error) {
-    console.log(error)
     res.status(500).json({ error: "Internal Server Error" });
   }
 }

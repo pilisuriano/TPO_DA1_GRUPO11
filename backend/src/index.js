@@ -10,16 +10,11 @@ import TimelineRoute from "./routes/timeline.router.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
 connectDB();
-
-app.use(express.json()); // to parse req.body
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // API routes
-app.get('/', (req, res) => {
-  res.send("Welcome to Memento API");
-})
 app.use('/auths', AuthsRoutes);
 app.use('/users', UsersRoutes);
 app.use('/posts', PostsRoutes);
