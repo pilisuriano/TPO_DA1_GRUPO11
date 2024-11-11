@@ -1,4 +1,268 @@
 import * as React from "react";
+import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert } from "react-native";
+import { usePost } from '../../src/features/posts/PostProvider';
+import { useState } from "react";
+import { useDispatch, useSelector} from "react-redux";
+import { resetError } from "../../src/features/posts/postSlice";
+import { useNavigation, CommonActions } from '@react-navigation/native';
+
+const CreatePost = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { createNewPost, loading, error } = usePost();
+  const { userId } = useSelector((state) => state.auth); // Asegúrate de que el userId esté disponible en el estado de auth
+  const [postData, setPostData] = useState({
+    userId: "",
+    title: "",
+    location: {
+      placeName: "",
+      coordinates: {
+        latitude: "",
+        longitude: "",
+      },
+    },
+    media: [
+      {
+        url: "",
+        type: "image", // Default to image
+      },
+    ],
+  });
+
+  useEffect(() => {
+    // Inicializar la estructura del post vacío
+    setPostData({
+      userId,
+      title: "",
+      location: {
+        placeName: "",
+        coordinates: {
+          latitude: "",
+          longitude: "",
+        },
+      },
+      media: [
+        {
+          url: "",
+          type: "image", // Default to image
+        },
+      ],
+    });
+  }, [userId]);
+
+  const handleCreatePost = async () => {
+    try {
+      dispatch(resetError());
+      const res = await createNewPost?.(postData);  // Usar el operador de encadenamiento opcional
+      if (res) {
+        navigation.dispatch(CommonActions.reset({
+          routes: [{ name: '(tabs)/home' }]
+        }));
+      }
+    } catch (err) {
+      console.error("Error during post creation:", err);
+      Alert.alert("Error", "Could not create post. Please try again.");
+    }
+  };
+
+  return (
+    <View style={[styles.post, styles.postLayout1]}>
+      <Text style={[styles.post1, styles.postTypo]}>Post</Text>
+      <TextInput
+        style={[styles.input, styles.agregarTypo]}
+        placeholder="Agregar pie de foto"
+        value={postData.title}
+        onChangeText={(text) => setPostData({ ...postData, title: text })}
+      />
+      <View style={[styles.postChild, styles.postLayout]} />
+      <TextInput
+        style={[styles.input, styles.agregarTypo]}
+        placeholder="Agregar ubicación"
+        value={postData.location.placeName}
+        onChangeText={(text) => setPostData({ ...postData, location: { ...postData.location, placeName: text } })}
+      />
+      <View style={[styles.postItem, styles.postItemLayout]} />
+      <View style={[styles.rectangleParent, styles.postItemLayout]}>
+        <View style={[styles.groupChild, styles.postItemLayout]} />
+        <Pressable onPress={handleCreatePost}>
+          <Text style={[styles.publicarPost, styles.postTypo]}>Publicar post</Text>
+        </Pressable>
+      </View>
+      <Text style={[styles.seleccionarImgenesYo, styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
+      <TextInput
+        style={[styles.input, styles.agregarTypo]}
+        placeholder="Media URL"
+        value={postData.media[0].url}
+        onChangeText={(text) => setPostData({ ...postData, media: [{ ...postData.media[0], url: text }] })}
+      />
+      <TextInput
+        style={[styles.input, styles.agregarTypo]}
+        placeholder="Media Type (image or video)"
+        value={postData.media[0].type}
+        onChangeText={(text) => setPostData({ ...postData, media: [{ ...postData.media[0], type: text }] })}
+      />
+      <View style={[styles.postInner, styles.postLayout]} />
+      <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
+      <Pressable style={styles.plus} onPress={() => {}}>
+        <Image style={[styles.icon, styles.postLayout1]} resizeMode="cover" source={require("../../assets/images/PlusM.png")} />
+      </Pressable>
+      {loading && <Text>Loading...</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  postLayout1: {
+    overflow: "hidden",
+    width: "100%"
+  },
+  groupIconPosition: {
+    width: 390,
+    left: 0,
+    position: "absolute"
+  },
+  postTypo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  agregarTypo: {
+    fontSize: 16,
+    color: '#000',
+  },
+  postLayout: {
+    height: 40,
+    marginBottom: 12,
+  },
+  postItemLayout: {
+    height: 40,
+    marginBottom: 12,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 10,
+  },
+  post: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  post1: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  imageIcon: {
+    width: 100,
+    height: 100,
+  },
+  plus: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+  },
+});
+
+export default CreatePost;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*import * as React from "react";
 import {Image, StyleSheet, Text, Pressable, View} from "react-native";
 
 const POST = () => {
@@ -183,4 +447,4 @@ const styles = StyleSheet.create({
   	}
 });
 
-export default POST;
+export default POST;*/
