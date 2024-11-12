@@ -1,20 +1,20 @@
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
 import { View, Text, StyleSheet, Image, Pressable, Dimensions } from 'react-native';
+import { useRouter } from 'expo-router';
 
 const { width, height } = Dimensions.get('window');
 
 const StartScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useRouter();
 
   return (
     <View style={styles.inicio}>
       <Text style={[styles.conectaConAmigos, styles.comparteFotosYPosition]}>Conecta con amigos y familia</Text>
       <Text style={[styles.comparteFotosY, styles.comparteFotosYPosition]}>Comparte fotos y videos con las personas que quieras, y mira sus publicaciones.</Text>
-      <Pressable style={[styles.inicioChild, styles.inicioLayout]} onPress={() => navigation.navigate('screens/register/register')}>
+      <Pressable style={[styles.inicioChild, styles.inicioLayout]} onPress={() => navigation.push('signup')}>
         <Text style={[styles.registrarme, styles.registrarmeTypo]}>Registrarme</Text>
       </Pressable>
-      <Pressable style={[styles.inicioItem, styles.inicioLayout]} onPress={() => navigation.navigate('screens/login/login')}>
+      <Pressable style={[styles.inicioItem, styles.inicioLayout]} onPress={() => navigation.push('login')}>
         <Text style={[styles.iniciarSesin, styles.registrarmeTypo]}>Iniciar Sesión</Text>
       </Pressable>
       <Image style={styles.logo2Icon} resizeMode="cover" source={require('../../assets/images/Logo 2.png')} />

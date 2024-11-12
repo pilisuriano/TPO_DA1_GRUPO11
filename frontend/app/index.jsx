@@ -1,44 +1,27 @@
-import React, { useContext, useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import StartScreen from "./screens/startScreen";
+import React, { useContext, useEffect, useState } from 'react';
+import { Slot, useRouter } from 'expo-router';
+import { useSelector } from 'react-redux';
 
 export default function AppEntry() {
-  return (
-    <StartScreen></StartScreen>
-  );
-}
+  const router = useRouter();
+  const authenticated = useSelector((state) => state.auth.authenticated);
+  const [isInitialized, setIsInitialized] = useState(false);
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-function MainNavigator() {
-  const { authenticated } = useAuth();
   useEffect(() => {
-    SplashScreen.preventAutoHideAsync();
-    if (authenticated !== null) {
-      SplashScreen.hideAsync();
+    if (authenticated !== undefined) {
+      setIsInitialized(true);
     }
   }, [authenticated]);
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        {authenticated ? (
-          <>
-            {/* Pantallas protegidas */}
-            <Stack.Screen name="(tabs)" />
-            {/* <Stack.Screen name="(tabs)/Profile" /> */}
-          </>
-        ) : (
-          <>
-            {/* Pantallas públicas */}
-            {/* <Stack.Screen name="screens/login" />
-            <Stack.Screen name="screens/startScreen" /> */}
-            <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="Login" component={SIGNIN} options={{ headerShown: false }} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
+  useEffect(() => {
+    if (isInitialized) {
+      if (authenticated) {
+        router.replace('/(tabs)/home');
+      } else {
+        router.replace('/startScreen');
+      }
+    }
+  }, [isInitialized, authenticated]);
+
+  return null;
 }

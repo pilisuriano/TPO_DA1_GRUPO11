@@ -14,14 +14,3 @@ export const login = async (credentials) => {
     throw error.response ? error.response.data : new Error("Network error");
   }
 };
-
-export const signup = async (userData) => {
-  try {
-    const response = await api.post('/auths/signup', userData);
-    return response;
-  } catch (error) {
-    throw error.response ? error.response.data : new Error("Network error");
-  }
-};
-
-// Otras funciones de autenticación, como logout o verifyToken, también pueden estar aquí
