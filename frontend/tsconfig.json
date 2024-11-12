@@ -11,7 +11,16 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
+    "**/*.jsx",
+    "app/index.jsx",
+    "app/_layout.jsx",
+    "components/googlesign.jsx",
+    "app/(tabs)/home.jsx",
+    "app/(tabs)/_layout.jsx",
+    "app/(tabs)/perfil.jsx",
+    "app/login/index.jsx",
+    "app/signup/index.jsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "app/index.jsx", "app/_layout.jsx", "components/googlesign.jsx", "app/(tabs)/home.jsx", "app/(tabs)/_layout.jsx", "app/(tabs)/perfil.jsx"  ]
+  ]
 }

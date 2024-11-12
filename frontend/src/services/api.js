@@ -38,32 +38,4 @@ api.interceptors.response.use(
   }
 );
 
-// Definir las funciones para manejar las solicitudes HTTP
-export const createPost = async (postData) => {
-  try {
-    const response = await api.post('/posts', postData);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const getPost = async (postId) => {
-  try {
-    const response = await api.get(`/posts/${postId}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const deletePost = async (postId) => {
-  try {
-    const response = await api.delete(`/posts/${postId}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
 export default api;

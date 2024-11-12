@@ -1,18 +1,17 @@
-const express = require("express")
-const { Router } = express
-const usersRoutes = new Router()
+import express from "express";
+import { searchUser, getMe, updateMe, deleteMe, getOtherUserProfile } from "../controllers/user.controller.js";
+import { protectRoute } from "../middleware/protectRoute.js";
 
-usersRoutes.get("/", (req, res) => {
-  res.send("Connected to '/users'")
-})
+const usersRoutes = express.Router();
 
-usersRoutes.get("/me", (req, res) => {
-  res.send("Connected to '/users/me'")
-})
 
-usersRoutes.get("/:userId", (req, res) => {
-  res.send("Connected to '/users/{userId}'")
-})
+usersRoutes.get("/", protectRoute, searchUser);
+usersRoutes.get("/me", protectRoute, getMe);
+usersRoutes.put("/me", protectRoute, updateMe); //TODO
+usersRoutes.delete("/me", protectRoute, deleteMe);
+usersRoutes.get("/:userId", protectRoute, getOtherUserProfile);
+
+// TODO
 
 usersRoutes.get("/:userId/posts", (req, res) => {
   res.send("Connected to '/users/{userId}/posts'")
@@ -30,5 +29,4 @@ usersRoutes.delete("/:userId/unfollow", (req, res) => {
   res.send("Connected to '/users/{userId}/unfollow'")
 })
 
-
-module.exports = usersRoutes
+export default usersRoutes;
