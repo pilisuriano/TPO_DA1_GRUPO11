@@ -1,29 +1,16 @@
-const express = require("express")
-const { Router } = express
-const authsRoutes = new Router()
+import express from "express"
+import { login, signup, logout, verifyEmail, verifyOtp, resetPassword } from "../controllers/auth.controller.js"
 
-authsRoutes.post("/login", (req, res) => {
-  res.send("Connected to '/auths/login'")
-})
+const authsRoutes = express.Router()
 
-authsRoutes.post("/verify-email", (req, res) => {
-  res.send("Connected to '/auths/verify-email'")
-})
+authsRoutes.post("/login", login)
+authsRoutes.post("/signup", signup)
+authsRoutes.post("/verify-email", verifyEmail)
+authsRoutes.post("/verify-otp", verifyOtp)
+authsRoutes.post("/reset-password", resetPassword)
+/*
+  TODO req: token
+*/
+authsRoutes.post("/logout", logout)
 
-authsRoutes.post("/signup", (req, res) => {
-  res.send("Connected to '/auths/signup'")
-})
-
-authsRoutes.post("/verify-otp", (req, res) => {
-  res.send("Connected to '/auths/verify-otp'")
-})
-
-authsRoutes.post("/reset-password", (req, res) => {
-  res.send("Connected to '/auths/reset-password'")
-})
-
-authsRoutes.post("/logout", (req, res) => {
-  res.send("Connected to '/auths/logout'")
-})
-
-module.exports = authsRoutes
+export default authsRoutes;

@@ -1,17 +1,16 @@
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Slot, Stack, useRouter, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useCallback, useState } from 'react';
 import 'react-native-reanimated';
-
+import store from '../src/store/store'
 import React from 'react';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+const StackLayout = () => {
   const [fontsLoaded] = useFonts({
     'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
     'Poppins-Bold': require('../assets/fonts/Poppins-Bold.ttf'),
@@ -25,6 +24,10 @@ export default function RootLayout() {
 
   const [isSplashReady, setSplashReady] = useState(false);
 
+  const dispatch = useDispatch();
+  const authenticated = useSelector((state) => state.auth.authenticated);
+  const router = useRouter()
+
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded) {
       await SplashScreen.hideAsync();
@@ -36,10 +39,21 @@ export default function RootLayout() {
     setTimeout(() => {
       onLayoutRootView();
     }, 200); // Mantener la pantalla de carga visible por al menos 1.5 segundos
+
   }, [onLayoutRootView]);
 
-  if (!isSplashReady) {
-    return null; // Mantener la pantalla de carga visible
+  useEffect(() => {
+    if (isSplashReady && fontsLoaded) {
+      if (!authenticated) {
+        router.replace('/startScreen');
+      } else {
+        router.replace('/(tabs)/home');
+      }
+    }
+  }, [isSplashReady, fontsLoaded, authenticated, router]);
+
+  if (!isSplashReady || !fontsLoaded) {
+    return null;
   }
 
   return (
@@ -48,32 +62,34 @@ export default function RootLayout() {
         headerShown: false,
       }}
     >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/login/login" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/login/forgotpass" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/login/passreset" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/login/recovered" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/login/signingoogle" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/register/chooseuser" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/register/otp" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/register/personalinfo" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/register/register" options={{ headerShown: false }} />
-        <Stack.Screen name="screens/register/welcome" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="login/index" options={{ headerShown: false }} />
+      <Stack.Screen name="signup/index" options={{ headerShown: false }} />
+      <Stack.Screen name="signup/otp" options={{ headerShown: false }} />
+      <Stack.Screen name="signup/userInformation" options={{ headerShown: false }} />
+      <Stack.Screen name="signup/chooseUser" options={{ headerShown: false }} />
+      <Stack.Screen name="signup/welcome" options={{ headerShown: false }} />
+      <Stack.Screen name="forgotPassword/index" options={{ headerShown: false }} />
+      <Stack.Screen name="forgotPassword/otp" options={{ headerShown: false }} />
+      <Stack.Screen name="forgotPassword/resetPassword" options={{ headerShown: false }} />
+      <Stack.Screen name="forgotPassword/recovered" options={{ headerShown: false }} />
+      {/* <Stack.Screen name="screens/login/signingoogle" options={{ headerShown: false }} /> */}
+      {authenticated ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      ) : (
+        <Stack.Screen name="startScreen/index" options={{ headerShown: false }} />
+      )}
     </Stack>
   );
 }
-//<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
-  /*return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      {/* Aquí puedes añadir más pantallas *//*
-    </Stack>
-  );*/
+const RootLayoutNav = () => {
+  return (
+    <Provider store={store}>
+      <StackLayout />
+    </Provider>
 
-  /*<Stack.Screen name="Login" component={Login} />*/
+  )
+}
+
+export default RootLayoutNav;
