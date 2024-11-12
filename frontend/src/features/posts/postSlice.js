@@ -1,10 +1,10 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createPost as createPostAPI, getPost as getPostAPI, deletePost as deletePostAPI } from '../../services/api';
+import { createPost, getPost } from './api.js';
 
 // Acción para crear un nuevo post
-export const createPost = createAsyncThunk('posts/createPost', async (postData, thunkAPI) => {
+export const createUserPost = createAsyncThunk('posts/createPost', async (postData, thunkAPI) => {
   try {
-    const response = await createPostAPI(postData);
+    const response = await createPost(postData);
     return response.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -12,19 +12,9 @@ export const createPost = createAsyncThunk('posts/createPost', async (postData, 
 });
 
 // Acción para obtener un post
-export const getPost = createAsyncThunk('posts/getPost', async (postId, thunkAPI) => {
+export const getUserPost = createAsyncThunk('posts/getPost', async (postId, thunkAPI) => {
   try {
-    const response = await getPostAPI(postId);
-    return response.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data);
-  }
-});
-
-// Acción para eliminar un post
-export const deletePost = createAsyncThunk('posts/deletePost', async (postId, thunkAPI) => {
-  try {
-    const response = await deletePostAPI(postId);
+    const response = await getPost(postId);
     return response.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
@@ -45,41 +35,29 @@ const postSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createPost.pending, (state) => {
+      .addCase(createUserPost.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createPost.fulfilled, (state, action) => {
+      .addCase(createUserPost.fulfilled, (state, action) => {
         state.loading = false;
         state.posts.push(action.payload);
       })
-      .addCase(createPost.rejected, (state, action) => {
+      .addCase(createUserPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(getPost.pending, (state) => {
+      .addCase(getUserPost.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getPost.fulfilled, (state, action) => {
+      .addCase(getUserPost.fulfilled, (state, action) => {
         state.loading = false;
         state.posts = state.posts.map((post) =>
           post.id === action.payload.id ? action.payload : post
         );
       })
-      .addCase(getPost.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(deletePost.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(deletePost.fulfilled, (state, action) => {
-        state.loading = false;
-        state.posts = state.posts.filter((post) => post.id !== action.payload.id);
-      })
-      .addCase(deletePost.rejected, (state, action) => {
+      .addCase(getUserPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
