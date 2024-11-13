@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
-import { useDispatch, useSelector} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createUserPost, resetError } from "../../src/features/posts/postSlice";
 import { useNavigation, CommonActions } from '@react-navigation/native';
 import * as ImagePicker from "expo-image-picker";
@@ -9,59 +9,32 @@ import * as ImagePicker from "expo-image-picker";
 const CreatePost = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const [title, setTitle] = useState("")
+  const [media, setMedia] = useState([]);
+  const [formData, setFormData] = useState(new FormData());
+  // const [location, setLocation] = useState('');
   const { posts, loading, error } = useSelector((state) => state.post);
 
-  /*
-    No hace falta mandarle el userId al crear el Post, 
-    ya que con el token que viaja en los headers de la llamada el backend ya sabe el userId (y ya se agrega desde ahi)
-  */
-  // const { userId } = useSelector((state) => state.auth);
-
-  // cambiar los datos que se quieren enviar, va a devolver error
-  // "media" deberia ser un archivo, la url y el type no se mandan de front, eso lo genero el back al crear el nuevo Post
-  const [postData, setPostData] = useState({
-    // userId: "",
-    title: "",
-    location: {
-      placeName: "",
-      coordinates: {
-        latitude: "",
-        longitude: "",
-      },
-    },
-    media: [
-      {
-        url: "",
-        type: "image", // Default to image
-      },
-    ],
-  });
+  // const [postData, setPostData] = useState({});
 
   useEffect(() => {
     // Inicializar la estructura del post vacío
-    setPostData({
-      // userId,
-      title: "",
-      location: {
-        placeName: "",
-        coordinates: {
-          latitude: "",
-          longitude: "",
-        },
-      },
-      media: [
-        {
-          url: "",
-          type: "image", // Default to image
-        },
-      ],
-    });
+
   }, []);
 
   const handleCreatePost = async () => {
+    formData.append('title', title);
+    // formData.append('location', JSON.stringify(location));
+    if (media.length > 0) {
+    formData.append('media', {
+      uri: media[0].uri,
+      type: 'image/jpeg',
+      name: 'photo.jpg',
+    });
+  }
     try {
       dispatch(resetError());
-      const res = await dispatch(createUserPost(postData)).unwrap();  // llamada a funcion del slice que llama a api
+      const res = await dispatch(createUserPost(formData)).unwrap();  // llamada a funcion del slice que llama a api
       if (res) {
         navigation.dispatch(CommonActions.reset({
           index: 0,
@@ -76,69 +49,66 @@ const CreatePost = () => {
 
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.All, // Asegura que solo imágenes se seleccionen
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
 
     if (!result.canceled) {
-      const selectedMedia = result.assets[0];
-      setPostData({
-        ...postData,
-        media: [{ url: selectedMedia.uri, type: selectedMedia.type }],
-      });
+      const selectedImage = result.assets[0];
+      setMedia([{ uri: selectedImage.uri, type: 'image/jpeg', name: 'photo.jpg' }]);  // Guardar la imagen seleccionada en el estado
     }
   };
 
   const removeMedia = () => {
-    setPostData({
-      ...postData,
-      media: [{ url: "", type: "image" }],
-    });
+    // setPostData({
+    //   ...postData,
+    //   media: [{ url: "", type: "image" }],
+    // });
   };
 
 
   return (
-      <View style={[styles.post, styles.postLayout1]}>
-        <Text style={[styles.post1, styles.postTypo]}>Post</Text>
-        <Text style={[styles.seleccionarImgenesYo, styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
-        <Pressable style={styles.plus} onPress={pickMedia}>
-          <Image style={[styles.icon, styles.postLayout1]} resizeMode="cover" source={require("../../assets/images/PlusM.png")} />
-        </Pressable>
-        {postData.media[0].url ? (
-          <View style={styles.thumbnailContainer}>
-            <Image source={{ uri: postData.media[0].url }} style={styles.thumbnail} />
-            <Pressable style={styles.removeButton} onPress={removeMedia}>
-              <Text style={styles.removeButtonText}>Eliminar</Text>
-            </Pressable>
-          </View>
-        ) : null}
-        <TextInput
-          style={[styles.input, styles.agregarTypo]}
-          placeholder="Agregar pie de foto"
-          value={postData.title}
-          onChangeText={(text) => setPostData({ ...postData, title: text })}
-        />
-        <View style={[styles.postChild, styles.postLayout]} />
-        <TextInput
-          style={[styles.input, styles.agregarTypo]}
-          placeholder="Agregar ubicación"
-          value={postData.location.placeName}
-          onChangeText={(text) => setPostData({ ...postData, location: { ...postData.location, placeName: text } })}
-        />
-        <View style={[styles.postItem, styles.postItemLayout]} />
-        <View style={[styles.rectangleParent, styles.postItemLayout]}>
-          <View style={[styles.groupChild, styles.postItemLayout]} />
-          <Pressable onPress={handleCreatePost}>
-            <Text style={[styles.publicarPost, styles.postTypo]}>Publicar post</Text>
+    <View style={[styles.post, styles.postLayout1]}>
+      <Text style={[styles.post1, styles.postTypo]}>Post</Text>
+      <Text style={[styles.seleccionarImgenesYo, styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
+      <Pressable style={styles.plus} onPress={pickMedia}>
+        <Image style={[styles.icon, styles.postLayout1]} resizeMode="cover" source={require("../../assets/images/PlusM.png")} />
+      </Pressable>
+      {media.length > 0 && media[0].uri ? (
+        <View style={styles.thumbnailContainer}>
+          <Image source={{ uri: media[0].uri }} style={styles.thumbnail} />
+          <Pressable style={styles.removeButton} onPress={removeMedia}>
+            <Text style={styles.removeButtonText}>Eliminar</Text>
           </Pressable>
         </View>
-        <View style={[styles.postInner, styles.postLayout]} />
-        <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
-        {loading && <Text>Loading...</Text>}
-        {error && <Text style={styles.errorText}>{error}</Text>}
+      ) : null}
+      <TextInput
+        style={[styles.input, styles.agregarTypo]}
+        value={title}
+        onChangeText={setTitle}
+        placeholder="Agregar pie de foto"
+      />
+      <View style={[styles.postChild, styles.postLayout]} />
+      {/* <TextInput
+          style={[styles.input, styles.agregarTypo]}
+          placeholder="Agregar ubicación"
+          value={formData.location.placeName}
+          onChangeText={(text) => setPostData({ ...postData, location: { ...postData.location, placeName: text } })}
+        /> */}
+      <View style={[styles.postItem, styles.postItemLayout]} />
+      <View style={[styles.rectangleParent, styles.postItemLayout]}>
+        <View style={[styles.groupChild, styles.postItemLayout]} />
+        <Pressable onPress={handleCreatePost}>
+          <Text style={[styles.publicarPost, styles.postTypo]}>Publicar post</Text>
+        </Pressable>
       </View>
+      <View style={[styles.postInner, styles.postLayout]} />
+      <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
+      {loading && <Text>Loading...</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </View>
   );
 };
 
@@ -376,7 +346,7 @@ const styles = StyleSheet.create({
     top: 0,
     width: 390
   },*/
-  
+
 });
 
 export default CreatePost;

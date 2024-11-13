@@ -1,37 +1,17 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createPost, getPost } from './api.js';
-import { getItem } from '../../services/secureStore.js';
-
-
-// Función para obtener el token de autenticación
-const getAuthToken = async () => {
-  try {
-    const token = await getItem('authToken');
-    return token;
-  } catch (error) {
-    console.error('Error getting auth token:', error);
-    return null;
-  }
-};
-
-// Obtener el token de forma síncrona para el estado inicial
-let token;
-(async () => {
-  token = await getAuthToken();
-})();
 
 const initialState = {
-  token: token,
   posts: [], // Estado inicial de posts como un array vacío
   loading: false,
   error: null,
-  authenticated: !!token,
 };
 
 // Acción para crear un nuevo post
-export const createUserPost = createAsyncThunk('posts/', async (postData, thunkAPI) => {
+export const createUserPost = createAsyncThunk('posts/createPost', async (postData, thunkAPI) => {
   try {
     const response = await createPost(postData);
+    console.log(`RESPONSE: ${JSON.stringify(response)}`)
     return response.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);
