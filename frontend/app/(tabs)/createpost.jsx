@@ -1,9 +1,10 @@
 import * as React from "react";
-import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert } from "react-native";
+import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView } from "react-native";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector} from "react-redux";
 import { createUserPost, resetError } from "../../src/features/posts/postSlice";
 import { useNavigation, CommonActions } from '@react-navigation/native';
+import * as ImagePicker from "expo-image-picker";
 
 const CreatePost = () => {
   const navigation = useNavigation();
@@ -60,10 +61,11 @@ const CreatePost = () => {
   const handleCreatePost = async () => {
     try {
       dispatch(resetError());
-      const res = dispatch(createUserPost(postData));  // llamada a funcion del slice que llama a api
+      const res = await dispatch(createUserPost(postData)).unwrap();  // llamada a funcion del slice que llama a api
       if (res) {
         navigation.dispatch(CommonActions.reset({
-          routes: [{ name: '(tabs)/home' }]
+          index: 0,
+          routes: [{ name: 'home' }]
         }));
       }
     } catch (err) {
@@ -72,92 +74,142 @@ const CreatePost = () => {
     }
   };
 
+  const pickMedia = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      const selectedMedia = result.assets[0];
+      setPostData({
+        ...postData,
+        media: [{ url: selectedMedia.uri, type: selectedMedia.type }],
+      });
+    }
+  };
+
+  const removeMedia = () => {
+    setPostData({
+      ...postData,
+      media: [{ url: "", type: "image" }],
+    });
+  };
+
+
   return (
-    <View style={[styles.post, styles.postLayout1]}>
-      <Text style={[styles.post1, styles.postTypo]}>Post</Text>
-      <TextInput
-        style={[styles.input, styles.agregarTypo]}
-        placeholder="Agregar pie de foto"
-        value={postData.title}
-        onChangeText={(text) => setPostData({ ...postData, title: text })}
-      />
-      <View style={[styles.postChild, styles.postLayout]} />
-      <TextInput
-        style={[styles.input, styles.agregarTypo]}
-        placeholder="Agregar ubicación"
-        value={postData.location.placeName}
-        onChangeText={(text) => setPostData({ ...postData, location: { ...postData.location, placeName: text } })}
-      />
-      <View style={[styles.postItem, styles.postItemLayout]} />
-      <View style={[styles.rectangleParent, styles.postItemLayout]}>
-        <View style={[styles.groupChild, styles.postItemLayout]} />
-        <Pressable onPress={handleCreatePost}>
-          <Text style={[styles.publicarPost, styles.postTypo]}>Publicar post</Text>
+      <View style={[styles.post, styles.postLayout1]}>
+        <Text style={[styles.post1, styles.postTypo]}>Post</Text>
+        <Text style={[styles.seleccionarImgenesYo, styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
+        <Pressable style={styles.plus} onPress={pickMedia}>
+          <Image style={[styles.icon, styles.postLayout1]} resizeMode="cover" source={require("../../assets/images/PlusM.png")} />
         </Pressable>
+        {postData.media[0].url ? (
+          <View style={styles.thumbnailContainer}>
+            <Image source={{ uri: postData.media[0].url }} style={styles.thumbnail} />
+            <Pressable style={styles.removeButton} onPress={removeMedia}>
+              <Text style={styles.removeButtonText}>Eliminar</Text>
+            </Pressable>
+          </View>
+        ) : null}
+        <TextInput
+          style={[styles.input, styles.agregarTypo]}
+          placeholder="Agregar pie de foto"
+          value={postData.title}
+          onChangeText={(text) => setPostData({ ...postData, title: text })}
+        />
+        <View style={[styles.postChild, styles.postLayout]} />
+        <TextInput
+          style={[styles.input, styles.agregarTypo]}
+          placeholder="Agregar ubicación"
+          value={postData.location.placeName}
+          onChangeText={(text) => setPostData({ ...postData, location: { ...postData.location, placeName: text } })}
+        />
+        <View style={[styles.postItem, styles.postItemLayout]} />
+        <View style={[styles.rectangleParent, styles.postItemLayout]}>
+          <View style={[styles.groupChild, styles.postItemLayout]} />
+          <Pressable onPress={handleCreatePost}>
+            <Text style={[styles.publicarPost, styles.postTypo]}>Publicar post</Text>
+          </Pressable>
+        </View>
+        <View style={[styles.postInner, styles.postLayout]} />
+        <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
+        {loading && <Text>Loading...</Text>}
+        {error && <Text style={styles.errorText}>{error}</Text>}
       </View>
-      <Text style={[styles.seleccionarImgenesYo, styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
-      <TextInput
-        style={[styles.input, styles.agregarTypo]}
-        placeholder="Media URL"
-        value={postData.media[0].url}
-        onChangeText={(text) => setPostData({ ...postData, media: [{ ...postData.media[0], url: text }] })}
-      />
-      <TextInput
-        style={[styles.input, styles.agregarTypo]}
-        placeholder="Media Type (image or video)"
-        value={postData.media[0].type}
-        onChangeText={(text) => setPostData({ ...postData, media: [{ ...postData.media[0], type: text }] })}
-      />
-      <View style={[styles.postInner, styles.postLayout]} />
-      <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
-      <Pressable style={styles.plus} onPress={() => {}}>
-        <Image style={[styles.icon, styles.postLayout1]} resizeMode="cover" source={require("../../assets/images/PlusM.png")} />
-      </Pressable>
-      {loading && <Text>Loading...</Text>}
-      {error && <Text style={styles.errorText}>{error}</Text>}
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  postLayout1: {
-    overflow: "hidden",
-    width: "100%"
+  post: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    flex: 1,
+    height: 844
   },
-  groupIconPosition: {
-    width: 390,
-    left: 0,
+  post1: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+    top: 70,
+    left: 175,
+    width: 43,
+    color: "#000",
+    textAlign: "left",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 18
+  },
+  plus: {
+    left: "82.56%",
+    top: "33.53%",
+    right: "10.77%",
+    bottom: "63.39%",
+    width: "6.67%",
+    height: "3.08%",
     position: "absolute"
   },
-  postTypo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#000',
+  postInner: {
+    top: 181,
+    borderStyle: "solid",
+    borderColor: "#7e5f5b",
+    borderWidth: 0.5,
+    height: 133
   },
-  agregarTypo: {
-    fontSize: 16,
-    color: '#000',
-  },
-  postLayout: {
-    height: 40,
-    marginBottom: 12,
-  },
-  postItemLayout: {
-    height: 40,
-    marginBottom: 12,
-  },
+  /*rectangleView: {
+    borderRadius: 10,
+    backgroundColor: "#f2f2f2",
+    borderStyle: "solid",
+    borderColor: "#7e5f5b",
+    borderWidth: 0.5,
+    flex: 1,
+    width: "100%",
+    height: 133
+  },*/
   input: {
     height: 40,
     borderColor: '#ccc',
     borderWidth: 1,
+    borderRadius: 8,
     marginBottom: 12,
     paddingHorizontal: 8,
+    color: '#000',
   },
   button: {
     backgroundColor: '#007BFF',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 8,
     alignItems: 'center',
+    marginTop: 16,
   },
   buttonText: {
     color: '#fff',
@@ -167,34 +219,176 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     marginTop: 10,
+    textAlign: 'center',
   },
-  post: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
+  postLayout1: {
+    overflow: "hidden",
+    width: "100%"
   },
-  post1: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
+  groupIcon: {
+    top: 775,
+    height: 75
   },
-  imageIcon: {
+  groupIconPosition: {
+    width: 390,
+    left: 0,
+    position: "absolute"
+  },
+  postTypo: {
+    color: '#000',
+    textAlign: "left",
+    fontFamily: "Poppins-SemiBold",
+    fontWeight: "600",
+    fontSize: 18,
+    position: "absolute"
+  },
+  thumbnailContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  thumbnail: {
     width: 100,
     height: 100,
+    borderRadius: 8,
   },
-  plus: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
+  removeButton: {
+    backgroundColor: '#FF0000',
+    padding: 10,
+    borderRadius: 8,
+    marginLeft: 16,
   },
+  removeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  /*agregarTypo: {
+    color: '#000',
+    opacity: 0.7,
+    fontFamily: "Poppins-Medium",
+    fontWeight: "500",
+    fontSize: 14,
+    left: 35,
+    textAlign: "left",
+    position: "absolute"
+  },*/
+  /*postLayout: {
+    height: 40,
+    marginBottom: 12,
+    width: 321,
+    backgroundColor: "#f2f2f2",
+    borderRadius: 10,
+    left: 35,
+    position: "absolute"
+  },*/
+  postLayout1: {
+    overflow: "hidden",
+    width: "100%"
+  },
+  postItemLayout: {
+    marginBottom: 12,
+    height: 49,
+    width: 321,
+    position: "absolute"
+  },
+  imageIcon: {
+    top: 509,
+    left: 325,
+    width: 20,
+    height: 20,
+    opacity: 0.5,
+    borderRadius: 10,
+    position: "absolute"
+  },
+  /*seleccionarImgenesYo: {
+    top: 155,
+    width: 259,
+    opacity: 0.7,
+    fontFamily: "Poppins-Medium",
+    fontWeight: "500",
+    fontSize: 14
+  },*/
+  /*rectangleParent: {
+    top: 579,
+    left: 35,
+    height: 49
+  },*/
+  publicarPost: {
+    top: 11,
+    left: 101,
+    color: "#fff",
+    textAlign: "left",
+    fontFamily: "Poppins-SemiBold",
+    fontWeight: "600",
+    fontSize: 18
+  },
+  groupChild: {
+    backgroundColor: "#bb4426",
+    borderRadius: 10,
+    height: 49,
+    left: 0,
+    top: 0
+  },
+  postItem: {
+    top: 494,
+    backgroundColor: "#f2f2f2",
+    height: 49,
+    borderRadius: 10,
+    left: 35
+  },
+  agregarUbicacin: {
+    top: 468,
+    width: 139,
+    opacity: 0.7,
+    fontFamily: "Poppins-Medium",
+    fontWeight: "500",
+    fontSize: 14
+  },
+  postChild: {
+    top: 367,
+    height: 84
+  },
+  agregarPieDe: {
+    top: 341,
+    width: 139,
+    opacity: 0.7,
+    fontFamily: "Poppins-Medium",
+    fontWeight: "500",
+    fontSize: 14
+  },
+  /*iconlylightOutlinearrowL: {
+    left: "7.73%",
+    top: "8.87%",
+    right: "89.6%",
+    bottom: "88.88%",
+    width: "2.67%",
+    height: "2.25%",
+    position: "absolute"
+  },*/
+  icon: {
+    height: "100%",
+    maxWidth: "100%",
+    maxHeight: "100%"
+  },
+  /*blackBase21: {
+    height: 41,
+    top: 0,
+    width: 390
+  },*/
+  
 });
 
 export default CreatePost;
 
-
-
-
-
+/*
+<TextInput
+          style={[styles.input, styles.agregarTypo]}
+          placeholder="Media URL"
+          value={postData.media[0].url}
+          onChangeText={(text) => setPostData({ ...postData, media: [{ ...postData.media[0], url: text }] })}
+        />
+*/
 
 
 
