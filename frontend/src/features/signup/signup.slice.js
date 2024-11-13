@@ -7,7 +7,6 @@ const initialState = {
   created: false
 };
 
-// signup REVISAR
 export const signupUser = createAsyncThunk('auths/signup', async (userData, thunkAPI) => {
   try {
     const response = await signup(userData);
