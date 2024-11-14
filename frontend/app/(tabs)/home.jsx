@@ -30,7 +30,7 @@ const posts = [
 		cantComentarios: 'Ver los 32 comentarios',
 	},
 	{
-		id: '2',
+		id: '3',
 		profilePic: require("../../assets/images/Profile Picture.png"),
 		name: 'Chris Lui',
 		time: 'Hace 1 hora',
