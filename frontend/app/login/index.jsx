@@ -41,7 +41,6 @@ export default function LoginScreen() {
     if (authenticated) {
       router.replace("/(tabs)/home")
     }
-    dispatch(resetError())
   }, [authenticated]);
 
   return (

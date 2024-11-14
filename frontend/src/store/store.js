@@ -3,6 +3,7 @@ import authReducer from "../features/auth/auth.slice"
 import signupReducer from "../features/signup/signup.slice"
 import verifyEmailReducer from "../features/verifyEmail/verifyEmail.slice";
 import verifyOtpReducer from "../features/verifyOtp/verifyOtp.slice";
+import postReducer from "../features/posts/postSlice";
 import errorMiddleware from "../utils/errorMiddleware"
 
 const store = configureStore({
@@ -11,6 +12,7 @@ const store = configureStore({
     signup: signupReducer,
     verifyEmail: verifyEmailReducer,
     verifyOtp: verifyOtpReducer,
+    post: postReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

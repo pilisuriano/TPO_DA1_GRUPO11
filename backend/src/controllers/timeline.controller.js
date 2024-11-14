@@ -1,5 +1,4 @@
 import Post from '../models/post.model.js';
-import Follower from '../models/follower.model.js';
 
 export const getTimeline = async (req, res) => {
   try {
