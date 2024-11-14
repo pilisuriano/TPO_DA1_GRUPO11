@@ -1,7 +1,6 @@
 import * as React from "react";
 import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity, TextInput, Pressable, s } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const posts = [
@@ -44,39 +43,39 @@ const posts = [
 ];
 
 const Post = ({ post }) => (
-	<View style={styles.postContainer}>
-		{/* Encabezado de la publicación */}
-		<View style={styles.header}>
-			<Image source={post.profilePic} style={styles.profilePic} />
-			<View style={styles.headerInfo}>
-				<Text style={styles.name}>{post.name}</Text>
-				<Text style={styles.details}>{post.time}  ·   {post.location}</Text>
-			</View>
-		</View>
+  <View style={styles.postContainer}>
+    {/* Encabezado de la publicación */}
+    <View style={styles.header}>
+      <Image source={post.profilePic} style={styles.profilePic} />
+      <View style={styles.headerInfo}>
+        <Text style={styles.name}>{post.name}</Text>
+        <Text style={styles.details}>{post.time}  ·   {post.location}</Text>
+      </View>
+    </View>
 
-		{/* Imagen de la publicación */}
-		<Image source={post.postImage} style={styles.postImage} />
+    {/* Imagen de la publicación */}
+    <Image source={post.postImage} style={styles.postImage} />
 
-		{/* Pie de la publicación */}
-		<View style={styles.footer}>
-			<Text style={styles.comment}>{post.comment}</Text>
-			<View style={styles.reactions}>
-				<TouchableOpacity style={styles.iconContainer}>
-					<Icon name="heart" size={20} color="red" />
-					<Text style={styles.reactionText}>{post.likes}</Text>
-				</TouchableOpacity>
-				<TouchableOpacity style={styles.iconContainer}>
-					<Icon name="comment" size={20} color="gray" />
-					<Text style={styles.reactionText}>{post.comments}</Text>
-				</TouchableOpacity>
+    {/* Pie de la publicación */}
+    <View style={styles.footer}>
+      <Text style={styles.comment}>{post.comment}</Text>
+      <View style={styles.reactions}>
+        <TouchableOpacity style={styles.iconContainer}>
+          <Icon name="heart" size={20} color="red" />
+          <Text style={styles.reactionText}>{post.likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.iconContainer}>
+          <Icon name="comment" size={20} color="gray" />
+          <Text style={styles.reactionText}>{post.comments}</Text>
+        </TouchableOpacity>
 
 
-			</View>
-			<View>
-				<Text style={styles.cantComentarios}>{post.cantComentarios}</Text>
-			</View>
-		</View>
-	</View>
+      </View>
+      <View>
+        <Text style={styles.cantComentarios}>{post.cantComentarios}</Text>
+      </View>
+    </View>
+  </View>
 );
 
 const Home = () => {

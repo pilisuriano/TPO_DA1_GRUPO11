@@ -3,9 +3,18 @@ import Post from '../models/post.model.js';
 export const getTimeline = async (req, res) => {
   try {
 
-    const { limit = 10, page = 1, after_timestamp, after_postId, before_timestamp, before_postId } = req.query;
+    const { limit, page, after_timestamp, after_postId, before_timestamp, before_postId } = req.query;
 
-    const query = {};
+    const queryLimit = (!after_timestamp && !before_timestamp && !after_postId && !before_postId) ? parseInt(limit) || 10 : null;
+    const queryPage = (!after_timestamp && !before_timestamp && !after_postId && !before_postId) ? parseInt(page) || 1 : null;
+
+    const userId = req.user._id;
+
+    // Encuentra los usuarios que el usuario actual sigue
+    const following = await Follower.find({ followerId: userId }).select('userId');
+    const followingIds = following.map(follow => follow.userId);
+
+    const query = { userId: { $in: [...followingIds, userId] } };
 
     // Cargar nuevos posts
     if (after_timestamp) {
@@ -32,8 +41,8 @@ export const getTimeline = async (req, res) => {
 
     const posts = await Post.find(query)
       .sort({ createdAt: -1 })
-      .limit(parseInt(limit))
-      .skip((page - 1) * limit)
+      .limit(parseInt(queryLimit))
+      .skip((queryPage - 1) * queryLimit)
       .populate('userId', 'fullName profileImage')
       .lean();
 
@@ -41,14 +50,34 @@ export const getTimeline = async (req, res) => {
     const postsWithFlags = posts.map(post => ({
       ...post,
       isLiked: false,
-      isFavorite: false
+      isFavorite: false,
+      type: "post"
     }));
 
+    // Obtengo ads
+    const adsResponse = await fetch(process.env.URL_ENDPOINT_ADS); // Reemplaza con la URL correcta
+    const ads = await adsResponse.json();
+    const adsWithType = ads.map(ad => ({
+      ...ad,
+      type: "ad"
+    }));
+
+    // Juntar posts y ads
+    const combinedTimeline = [];
+    let adIndex = 0;
+    for (let i = 0; i < postsWithFlags.length; i++) {
+      combinedTimeline.push(postsWithFlags[i]);
+      if ((i + 1) % 3 === 0 && adIndex < adsWithType.length) {
+        combinedTimeline.push(adsWithType[adIndex]);
+        adIndex++;
+      }
+    }
+
     const totalPosts = await Post.countDocuments(query);
-    const hasMore = (page * limit) < totalPosts;
+    const hasMore = (queryPage * queryLimit) < totalPosts;
 
     return res.status(200).json({
-      posts: postsWithFlags,
+      posts: combinedTimeline,
       totalPosts,
       hasMore
     });

@@ -17,6 +17,7 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,24 +29,16 @@ export default function LoginScreen() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const isButtonEnabled = email.trim() !== '' && password.trim() !== '';
-  const { authenticated, loading, error } = useSelector((state) => state.auth);
+
+  const isValidPassword = (password) => {
+    return password.length > 6;
+  };
+  const isButtonEnabled = email.trim() !== '' && password.trim() !== '' && isValidPassword(password);
+  const { authenticated, loading, error, showInUI } = useSelector((state) => state.auth);
 
   const handleLogin = async () => {
-    try {
-      if (isButtonEnabled) {
-        dispatch(resetError())
-        dispatch(loginUser({ email, password }));
-        // if (authenticated) {
-        //   navigation.dispatch(CommonActions.reset({
-        //     routes: [{ name: '(tabs)/home' }]
-        //   }))
-        // }
-      }
-
-    } catch (err) {
-      console.error("Error during login:", err);
-      Alert.alert("Error", "Could not log in. Please try again.");
+    if (isButtonEnabled) {
+      dispatch(loginUser({ email, password }));
     }
   };
 
@@ -56,68 +49,85 @@ export default function LoginScreen() {
   }, [authenticated]);
 
   return (
-    <>
-    <StatusBar backgroundColor={'transparent'} translucent/>
     <SafeAreaView style={styles.safeArea}>
-      <Pressable style={styles.toolbar} onPress={() => router.back()}>
-        <Image resizeMode="cover" source={require('../../assets/images/Arrow---Left-2.png')} />
-      </Pressable>
-      {/* Agregar al scrollview padding/espaciado dependiendo el statusBar (video) */}
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Inicia sesión</Text>
-        <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
 
-
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Correo electrónico</Text>
-          <TextInput
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            style={styles.input}
-            placeholderTextColor="#C7C7CD"
-          />
+      <StatusBar barStyle="dark-content" />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#B5432A" />
         </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.title}>Inicia sesión</Text>
+          <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholderTextColor="#C7C7CD"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
 
-        {/* CAMBIAR RUTA */}
-        <TouchableOpacity onPress={() => router.push('ForgotPassword')}>
-          <Text style={styles.forgotPassword}>¿Olvidó su contraseña?</Text>
-        </TouchableOpacity>
-        <View style={styles.footerContainer}>
-          <TouchableOpacity
-            style={[styles.loginButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
-            disabled={!isButtonEnabled}
-            onPress={handleLogin}>
-            <Text style={styles.loginButtonText}>Listo</Text>
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Correo electrónico</Text>
+            <TextInput
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (showInUI) dispatch(resetError()); // Limpiar el error al escribir
+              }}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              style={[styles.input, showInUI && styles.inputError]}
+              placeholderTextColor="#C7C7CD"
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Contraseña</Text>
+            <TextInput
+              style={[styles.input, showInUI && styles.inputError]}
+              placeholderTextColor="#C7C7CD"
+              value={password}
+              autoCapitalize="none"
+              onChangeText={(text) => {
+                setPassword(text);
+                if (showInUI) dispatch(resetError()); // Limpiar el error al escribir
+              }}
+              secureTextEntry
+            />
+          </View>
+
+          {showInUI && (
+            <Text style={styles.errorText}>{error}</Text>
+          )}
+
+          <TouchableOpacity onPress={() => router.push('/forgotPassword')}>
+            <Text style={styles.forgotPassword}>¿Olvidó su contraseña?</Text>
           </TouchableOpacity>
+          <View style={styles.footerContainer}>
+            <TouchableOpacity
+              style={[styles.loginButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
+              disabled={!isButtonEnabled}
+              onPress={handleLogin}>
+              <Text style={styles.loginButtonText}>Listo</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.push('signup')}>
-            <Text style={styles.registerText}>
-              ¿No tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.replace('signup')}>
+              <Text style={styles.registerText}>
+                ¿No tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
+              </Text>
+            </TouchableOpacity>
 
-        </View>
+          </View>
 
-      </ScrollView>
+        </ScrollView>
+      )}
+
     </SafeAreaView>
-    </>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -126,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF', // color de fondo para evitar que se vea vacío
     justifyContent: 'space-between',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 35 : 35,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 100 : 100,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -172,6 +182,16 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 14,
     color: '#000',
+  },
+  inputError: {
+    borderColor: '#BB4426',
+    borderWidth: 1,
+  },
+  errorText: {
+    color: '#BB4426',
+    fontSize: 14,
+    marginTop: 5,
+    marginBottom: 10,
   },
   forgotPassword: {
     fontSize: 14,

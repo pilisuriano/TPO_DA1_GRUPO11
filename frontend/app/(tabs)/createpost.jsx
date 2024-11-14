@@ -25,15 +25,10 @@ const CreatePost = () => {
   const handleCreatePost = async () => {
     formData.append('title', title);
     // formData.append('location', JSON.stringify(location));
-    /*if (media.length > 0 && media[0].uri) {
+    if (media.length > 0 && media[0].uri) {
       const file = media[0];
-      formData.append('media', {
-        uri: file.uri,
-        type: file.type || 'image/jpeg',
-        name: file.name || 'photo.jpg',
-    });
-    }*/
-    console.log(formData);
+      formData.append('media', file.uri)
+    }
 
     try {
       dispatch(resetError());
@@ -52,7 +47,7 @@ const CreatePost = () => {
 
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Asegura que solo imágenes se seleccionen
+      mediaTypes: ImagePicker.MediaTypeOptions.All, 
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,

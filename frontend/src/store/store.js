@@ -4,6 +4,7 @@ import signupReducer from "../features/signup/signup.slice"
 import verifyEmailReducer from "../features/verifyEmail/verifyEmail.slice";
 import verifyOtpReducer from "../features/verifyOtp/verifyOtp.slice";
 import postReducer from "../features/posts/postSlice";
+import errorMiddleware from "../utils/errorMiddleware"
 
 const store = configureStore({
   reducer: {
@@ -13,6 +14,10 @@ const store = configureStore({
     verifyOtp: verifyOtpReducer,
     post: postReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false
+    }).concat(errorMiddleware),
 });
 
 export default store;

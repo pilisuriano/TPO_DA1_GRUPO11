@@ -28,12 +28,12 @@ const parseErrorResponse = (error) => {
 // Acción para crear un nuevo post
 export const createUserPost = createAsyncThunk('posts/createPost', async (formData, thunkAPI) => {
   try {
-    console.log("POST DATA:", formData);
+    console.log("POST DATA:", JSON.stringify(formData));
     const response = await createPost(formData);
     console.log(`RESPONSE: ${JSON.stringify(response)}`)
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(parseErrorResponse(error)); //(error.response.data)
+    return thunkAPI.rejectWithValue(error); //(error.response.data)
   }
 });
 

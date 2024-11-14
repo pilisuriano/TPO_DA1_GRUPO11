@@ -32,27 +32,12 @@ export const createPost = async (req, res) => {
     const results = await Promise.all(uploadPromises);
     mediaUrls.push(...results);
 
-    // Crear el nuevo post en la base de datos con location obligatorio
-    // const newPost = await Post.create({
-    //   user: userId,
-    //   title,
-    //   location: {
-    //     placeName: location.placeName,
-    //     coordinates: {
-    //       latitude: location.coordinates.latitude,
-    //       longitude: location.coordinates.longitude,
-    //     },
-    //     placeId: location.placeId,
-    //   },
-    //   media: mediaUrls,
-    // });
     const newPost = {
       userId,
       title,
       media: mediaUrls,
     };
     
-    // Solo agregar `location` si existen los valores
     if (location && location.placeName && location.coordinates) {
       newPost.location = {
         placeName: location.placeName,
