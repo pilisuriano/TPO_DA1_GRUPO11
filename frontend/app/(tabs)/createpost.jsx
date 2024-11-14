@@ -57,7 +57,7 @@ const CreatePost = () => {
       aspect: [4, 3],
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       const file = result.assets[0];
       const mediaData = {
@@ -67,7 +67,7 @@ const CreatePost = () => {
       };
       // Verifica la estructura de mediaData
       console.log("Selected media data:", mediaData);
-       // Utilizar fetch para crear un archivo Blob desde el URI
+      // Utilizar fetch para crear un archivo Blob desde el URI
       const response = await fetch(mediaData.uri);
       const blob = await response.blob();
       // Clear previous media entries
@@ -111,26 +111,33 @@ const CreatePost = () => {
 
 
   return (
-    <View style={[styles.post, styles.postLayout1]}>
-      <Text style={[styles.post1, styles.postTypo]}>Post</Text>
-      <Text style={[styles.seleccionarImgenesYo, styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
-      <Pressable style={styles.plus} onPress={pickMedia}>
-        <Image style={[styles.icon, styles.postLayout1]} resizeMode="cover" source={require("../../assets/images/PlusM.png")} />
-      </Pressable>
-      {media.length > 0 && media[0].uri ? (
-        <View style={styles.thumbnailContainer}>
-          <Image source={{ uri: media[0].uri }} style={styles.thumbnail} />
-          <Pressable style={styles.removeButton} onPress={removeMedia}>
-            <Text style={styles.removeButtonText}>Eliminar</Text>
-          </Pressable>
-        </View>
-      ) : null}
+
+    <View style={[styles.post]}>
+
+      <Text style={[styles.postText]}>Post</Text>
+      <Text style={[styles.agregarTypo]}>Seleccionar imágen(es) y/o video</Text>
+      <View style={[styles.backgraund]}>
+        <Pressable onPress={pickMedia}>
+          <Image style={[styles.icon]} resizeMode="stretch" source={require("../../assets/images/PlusM.png")} />
+        </Pressable>
+
+
+        {media.length > 0 && media[0].uri ? (
+          <View style={styles.thumbnailContainer}>
+            <Image source={{ uri: media[0].uri }} style={styles.thumbnail} />
+            <Pressable style={styles.removeButton} onPress={removeMedia}>
+              <Text style={styles.removeButtonText}>Eliminar</Text>
+            </Pressable>
+          </View>
+
+        ) : null}</View>
+      <View style={[styles.pie]}>
       <TextInput
-        style={[styles.input, styles.agregarTypo]}
+        
         value={title}
         onChangeText={setTitle}
         placeholder="Agregar pie de foto"
-      />
+      /></View>
       <View style={[styles.postChild, styles.postLayout]} />
       {/* <TextInput
           style={[styles.input, styles.agregarTypo]}
@@ -138,12 +145,13 @@ const CreatePost = () => {
           value={formData.location.placeName}
           onChangeText={(text) => setPostData({ ...postData, location: { ...postData.location, placeName: text } })}
         /> */}
-      <View style={[styles.postItem, styles.postItemLayout]} />
+
       <View style={[styles.rectangleParent, styles.postItemLayout]}>
-        <View style={[styles.groupChild, styles.postItemLayout]} />
-        <Pressable onPress={handleCreatePost}>
-          <Text style={[styles.publicarPost, styles.postTypo]}>Publicar post</Text>
-        </Pressable>
+        <View style={[styles.groupChild]} >
+          <Pressable onPress={handleCreatePost}>
+            <Text style={[styles.publicarPost]}>Publicar post</Text>
+          </Pressable>
+        </View>
       </View>
       <View style={[styles.postInner, styles.postLayout]} />
       <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
@@ -154,40 +162,50 @@ const CreatePost = () => {
 };
 
 const styles = StyleSheet.create({
+
   post: {
-    width: '100%',
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
     flex: 1,
-    height: 844
+    textAlign: 'center',
+    position: "static",
+    alignContent: "space-around",
+    backgroundColor: '#fff',
   },
-  post1: {
+  agregarTypo: {
+    color: "#000",
+    borderRadius: 8,
+    top: 70,
+    textAlign: 'center',
+    position: "static"
+  },
+  postText: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: 'center',
     top: 70,
     left: 175,
-    width: 43,
     color: "#000",
-    textAlign: "left",
     fontFamily: "Poppins-SemiBold",
-    fontSize: 18
+    textAlign: "left",
+    fontWeight: "600",
+    position: "static"
   },
-  plus: {
-    left: "82.56%",
-    top: "33.53%",
-    right: "10.77%",
-    bottom: "63.39%",
-    width: "6.67%",
-    height: "3.08%",
-    position: "absolute"
+  backgraund: {
+    width: '90%',
+    height: '15%',
+    alignContent: "space-around",
+    justifyContent: "space-evenly",
+    position: "static",
+    backgroundColor: '#F2F2F2',
+    top: 80,
+    left: 20,
+    flexDirection: 'row',
+    borderRadius: 10,
+  },
+  icon: {
+    width: 90,
+    height: 90,
+    position: "static",
+    top: 10,
   },
   postInner: {
     top: 181,
@@ -217,10 +235,10 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#007BFF',
-    padding: 10,
+    padding: 1000,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 1600,
   },
   buttonText: {
     color: '#fff',
@@ -243,20 +261,27 @@ const styles = StyleSheet.create({
   groupIconPosition: {
     width: 390,
     left: 0,
-    position: "absolute"
+    position: "static"
   },
-  postTypo: {
+  pie: {
+    height: 49,
+    borderRadius: 10,
+    left: 10,
+    top: 80,
+    textAlign: 'center',
+    position: "static",
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 12,
+    paddingHorizontal: 8,
     color: '#000',
-    textAlign: "left",
-    fontFamily: "Poppins-SemiBold",
-    fontWeight: "600",
-    fontSize: 18,
-    position: "absolute"
   },
   thumbnailContainer: {
+    width: 90,
+    height: 90,
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 16,
+    top: 15,
   },
   thumbnail: {
     width: 100,
@@ -265,43 +290,16 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     backgroundColor: '#FF0000',
-    padding: 10,
     borderRadius: 8,
-    marginLeft: 16,
   },
   removeButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  /*agregarTypo: {
-    color: '#000',
-    opacity: 0.7,
-    fontFamily: "Poppins-Medium",
-    fontWeight: "500",
-    fontSize: 14,
-    left: 35,
-    textAlign: "left",
-    position: "absolute"
-  },*/
-  /*postLayout: {
-    height: 40,
-    marginBottom: 12,
-    width: 321,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 10,
-    left: 35,
-    position: "absolute"
-  },*/
-  postLayout1: {
-    overflow: "hidden",
-    width: "100%"
-  },
   postItemLayout: {
     marginBottom: 12,
-    height: 49,
-    width: 321,
-    position: "absolute"
+    position: "static"
   },
   imageIcon: {
     top: 509,
@@ -310,7 +308,7 @@ const styles = StyleSheet.create({
     height: 20,
     opacity: 0.5,
     borderRadius: 10,
-    position: "absolute"
+    position: "static"
   },
   /*seleccionarImgenesYo: {
     top: 155,
@@ -326,31 +324,21 @@ const styles = StyleSheet.create({
     height: 49
   },*/
   publicarPost: {
-    top: 11,
-    left: 101,
     color: "#fff",
-    textAlign: "left",
     fontFamily: "Poppins-SemiBold",
     fontWeight: "600",
-    fontSize: 18
+    fontSize: 18,
+    position: "static",
+    top: 7,
   },
   groupChild: {
     backgroundColor: "#bb4426",
     borderRadius: 10,
     height: 49,
-    left: 0,
-    top: 0
+    alignContent: "center",
   },
-  postItem: {
-    top: 494,
-    backgroundColor: "#f2f2f2",
-    height: 49,
-    borderRadius: 10,
-    left: 35
-  },
+  
   agregarUbicacin: {
-    top: 468,
-    width: 139,
     opacity: 0.7,
     fontFamily: "Poppins-Medium",
     fontWeight: "500",
@@ -361,32 +349,11 @@ const styles = StyleSheet.create({
     height: 84
   },
   agregarPieDe: {
-    top: 341,
-    width: 139,
     opacity: 0.7,
     fontFamily: "Poppins-Medium",
     fontWeight: "500",
     fontSize: 14
   },
-  /*iconlylightOutlinearrowL: {
-    left: "7.73%",
-    top: "8.87%",
-    right: "89.6%",
-    bottom: "88.88%",
-    width: "2.67%",
-    height: "2.25%",
-    position: "absolute"
-  },*/
-  icon: {
-    height: "100%",
-    maxWidth: "100%",
-    maxHeight: "100%"
-  },
-  /*blackBase21: {
-    height: 41,
-    top: 0,
-    width: 390
-  },*/
 
 });
 
