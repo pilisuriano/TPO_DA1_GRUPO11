@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import User from "../models/user.model.js"
 
+// agregar authToken a bd (User) para compararlo 
 export const protectRoute = async (req, res, next) => {
   try {
     const authHeader = req.header('Authorization');

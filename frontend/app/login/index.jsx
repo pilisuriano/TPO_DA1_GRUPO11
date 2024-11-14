@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { loginUser, resetError } from '../../src/features/auth/auth.slice';
 import {
@@ -36,11 +36,11 @@ export default function LoginScreen() {
       if (isButtonEnabled) {
         dispatch(resetError())
         dispatch(loginUser({ email, password }));
-        if (authenticated) {
-          navigation.dispatch(CommonActions.reset({
-            routes: [{ name: '(tabs)/home' }]
-          }))
-        }
+        // if (authenticated) {
+        //   navigation.dispatch(CommonActions.reset({
+        //     routes: [{ name: '(tabs)/home' }]
+        //   }))
+        // }
       }
 
     } catch (err) {
@@ -48,6 +48,12 @@ export default function LoginScreen() {
       Alert.alert("Error", "Could not log in. Please try again.");
     }
   };
+
+  useEffect(() => {
+    if (authenticated) {
+      router.replace("/(tabs)/home")
+    }
+  }, [authenticated]);
 
   return (
     <>

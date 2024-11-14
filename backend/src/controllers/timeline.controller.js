@@ -1,25 +1,13 @@
 import Post from '../models/post.model.js';
-import Follower from '../models/follower.model.js';
 
 export const getTimeline = async (req, res) => {
   try {
 
     const { limit = 10, page = 1, after_timestamp, after_postId, before_timestamp, before_postId } = req.query;
 
-    // ID del usuario autenticado
-    const userId = req.userId;
-
-    // Encuentra los usuarios que el usuario actual sigue
-    const following = await Follower.find({ followerId: userId }).select('userId');
-    const followingIds = following.map(follow => follow.userId);
-
-    // Solo carga posts de usuarios seguidos
-    const query = { userId: { $in: followingIds } };
-
-    // const query = {};
+    const query = {};
 
     // Cargar nuevos posts
-    // TODO solo cargar posts de personas a las que sigo!!
     if (after_timestamp) {
       query.createdAt = { $gt: new Date(after_timestamp) };
     }

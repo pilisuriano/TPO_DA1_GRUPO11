@@ -8,9 +8,14 @@ export const createPost = async (req, res) => {
     const { title, location } = req.body;
     const mediaUrls = [];
 
-    // if (!req.files || req.files.length === 0) {
-    //   return res.status(400).json({ error: "No files uploaded" });
-    // }
+    if (!req.files || req.files.length === 0) {
+     return res.status(400).json({ error: "No files uploaded" });
+    }
+
+    /*console.log('Body:', req.body);  // Esto debería mostrar el título
+    console.log('Files:', req.files);  // Esto debería mostrar los archivos
+    // Procesa el post (guardar en DB o lo que sea necesario)
+    res.status(200).send({ message: 'Post created successfully' });*/
 
     const uploadPromises = req.files.map(async (file) => {
       return new Promise((resolve, reject) => {
