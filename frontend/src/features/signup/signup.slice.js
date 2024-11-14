@@ -4,7 +4,8 @@ import { signup } from './api.js';
 const initialState = {
   loading: false,
   error: null,
-  created: false
+  created: false,
+  showInUI: false,
 };
 
 export const signupUser = createAsyncThunk('auths/signup', async (userData, thunkAPI) => {
@@ -32,22 +33,30 @@ const signupSlice = createSlice({
   reducers: {
     resetError: (state) => {
       state.error = null;
-      state.created = false
+      state.created = false;
+      state.showInUI = false;
+    },
+    setError: (state, action) => {
+      state.error = action.payload.message;
+      state.showInUI = action.payload.showInUI;
     },
   },
   extraReducers: (builder) => {
     builder
     .addCase(signupUser.pending, (state) => {
       state.loading = true;
+      state.showInUI = false;
     })
     .addCase(signupUser.fulfilled, (state, action) => {
       state.loading = false;
+      state.showInUI = false;
       state.created = true;
       state.error = null;
     })
     .addCase(signupUser.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload.data ? action.payload.data.message : null;
+      state.showInUI = action.payload.data ? true : false;
     })
   },
 });

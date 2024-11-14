@@ -17,6 +17,7 @@ import {
   Image,
   Keyboard,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,7 +29,11 @@ export default function LoginScreen() {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const isButtonEnabled = email.trim() !== '' && password.trim() !== '';
+
+  const isValidPassword = (password) => {
+    return password.length > 6;
+  };
+  const isButtonEnabled = email.trim() !== '' && password.trim() !== '' && isValidPassword(password);
   const { authenticated, loading, error, showInUI } = useSelector((state) => state.auth);
 
   const handleLogin = async () => {
@@ -44,13 +49,14 @@ export default function LoginScreen() {
   }, [authenticated]);
 
   return (
-    <>
-      <StatusBar backgroundColor={'transparent'} translucent />
-      <SafeAreaView style={styles.safeArea}>
-        <Pressable style={styles.toolbar} onPress={() => router.back()}>
-          <Image resizeMode="cover" source={require('../../assets/images/Arrow---Left-2.png')} />
-        </Pressable>
-        {/* Agregar al scrollview padding/espaciado dependiendo el statusBar (video) */}
+    <SafeAreaView style={styles.safeArea}>
+
+      <StatusBar barStyle="dark-content" />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#B5432A" />
+        </View>
+      ) : (
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.title}>Inicia sesión</Text>
           <Text style={styles.subtitle}>Ingresa tus credenciales</Text>
@@ -77,6 +83,7 @@ export default function LoginScreen() {
               style={[styles.input, showInUI && styles.inputError]}
               placeholderTextColor="#C7C7CD"
               value={password}
+              autoCapitalize="none"
               onChangeText={(text) => {
                 setPassword(text);
                 if (showInUI) dispatch(resetError()); // Limpiar el error al escribir
@@ -86,7 +93,7 @@ export default function LoginScreen() {
           </View>
 
           {showInUI && (
-            <Text style={styles.errorText}>{error}</Text> 
+            <Text style={styles.errorText}>{error}</Text>
           )}
 
           <TouchableOpacity onPress={() => router.push('/forgotPassword')}>
@@ -100,7 +107,7 @@ export default function LoginScreen() {
               <Text style={styles.loginButtonText}>Listo</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => router.push('signup')}>
+            <TouchableOpacity onPress={() => router.replace('signup')}>
               <Text style={styles.registerText}>
                 ¿No tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
               </Text>
@@ -109,12 +116,18 @@ export default function LoginScreen() {
           </View>
 
         </ScrollView>
-      </SafeAreaView>
-    </>
+      )}
+
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -123,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF', // color de fondo para evitar que se vea vacío
     justifyContent: 'space-between',
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 35 : 35,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 100 : 100,
   },
   scrollContainer: {
     flexGrow: 1,

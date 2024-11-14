@@ -25,15 +25,10 @@ const CreatePost = () => {
   const handleCreatePost = async () => {
     formData.append('title', title);
     // formData.append('location', JSON.stringify(location));
-    /*if (media.length > 0 && media[0].uri) {
+    if (media.length > 0 && media[0].uri) {
       const file = media[0];
-      formData.append('media', {
-        uri: file.uri,
-        type: file.type || 'image/jpeg',
-        name: file.name || 'photo.jpg',
-    });
-    }*/
-    console.log(formData);
+      formData.append('media', file.uri)
+    }
 
     try {
       dispatch(resetError());
@@ -52,12 +47,12 @@ const CreatePost = () => {
 
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Asegura que solo imágenes se seleccionen
+      mediaTypes: ImagePicker.MediaTypeOptions.All, 
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
-  
+
     if (!result.canceled) {
       const file = result.assets[0];
       const mediaData = {
@@ -65,30 +60,8 @@ const CreatePost = () => {
         type: file.type || 'image/png',
         name: file.fileName || 'photo.png',
       };
-      // Verifica la estructura de mediaData
-      console.log("Selected media data:", mediaData);
-       // Utilizar fetch para crear un archivo Blob desde el URI
-      const response = await fetch(mediaData.uri);
-      const blob = await response.blob();
-      // Clear previous media entries
-      /*setMedia([mediaData]);
-      const newFormData = new FormData();
-      newFormData.append('media', {
-        uri: mediaData.uri,
-        type: mediaData.type,
-        name: mediaData.name,
-      });*/
-      // Agregar media al FormData existente sin eliminar el title u otros campos
-      /*const newFormData = new FormData(formData);  // Copiar los datos existentes
-      newFormData.append('media', {
-        uri: mediaData.uri,
-        type: mediaData.type,
-        name: mediaData.name,
-      });*/
-      const newFormData = new FormData();
-      newFormData.append('media', blob, mediaData.name);
-      setFormData(newFormData);  // Update formData with the new media
-      setMedia([mediaData]);  // Actualizar el estado de los medios seleccionados
+      const selectedImage = result.assets[0];
+      setMedia([{ uri: selectedImage.uri, type: 'image/jpeg', name: 'photo.jpg' }]);
     }
   };
   const removeMedia = () => {
