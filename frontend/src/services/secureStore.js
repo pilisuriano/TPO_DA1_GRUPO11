@@ -9,7 +9,7 @@ export const saveAuthToken = async (token) => {
 };
 
 export const getAuthToken = async () => {
-    await SecureStore.getItemAsync('authToken');
+    return await SecureStore.getItemAsync('authToken');
 };
 
 export const deleteAuthToken = async (token) => {

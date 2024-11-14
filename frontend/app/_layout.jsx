@@ -73,6 +73,8 @@ const StackLayout = () => {
       <Stack.Screen name="forgotPassword/otp" options={{ headerShown: false }} />
       <Stack.Screen name="forgotPassword/resetPassword" options={{ headerShown: false }} />
       <Stack.Screen name="forgotPassword/recovered" options={{ headerShown: false }} />
+      <Stack.Screen name="error/internetConnection" options={{ headerShown: false }} />
+      <Stack.Screen name="error/server" options={{ headerShown: false }} />
       {/* <Stack.Screen name="screens/login/signingoogle" options={{ headerShown: false }} /> */}
       {authenticated ? (
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

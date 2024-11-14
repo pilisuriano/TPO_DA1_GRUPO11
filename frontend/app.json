@@ -13,14 +13,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.DA1Grupo11.memento"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Logo 2.png",
         "backgroundColor": "#ffffff"
       },
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.DA1Grupo11.memento",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
