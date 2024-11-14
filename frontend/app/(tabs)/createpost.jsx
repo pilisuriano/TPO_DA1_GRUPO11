@@ -18,20 +18,23 @@ const CreatePost = () => {
   // const [postData, setPostData] = useState({});
 
   useEffect(() => {
-    // Inicializar la estructura del post vacío
-
+    // Inicializar la estructura del post vacío, si es necesario
+    setFormData(new FormData());  // Reiniciar FormData cuando el componente se monta
   }, []);
 
   const handleCreatePost = async () => {
     formData.append('title', title);
     // formData.append('location', JSON.stringify(location));
-    if (media.length > 0) {
-    formData.append('media', {
-      uri: media[0].uri,
-      type: 'image/jpeg',
-      name: 'photo.jpg',
+    /*if (media.length > 0 && media[0].uri) {
+      const file = media[0];
+      formData.append('media', {
+        uri: file.uri,
+        type: file.type || 'image/jpeg',
+        name: file.name || 'photo.jpg',
     });
-  }
+    }*/
+    console.log(formData);
+
     try {
       dispatch(resetError());
       const res = await dispatch(createUserPost(formData)).unwrap();  // llamada a funcion del slice que llama a api
@@ -54,18 +57,56 @@ const CreatePost = () => {
       aspect: [4, 3],
       quality: 1,
     });
-
+  
     if (!result.canceled) {
-      const selectedImage = result.assets[0];
-      setMedia([{ uri: selectedImage.uri, type: 'image/jpeg', name: 'photo.jpg' }]);  // Guardar la imagen seleccionada en el estado
+      const file = result.assets[0];
+      const mediaData = {
+        uri: file.uri,
+        type: file.type || 'image/png',
+        name: file.fileName || 'photo.png',
+      };
+      // Verifica la estructura de mediaData
+      console.log("Selected media data:", mediaData);
+       // Utilizar fetch para crear un archivo Blob desde el URI
+      const response = await fetch(mediaData.uri);
+      const blob = await response.blob();
+      // Clear previous media entries
+      /*setMedia([mediaData]);
+      const newFormData = new FormData();
+      newFormData.append('media', {
+        uri: mediaData.uri,
+        type: mediaData.type,
+        name: mediaData.name,
+      });*/
+      // Agregar media al FormData existente sin eliminar el title u otros campos
+      /*const newFormData = new FormData(formData);  // Copiar los datos existentes
+      newFormData.append('media', {
+        uri: mediaData.uri,
+        type: mediaData.type,
+        name: mediaData.name,
+      });*/
+      const newFormData = new FormData();
+      newFormData.append('media', blob, mediaData.name);
+      setFormData(newFormData);  // Update formData with the new media
+      setMedia([mediaData]);  // Actualizar el estado de los medios seleccionados
     }
   };
-
   const removeMedia = () => {
     // setPostData({
     //   ...postData,
     //   media: [{ url: "", type: "image" }],
     // });
+    setMedia([]);
+    setFormData(new FormData());  // Vaciar el estado de media
+
+    /*const mediaFormData = new FormData();
+      mediaFormData.append('media', {
+        uri: mediaData.uri,
+        type: mediaData.type,
+        name: mediaData.name,
+      });
+      setFormData(mediaFormData);
+      setMedia([mediaData]);*/
   };
 
 

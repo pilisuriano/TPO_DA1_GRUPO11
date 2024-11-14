@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createPost, getPost } from './api.js';
+import { createPost, getPost } from '../../services/api';
 
 const initialState = {
   posts: [], // Estado inicial de posts como un array vacío
@@ -7,14 +7,33 @@ const initialState = {
   error: null,
 };
 
+const parseErrorResponse = (error) => {
+  if (error.response) {
+    const contentType = error.response.headers['content-type'];
+    if (contentType && contentType.includes('application/json')) {
+      return JSON.stringify(error.response.data);
+    } else if (contentType && contentType.includes('text/html')) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(error.response.data, 'text/html');
+      const message = doc.querySelector('pre') ? doc.querySelector('pre').textContent : 'An error occurred: Bad Request';
+      return message;
+    } else {
+      return `An error occurred: ${JSON.stringify(error.response.data)}`;
+    }
+  } else {
+    return `An error occurred: ${error.message || 'Unknown error'}`;
+  }
+};
+
 // Acción para crear un nuevo post
-export const createUserPost = createAsyncThunk('posts/createPost', async (postData, thunkAPI) => {
+export const createUserPost = createAsyncThunk('posts/createPost', async (formData, thunkAPI) => {
   try {
-    const response = await createPost(postData);
+    console.log("POST DATA:", formData);
+    const response = await createPost(formData);
     console.log(`RESPONSE: ${JSON.stringify(response)}`)
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data);
+    return thunkAPI.rejectWithValue(parseErrorResponse(error)); //(error.response.data)
   }
 });
 

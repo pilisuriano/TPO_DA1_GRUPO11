@@ -8,9 +8,9 @@ export const PostProvider = ({ children }) => {
   const dispatch = useDispatch();
   const { posts, loading, error } = useSelector((state) => state.post);
 
-  const createNewPost = async (postData) => {
+  const createNewPost = async (formData) => {
     try {
-      return dispatch(createPost(postData));
+      return dispatch(createPost(formData));
     } catch (error) {
       console.error("Create post failed", error);
     }
