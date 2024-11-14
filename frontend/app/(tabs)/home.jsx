@@ -85,7 +85,6 @@ const Home = () => {
 	return (
 		<View>
 			{/* Barra de búsqueda */}
-
 			<View style={styles.containerInicio}>
 				<Image style={[styles.memento]} source={require("../../assets/images/Marca 2.png")} />
 				<View style={styles.searchBar}>
@@ -198,6 +197,8 @@ const styles = StyleSheet.create({
 		flexDirection: "column",
 		backgroundColor: "#ffffff",
 		width: "100%",
+		padding: 10,
+		top:10,
 
 	},
 	memento: {
