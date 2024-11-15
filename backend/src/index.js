@@ -3,6 +3,7 @@ dotenv.config();
 
 import express from "express";
 import cors from "cors";
+import bodyParser from 'body-parser';
 import connectDB from './database/connectdb.js';
 import AuthsRoutes from './routes/auths.router.js';
 import UsersRoutes from './routes/users.router.js';
@@ -15,6 +16,7 @@ connectDB();
 app.use(cors({ origin: '*' })); 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' }));
 
 // API routes
 app.use('/auths', AuthsRoutes);

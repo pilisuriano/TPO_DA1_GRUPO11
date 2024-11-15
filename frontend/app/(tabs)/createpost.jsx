@@ -11,7 +11,7 @@ const CreatePost = () => {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("")
   const [media, setMedia] = useState([]);
-  
+
   const [image, setImage] = useState(null);
   /*
 
@@ -25,7 +25,7 @@ const CreatePost = () => {
   // const [postData, setPostData] = useState({});
 
 
-  const handleCreatePost = async () => {
+  const handleCreatePost = () => {
     // formData.append('title', title);
 
 
@@ -38,26 +38,42 @@ const CreatePost = () => {
     }
   };
 
-
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
-      quality: 0.6,
+      quality: 0.5,
       base64: true,
     });
 
     if (!result.canceled) {
       // setImage(result.assets[0].uri); // Muestra la imagen seleccionada
-      // console.log(result.assets[0].base64)
+      console.log(result.assets[0].base64)
       setImage(result.assets[0].base64); // Llama a la función de subida con la imagen en base64
     }
+
+
     // if (!result.canceled) {
     //   const base64Image = `data:image/jpeg;base64,${result.base64}`;
     //   console.log("asdsa", base64Image)
     //   setMedia(base64Image)
     //   return base64Image;
+    // }
+    // if (!result.canceled && result.assets && result.assets.length > 0) {
+    //   const resizedImage = await ImageResizer.createResizedImage(result.assets[0].uri, 800, 600, 'JPEG', 80);
+    //   const base64Image = await fetch(resizedImage.uri).then(res => res.blob()).then(blob => {
+    //     return new Promise((resolve, reject) => {
+    //       const reader = new FileReader();
+    //       reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    //       reader.onerror = reject;
+    //       reader.readAsDataURL(blob);
+    //     });
+    //   });
+    //   setImage(base64Image);
+    //   // console.log("Image set to:", base64Image);
+    // } else {
+    //   console.error("Image picking was canceled or no assets found");
     // }
   };
   const removeMedia = () => {
@@ -72,7 +88,7 @@ const CreatePost = () => {
     //   console.log(posts)
 
     // }
-    if (posts ) {
+    if (posts) {
       console.log(posts);
     }
     // Inicializar la estructura del post vacío, si es necesario
@@ -91,7 +107,7 @@ const CreatePost = () => {
         </Pressable>
 
 
-        {media.length > 0 && media[0].uri ? (
+        {/* {media.length > 0 && media[0].uri ? (
           <View style={styles.thumbnailContainer}>
             <Image source={{ uri: media[0].uri }} style={styles.thumbnail} />
             <Pressable style={styles.removeButton} onPress={removeMedia}>
@@ -99,7 +115,8 @@ const CreatePost = () => {
             </Pressable>
           </View>
 
-        ) : null}</View>
+        ) : null} */}
+        </View>
       <View style={[styles.pie]}>
         <TextInput
 
@@ -107,7 +124,7 @@ const CreatePost = () => {
           onChangeText={setTitle}
           placeholder="Agregar pie de foto"
         /></View>
-      <View style={[styles.postChild, styles.postLayout]} />
+      <View style={[styles.postChild]} />
       {/* <TextInput
           style={[styles.input, styles.agregarTypo]}
           placeholder="Agregar ubicación"
@@ -122,10 +139,10 @@ const CreatePost = () => {
           </Pressable>
         </View>
       </View>
-      <View style={[styles.postInner, styles.postLayout]} />
+      <View style={[styles.postInner]} />
       <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
       {loading && <Text>Loading...</Text>}
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {/* {error && <Text style={styles.errorText}>{error}</Text>} */}
     </View>
   );
 };

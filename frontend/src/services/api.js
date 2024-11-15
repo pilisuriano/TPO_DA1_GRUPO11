@@ -8,10 +8,6 @@ const api = axios.create({
   },
 });
 
-// export const login = (credentials) => authApi.post('/auth/login', credentials);
-// export const signup = (userData) => authApi.post('/auth/signup', userData);
-// export default authApi;
-// Interceptor para agregar el token de autenticación si está disponible
 api.interceptors.request.use(
   async (config) => {
     // if (config.data instanceof FormData) {
@@ -36,7 +32,6 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.message === 'Network Error') {
-      console.log("mari: error network api.js")
       error.isNetworkError = true;
     }
     return Promise.reject(error);

@@ -2,11 +2,10 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createPost, getPost } from '../../features/posts/api';
 
 const initialState = {
-  posts: [], // Estado inicial de posts como un array vacío
+  posts: null, // Estado inicial de posts como un array vacío
   loading: false,
   error: null,
 };
-
 
 // Acción para crear un nuevo post
 export const createUserPost = createAsyncThunk('posts/createPost', async (data, thunkAPI) => {
@@ -14,9 +13,11 @@ export const createUserPost = createAsyncThunk('posts/createPost', async (data, 
     // console.log("POST DATA:", JSON.stringify(data));
     const response = await createPost(data);
     console.log(`RESPONSE: ${JSON.stringify(response)}`)
-    return response.data;
+    return {
+      ...response.data
+    }
   } catch (error) {
-    return thunkAPI.rejectWithValue(error); //(error.response.data)
+    return thunkAPI.rejectWithValue(error);
   }
 });
 

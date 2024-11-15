@@ -10,7 +10,7 @@ export default function verifyEmail() {
   const [email, setEmail] = useState("");
   const isButtonEnabled = email.trim() !== '';
 
-  const { emailSent, data, loading, error } = useSelector((state) => state.verifyEmail);
+  const { emailSent, data, loading, error, showInUI } = useSelector((state) => state.verifyEmail);
   const [isFocused, setIsFocused] = useState(false);
 
   const handleSendEmail = async () => {
