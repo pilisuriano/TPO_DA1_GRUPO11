@@ -43,22 +43,22 @@ api.interceptors.response.use(
   }
 );
 
-export const createPost = async (formData) => {
-  try {
-    const token = await getAuthToken(); // Use getAuthToken to get the token
+// export const createPost = async (formData) => {
+//   try {
+//     const token = await getAuthToken(); // Use getAuthToken to get the token
 
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        //'Content-Type': 'multipart/form-data'
-      }
-    };
+//     const config = {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         //'Content-Type': 'multipart/form-data'
+//       }
+//     };
     
-    const response = await api.post('/posts', formData, config);
-    return response.data;
-  } catch (error) {
-    console.error("Error during post request:", error);
-  }
-};
+//     const response = await api.post('/posts', formData, config);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error during post request:", error);
+//   }
+// };
 
 export default api;
