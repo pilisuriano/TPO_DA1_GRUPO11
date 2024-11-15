@@ -13,25 +13,24 @@ const CreatePost = () => {
   const [media, setMedia] = useState([]);
 
   const [image, setImage] = useState(null);
-  /*
-
-    {
-      "title":"Salmón al ajillo",
-      "images": ["data:image/jpeg;base64,/9j/4QD4RXhpZgAATU0AKgAAAAg......]
-    }
-  */
   const { posts, loading, error } = useSelector((state) => state.post);
+  const locationData = {
+    placeName: "",
+    coordinates: {
+      latitude: "",
+      longitude: ""
+    },
+    placeId: ""
+  }
 
   // const [postData, setPostData] = useState({});
 
 
   const handleCreatePost = () => {
     // formData.append('title', title);
-
-
     try {
       dispatch(resetError());
-      dispatch(createUserPost({ title: title, images: [`data:image/jpeg;base64,${image}`] }));  // llamada a funcion del slice que llama a api
+      dispatch(createUserPost({ title: title, location: locationData, images: [`data:image/jpeg;base64,${image}`] }));  // llamada a funcion del slice que llama a api
     } catch (err) {
       console.error("Error during post creation:", err);
       Alert.alert("Error", "Could not create post. Please try again.");
@@ -48,38 +47,13 @@ const CreatePost = () => {
     });
 
     if (!result.canceled) {
-      // setImage(result.assets[0].uri); // Muestra la imagen seleccionada
-      console.log(result.assets[0].base64)
+      // setImage(result.assets[0].uri); // imagen seleccionada que se puede usar para mostrar
       setImage(result.assets[0].base64); // Llama a la función de subida con la imagen en base64
     }
-
-
-    // if (!result.canceled) {
-    //   const base64Image = `data:image/jpeg;base64,${result.base64}`;
-    //   console.log("asdsa", base64Image)
-    //   setMedia(base64Image)
-    //   return base64Image;
-    // }
-    // if (!result.canceled && result.assets && result.assets.length > 0) {
-    //   const resizedImage = await ImageResizer.createResizedImage(result.assets[0].uri, 800, 600, 'JPEG', 80);
-    //   const base64Image = await fetch(resizedImage.uri).then(res => res.blob()).then(blob => {
-    //     return new Promise((resolve, reject) => {
-    //       const reader = new FileReader();
-    //       reader.onloadend = () => resolve(reader.result.split(',')[1]);
-    //       reader.onerror = reject;
-    //       reader.readAsDataURL(blob);
-    //     });
-    //   });
-    //   setImage(base64Image);
-    //   // console.log("Image set to:", base64Image);
-    // } else {
-    //   console.error("Image picking was canceled or no assets found");
-    // }
   };
   const removeMedia = () => {
 
-    setMedia([]);
-    setFormData(new FormData());  // Vaciar el estado de media
+    setImage([]);
   };
 
 

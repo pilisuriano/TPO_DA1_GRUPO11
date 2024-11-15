@@ -13,9 +13,8 @@ const initialState = {
 export const loginUser = createAsyncThunk('auths/login', async (credentials, thunkAPI) => {
   try {
     const response = await login(credentials);
-    console.log(`RESPONSE: ${JSON.stringify(response)}`)
     const token = response.data.token;
-    await saveAuthToken('authToken', token);
+    await saveAuthToken(token);
     return {
       token,
       userId: { id: response.data.userId },

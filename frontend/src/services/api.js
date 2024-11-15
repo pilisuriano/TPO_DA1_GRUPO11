@@ -10,13 +10,12 @@ const api = axios.create({
 
 api.interceptors.request.use(
   async (config) => {
-    // if (config.data instanceof FormData) {
-    //   config.headers['Content-Type'] = 'multipart/form-data';
-    // }
     const token = await getAuthToken();
+    console.log('Token obtenido:', token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('Starting Request', config);
     return config;
   },
   (error) => Promise.reject(error)
@@ -25,35 +24,19 @@ api.interceptors.request.use(
 // Interceptor para manejar la respuesta
 api.interceptors.response.use(
   (response) => {
+    console.log('Response:', response);
     return {
       ...response,
       data: response.data,
     };
   },
   (error) => {
+    console.log('Error Response:', error);
     if (error.message === 'Network Error') {
       error.isNetworkError = true;
     }
     return Promise.reject(error);
   }
 );
-
-// export const createPost = async (formData) => {
-//   try {
-//     const token = await getAuthToken(); // Use getAuthToken to get the token
-
-//     const config = {
-//       headers: {
-//         'Authorization': `Bearer ${token}`,
-//         //'Content-Type': 'multipart/form-data'
-//       }
-//     };
-    
-//     const response = await api.post('/posts', formData, config);
-//     return response.data;
-//   } catch (error) {
-//     console.error("Error during post request:", error);
-//   }
-// };
 
 export default api;
