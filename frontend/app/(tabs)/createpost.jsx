@@ -50,6 +50,29 @@ const CreatePost = () => {
       // setImage(result.assets[0].uri); // imagen seleccionada que se puede usar para mostrar
       setImage(result.assets[0].base64); // Llama a la función de subida con la imagen en base64
     }
+
+
+    // if (!result.canceled) {
+    //   const base64Image = `data:image/jpeg;base64,${result.base64}`;
+    //   console.log("asdsa", base64Image)
+    //   setMedia(base64Image)
+    //   return base64Image;
+    // }
+    // if (!result.canceled && result.assets && result.assets.length > 0) {
+    //   const resizedImage = await ImageResizer.createResizedImage(result.assets[0].uri, 800, 600, 'JPEG', 80);
+    //   const base64Image = await fetch(resizedImage.uri).then(res => res.blob()).then(blob => {
+    //     return new Promise((resolve, reject) => {
+    //       const reader = new FileReader();
+    //       reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    //       reader.onerror = reject;
+    //       reader.readAsDataURL(blob);
+    //     });
+    //   });
+    //   setImage(base64Image);
+    //   // console.log("Image set to:", base64Image);
+    // } else {
+    //   console.error("Image picking was canceled or no assets found");
+    // }
   };
   const removeMedia = () => {
 
