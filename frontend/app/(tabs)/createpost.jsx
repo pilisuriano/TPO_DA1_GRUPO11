@@ -133,7 +133,7 @@ const CreatePost = () => {
         onChangeText={setTitle}
         placeholder="Agregar pie de foto"
       /></View>
-      <View style={[styles.postChild, styles.postLayout]} />
+
       {/* <TextInput
           style={[styles.input, styles.agregarTypo]}
           placeholder="Agregar ubicación"
@@ -148,10 +148,10 @@ const CreatePost = () => {
           </Pressable>
         </View>
       </View>
-      <View style={[styles.postInner, styles.postLayout]} />
+      {/*<View style={[styles.postInner, styles.postLayout]}>
       <Image style={styles.imageIcon} resizeMode="cover" source={require("../../assets/images/imageubi.png")} />
       {loading && <Text>Loading...</Text>}
-      {error && <Text style={styles.errorText}>{error}</Text>}
+      {error && <Text style={styles.errorText}>{error}</Text>}</View>*/}
     </View>
   );
 };
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     position: "static",
-    alignContent: "space-around",
+    alignContent: "flex-start",
     backgroundColor: '#fff',
   },
   agregarTypo: {
@@ -187,20 +187,23 @@ const styles = StyleSheet.create({
   backgraund: {
     width: '90%',
     height: '15%',
-    alignContent: "space-around",
-    justifyContent: "space-evenly",
+    alignContent: "flex-start",
+    justifyContent: "space-beetwen",
     position: "static",
     backgroundColor: '#F2F2F2',
     top: 80,
     left: 20,
     flexDirection: 'row',
     borderRadius: 10,
+    marginBottom: 12,
+    paddingHorizontal: 12,
   },
   icon: {
     width: 90,
     height: 90,
     position: "static",
     top: 10,
+    paddingHorizontal: 12,
   },
   postInner: {
     top: 181,
@@ -209,16 +212,6 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     height: 133
   },
-  /*rectangleView: {
-    borderRadius: 10,
-    backgroundColor: "#f2f2f2",
-    borderStyle: "solid",
-    borderColor: "#7e5f5b",
-    borderWidth: 0.5,
-    flex: 1,
-    width: "100%",
-    height: 133
-  },*/
   input: {
     height: 40,
     borderColor: '#ccc',
@@ -259,10 +252,11 @@ const styles = StyleSheet.create({
     position: "static"
   },
   pie: {
+    width: '90%',
     height: 49,
     borderRadius: 10,
-    left: 10,
-    top: 80,
+    left: 20,
+    top: 90,
     textAlign: 'center',
     position: "static",
     borderColor: '#ccc',
@@ -270,6 +264,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingHorizontal: 8,
     color: '#000',
+    backgroundColor: '#f2f2f2',
   },
   thumbnailContainer: {
     width: 90,
@@ -277,6 +272,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     top: 15,
+    paddingHorizontal: 12,
   },
   thumbnail: {
     width: 100,
@@ -286,6 +282,9 @@ const styles = StyleSheet.create({
   removeButton: {
     backgroundColor: '#FF0000',
     borderRadius: 8,
+    width: 100,
+    height: 30,
+    paddingHorizontal: 12,
   },
   removeButtonText: {
     color: '#fff',
@@ -297,7 +296,7 @@ const styles = StyleSheet.create({
     position: "static"
   },
   imageIcon: {
-    top: 509,
+    top: 50,
     left: 325,
     width: 20,
     height: 20,
@@ -325,12 +324,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     position: "static",
     top: 7,
+    alignSelf: "center",
   },
   groupChild: {
     backgroundColor: "#bb4426",
     borderRadius: 10,
     height: 49,
+    top: '200%',
+    left: 20,
     alignContent: "center",
+    width: '90%',
   },
   
   agregarUbicacin: {
