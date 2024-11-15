@@ -8,10 +8,6 @@ const api = axios.create({
   },
 });
 
-// export const login = (credentials) => authApi.post('/auth/login', credentials);
-// export const signup = (userData) => authApi.post('/auth/signup', userData);
-// export default authApi;
-// Interceptor para agregar el token de autenticación si está disponible
 api.interceptors.request.use(
   async (config) => {
     // if (config.data instanceof FormData) {
@@ -36,29 +32,28 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.message === 'Network Error') {
-      console.log("mari: error network api.js")
       error.isNetworkError = true;
     }
     return Promise.reject(error);
   }
 );
 
-export const createPost = async (formData) => {
-  try {
-    const token = await getAuthToken(); // Use getAuthToken to get the token
+// export const createPost = async (formData) => {
+//   try {
+//     const token = await getAuthToken(); // Use getAuthToken to get the token
 
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        //'Content-Type': 'multipart/form-data'
-      }
-    };
+//     const config = {
+//       headers: {
+//         'Authorization': `Bearer ${token}`,
+//         //'Content-Type': 'multipart/form-data'
+//       }
+//     };
     
-    const response = await api.post('/posts', formData, config);
-    return response.data;
-  } catch (error) {
-    console.error("Error during post request:", error);
-  }
-};
+//     const response = await api.post('/posts', formData, config);
+//     return response.data;
+//   } catch (error) {
+//     console.error("Error during post request:", error);
+//   }
+// };
 
 export default api;

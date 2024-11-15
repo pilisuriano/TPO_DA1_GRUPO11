@@ -20,12 +20,12 @@ const errorMiddleware = ({ dispatch }) => next => action => {
           payload: { message: errorMessage, showInUI: true },
         });
       } else if (statusCode === 500 || statusCode === 404) {
-        router.push('/error/server')
+        // router.push('/error/server')
 				console.log('Unexpected error: 500, 404');
       }
       // Otros casos según el status code
     } else {
-      router.push('/error/server')
+      // router.push('/error/server')
     }
   }
   return next(action);

@@ -15,7 +15,7 @@ const WELCOME = () => {
               style={styles.registerButton}
               onPress={() => router.replace('/signup')}
             >
-              <Text style={styles.registerText}>Registrarme</Text>
+              <Text style={styles.registerText}>Continuar</Text>
             </TouchableOpacity>
   
         </View>
