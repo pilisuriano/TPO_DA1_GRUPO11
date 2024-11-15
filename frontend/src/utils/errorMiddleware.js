@@ -4,7 +4,6 @@ import { isRejectedWithValue } from '@reduxjs/toolkit';
 const errorMiddleware = ({ dispatch }) => next => action => {
   if (isRejectedWithValue(action)) {
     const error = action.payload;
-		console.log(error)
 		const errorMessage = error.data.message;
     
     if (error.isNetworkError) {
