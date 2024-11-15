@@ -8,11 +8,6 @@ const WELCOME = () => {
     return (
       <SafeAreaView style={styles.safeArea}>
         <StatusBar barStyle="dark-content" />
-        {/* {loading ? ( */}
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#B5432A" />
-          </View>
-        {/* ) : ( */}
         <View style={styles.imagesContainer}>
           <Image source={require('../../assets/images/Logo 2.png')} style={styles.logo} />
           <Text style={styles.title}>¡Te damos la bienvenida!</Text>
@@ -20,11 +15,10 @@ const WELCOME = () => {
               style={styles.registerButton}
               onPress={() => router.replace('/signup')}
             >
-              <Text style={styles.registerText}>Registrarme</Text>
+              <Text style={styles.registerText}>Continuar</Text>
             </TouchableOpacity>
   
         </View>
-        {/* )} */}
       </SafeAreaView>
   
   
