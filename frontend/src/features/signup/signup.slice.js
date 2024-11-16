@@ -11,7 +11,6 @@ const initialState = {
 export const signupUser = createAsyncThunk('auths/signup', async (userData, thunkAPI) => {
   try {
     const response = await signup(userData);
-    console.log(`RESPONSE: ${JSON.stringify(response)}`)
     if (!response.data) {
       throw new Error("Token not received")
     }
@@ -19,7 +18,6 @@ export const signupUser = createAsyncThunk('auths/signup', async (userData, thun
       ...response.data
     };
   } catch (error) {
-    console.log(error)
     if (!error) {
       return thunkAPI.rejectWithValue("No se pudo conectar con el servidor. Verifica tu conexión a Internet.");
     }

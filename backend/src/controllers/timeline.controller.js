@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+import Follower from '../models/follower.model.js';
 import Post from '../models/post.model.js';
 
 export const getTimeline = async (req, res) => {
@@ -59,6 +61,7 @@ export const getTimeline = async (req, res) => {
     const ads = await adsResponse.json();
     const adsWithType = ads.map(ad => ({
       ...ad,
+      _id: new mongoose.Types.ObjectId(),
       type: "ad"
     }));
 

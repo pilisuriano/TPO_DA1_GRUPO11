@@ -41,61 +41,13 @@ export default function basetab() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="search"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="editprofile"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="editarpost"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="editarfoto"
-        options={{
-          href: null, }}
-      />
+      
       <Tabs.Screen
         name="settings"
         options={{
           href: null, }}
       />
-      <Tabs.Screen
-        name="seguidos"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="seguidores"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="favoritos"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="postpublicado"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="userfound"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="userfoundcomment"
-        options={{
-          href: null, }}
-      />
+      
     </Tabs>
   );
 }

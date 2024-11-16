@@ -1,231 +1,305 @@
-import * as React from "react";
-import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity, TextInput, Pressable, s } from "react-native";
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity, TextInput, Pressable, s, ActivityIndicator, StatusBar, Platform } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useDispatch, useSelector } from "react-redux";
+import { getTimeline, getTimelineNewPosts, getTimelineOlderPosts } from "../../src/features/timeline/timeline.slice"
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { ToastAndroid, Linking } from 'react-native';
 
-const posts = [
-	{
-		id: '1',
-		profilePic: require("../../assets/images/Profile Picture.png"),
-		name: 'Alan Moreno',
-		time: 'Hace 3 horas',
-		location: 'Buenos Aires, Argentina',
-		postImage: require("../../assets/images/imageasado.png"),
-		comment: '¡Hola amigos! Recién creé mi cuenta. Feliz de estar aquí.',
-		likes: 247,
-		comments: 57,
-		cantComentarios: 'Ver los 57 comentarios',
-	},
-	{
-		id: '2',
-		profilePic: require("../../assets/images/Profile Picture.png"),
-		name: 'Chris Lui',
-		time: 'Hace 1 hora',
-		location: 'Cancún, México',
-		postImage: require("../../assets/images/imageasado.png"),
-		comment: 'Una tarde espléndida en Cancún.',
-		likes: 183,
-		comments: 32,
-		cantComentarios: 'Ver los 32 comentarios',
-	},
-	{
-		id: '3',
-		profilePic: require("../../assets/images/Profile Picture.png"),
-		name: 'Chris Lui',
-		time: 'Hace 1 hora',
-		location: 'Cancún, México',
-		postImage: require("../../assets/images/imageasado.png"),
-		comment: 'Una tarde espléndida en Cancún.',
-		likes: 183,
-		comments: 85,
-		cantComentarios: 'Ver los 85 comentarios',
-	},
-];
+const Post = ({ post }) => {
+  if (!post || !post.media || !post.media.length) {
+    return null;
+  }
 
-const Post = ({ post }) => (
+  return (
+    <View style={styles.postContainer}>
+      <View style={styles.header}>
+        <Image source={post.profilePic ? { uri: post.profilePic } : require("../../assets/images/Profile.png")} style={styles.profilePic} />
+
+        <View style={styles.headerInfo}>
+          <Text style={styles.name}>{post.userId.fullName}</Text>
+          <Text style={styles.details}>{transformDate(post.createdAt)}  ·   { }</Text>
+        </View>
+      </View>
+      {/* Imagen de la publicación */}
+
+      <Image source={{ uri: post.media[0]?.url }} style={styles.postImage} />
+
+      {/* Pie de la publicación */}
+      <View style={styles.footer}>
+        <Text style={styles.comment}>{post.title}</Text>
+        <View style={styles.reactions}>
+          <TouchableOpacity style={styles.iconContainer}>
+            <Icon name="heart" size={20} color="red" />
+            <Text style={styles.reactionText}>{post.likes}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconContainer}>
+            <Icon name="comment" size={20} color="gray" />
+            <Text style={styles.reactionText}>{post.comments.length}</Text>
+          </TouchableOpacity>
+        </View>
+        <View>
+          <Text style={styles.cantComentarios}>{post.comments.length != 0 ? post.comments.length : "Todavia no hay comentarios"}</Text>
+        </View>
+      </View>
+    </View>
+  )
+};
+
+const Ad = ({ post }) => (
+
   <View style={styles.postContainer}>
-    {/* Encabezado de la publicación */}
     <View style={styles.header}>
-      <Image source={post.profilePic} style={styles.profilePic} />
+      <Image source={{ uri: post.profilePic } || require("../../assets/images/Profile.png")} style={styles.profilePic} />
+
       <View style={styles.headerInfo}>
-        <Text style={styles.name}>{post.name}</Text>
-        <Text style={styles.details}>{post.time}  ·   {post.location}</Text>
+        <Text style={styles.name}>{post.commerce}</Text>
+        {/* <Text style={styles.details}>{post.createdAt}  ·   {post.location.placeName}</Text> */}
       </View>
     </View>
 
-    {/* Imagen de la publicación */}
-    <Image source={post.postImage} style={styles.postImage} />
+    <Image source={{ uri: post.imagePath[0]?.portraite }} style={styles.postImage} />
 
     {/* Pie de la publicación */}
     <View style={styles.footer}>
-      <Text style={styles.comment}>{post.comment}</Text>
+      <Text style={styles.comment}> Visitanos en:
+        <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> nuestra web </Text>
+      </Text>
       <View style={styles.reactions}>
-        <TouchableOpacity style={styles.iconContainer}>
-          <Icon name="heart" size={20} color="red" />
-          <Text style={styles.reactionText}>{post.likes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconContainer}>
-          <Icon name="comment" size={20} color="gray" />
-          <Text style={styles.reactionText}>{post.comments}</Text>
-        </TouchableOpacity>
-
-
-      </View>
-      <View>
-        <Text style={styles.cantComentarios}>{post.cantComentarios}</Text>
       </View>
     </View>
   </View>
-);
+)
+
+const handleLinkPress = async (url) => {
+  try {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      Alert.alert("Error", "No se puede abrir la URL: " + url);
+    }
+  } catch (error) {
+    console.error("Error al abrir la URL:", error);
+  }
+};
+
+const transformDate = (date) => {
+  const postDate = parseISO(date);
+  // Calcula la distancia de tiempo desde ahora
+  const formattedDate = formatDistanceToNow(postDate, { addSuffix: true, locale: es });
+  return formattedDate;
+}
 
 const Home = () => {
-	const navigation = useNavigation();
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const { posts, loading, hasMore, error } = useSelector((state) => state.timeline);
 
-	return (
-		<View>
-			{/* Barra de búsqueda */}
-			<View style={styles.containerInicio}>
-				<Image style={[styles.memento]} source={require("../../assets/images/Marca 2.png")} />
-				<View style={styles.searchBar}>
-					<Pressable style={[styles.timelinePublicidadChild, styles.unsplash4Qfycgpc4cBorder]} onPress={() => navigation.navigate('search')} >
-						<Text style={styles.buscar}>Buscar...</Text>
-						<Image style={[styles.searchIcon]} source={require("../../assets/images/Search.png")} />
-					</Pressable>
-					<Image style={[styles.icon]} source={require("../../assets/images/Group 12.png")} />
-				</View></View>
-			<FlatList
-				data={posts}
-				renderItem={({ item }) => <Post post={item} />}
-				keyExtractor={(item) => item.id}
-				contentContainerStyle={styles.container}
-			/>
-		</View>
-	);
+
+  useEffect(() => {
+    dispatch(getTimeline());
+    console.log({ loading, hasMore });
+  }, [dispatch]);
+
+  // Handler para refrescar posts más recientes
+  const handleRefresh = useCallback(() => {
+    if (!loading && posts.length > 0) {
+      const latestPost = posts[0];
+      dispatch(getTimelineNewPosts({ after_timestamp: latestPost.createdAt, after_postId: latestPost._id }))
+        .then((response) => {
+          if (response.payload.posts.length === 0) {
+            ToastAndroid.show('No hay nuevos posts', ToastAndroid.SHORT);
+          }
+        })
+    }
+  }, [dispatch, loading]);
+
+
+  // Handler para cargar más posts antiguos
+  const loadMorePosts = () => {
+    if (hasMore && !loading && posts.length > 0) {
+      const oldestPost = posts[posts.length - 1];
+      dispatch(getTimelineOlderPosts(oldestPost.createdAt));
+    }
+  };
+
+  const showSearchMessage = () => {
+    ToastAndroid.show('Proximamente vas a poder buscar otros usuarios!', ToastAndroid.LONG);
+  }
+
+  return (
+    <View>
+      {/* Barra de búsqueda */}
+      <View style={styles.containerInicio}>
+        <Image style={[styles.memento]} source={require("../../assets/images/Marca 2.png")} />
+        <View style={styles.searchBar}>
+          <Pressable style={[styles.timelinePublicidadChild, styles.searchPressable]} onPress={showSearchMessage} >
+            <Text style={styles.buscar}>Buscar...</Text>
+            <Image style={[styles.searchIcon]} source={require("../../assets/images/Search.png")} />
+          </Pressable>
+          <Image style={[styles.icon]} source={require("../../assets/images/Group 12.png")} />
+        </View>
+      </View>
+      {(loading && posts.length === 0) ? (<View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#B5432A" />
+      </View>) : (
+        <FlatList
+          data={posts}
+          renderItem={({ item }) =>
+            item.type === "post" ? <Post post={item} /> : <Ad post={item} />
+          }
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.container}
+          onEndReached={loadMorePosts}
+          onEndReachedThreshold={0.5}
+          refreshing={loading && posts.length > 0}
+          onRefresh={handleRefresh}
+          ListFooterComponent={hasMore ? <ActivityIndicator size="small" color="#0000ff" /> : null}
+        />
+      )}
+
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-	timelinePublicidadChild: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		width: 230,
-		height: 34,
-		borderColor: "#7e5f5b",
-		borderRadius: 10,
-		borderWidth: 1,
-		borderStyle: "solid",
-		backgroundColor: "#ffffff",
-	},
-	postContainer: {
-		marginBottom: 20,
-		backgroundColor: '#f0f0f0',
-		borderRadius: 10,
-		padding: 10,
-		borderColor: '#000000',
-		borderWidth: 1,
-	},
-	header: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginBottom: 10,
-	},
+  link: {
+    color: "#006175",
+    fontFamily: 'Roboto-Regular',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  timelinePublicidadChild: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: 230,
+    height: 34,
+    borderColor: "#7e5f5b",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderStyle: "solid",
+    backgroundColor: "#ffffff",
+  },
+  postContainer: {
+    marginBottom: 20,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    padding: 10,
+    borderColor: '#000000',
+    borderWidth: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
 
-	profilePic: {
-		width: 40,
-		height: 40,
-		borderRadius: 20,
-		marginRight: 10,
-	},
-	name: {
-		fontWeight: 'bold',
-	},
-	headerInfo: {
-		flex: 1,
-	},
-	details: {
-		color: 'gray',
-	},
-	postImage: {
-		width: '100%',
-		height: 200,
-		borderRadius: 10,
-		marginBottom: 10,
-		borderColor: '#000000',
-		borderWidth: 1,
-	},
+  profilePic: {
+    width: 22,
+    height: 22,
+    borderRadius: 20,
+    marginLeft: 16,
+    marginRight: 10,
+  },
+  name: {
+    fontWeight: 'bold',
+  },
+  headerInfo: {
+    flex: 1,
+  },
+  details: {
+    color: 'gray',
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderColor: '#000000',
+    borderWidth: 1,
+  },
 
-	footer: {
-		marginTop: 10,
-	},
-	comment: {
-		marginBottom: 10,
-	},
-	reactions: {
-		flexDirection: 'row',
-	},
+  footer: {
+    marginTop: 10,
+  },
+  comment: {
+    marginBottom: 10,
+  },
+  reactions: {
+    flexDirection: 'row',
+  },
 
-	iconContainer: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginRight: 20,
-	},
-	reactionText: {
-		marginLeft: 5,
-	},
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 20,
+  },
+  reactionText: {
+    marginLeft: 5,
+  },
 
-	container: {
-		padding: 10,
-		top: 10,
-		backgroundColor: '#ffffff',
-	},
-	cantComentarios: {
-		color: 'gray',
-	},
-	searchBar: {
-		position: "static",
-		backgroundColor: "#ffffff",
-		width: "100%",
-		top: 10,
-		height: 50,
-		flexDirection: 'row',
-		justifyContent: 'space-evenly',
-	},
-	containerInicio: {
-		alignItems: "center",
-		position: "static",
-		flexDirection: "column",
-		backgroundColor: "#ffffff",
-		width: "100%",
-		padding: 10,
-		top:10,
+  container: {
+    padding: 10,
+    top: 10,
+    paddingBottom: 120,
+    backgroundColor: '#ffffff',
+  },
+  cantComentarios: {
+    color: 'gray',
+  },
+  searchBar: {
+    position: "static",
+    backgroundColor: "#ffffff",
+    width: "100%",
+    top: 10,
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  containerInicio: {
+    alignItems: "center",
+    position: "static",
+    flexDirection: "column",
+    backgroundColor: "#ffffff",
+    width: "100%",
+    paddingHorizontal: 10,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 12 : 12,
 
-	},
-	memento: {
-		height: 40,
-		position: "static",
-		marginTop: 8,
-		width: '60%',
-
-	},
-	icon: {
-	},
-	searchIcon: {
-		width: 15,
-		height: 15,
-		position: 'relative',
-	},
-	unsplash4Qfycgpc4cBorder: {
-		borderWidth: 1,
-		borderStyle: "solid"
-	},
-	buscar: {
-		fontFamily: "Roboto-Medium",
-		color: "#7e5f5b",
-		opacity: 0.5,
-		textAlign: "right",
-		textAlignVertical: "center",
-		fontSize: 12,
-	},
+  },
+  memento: {
+    height: 40,
+    position: "static",
+    marginTop: 8,
+    width: '60%',
+  },
+  icon: {
+  },
+  searchIcon: {
+    width: 15,
+    height: 15,
+    position: 'relative',
+    marginRight: 10,
+  },
+  searchPressable: {
+    borderWidth: 1,
+    borderStyle: "solid"
+  },
+  buscar: {
+    fontFamily: "Roboto-Medium",
+    color: "#7e5f5b",
+    opacity: 0.5,
+    textAlign: "right",
+    textAlignVertical: "center",
+    fontSize: 12,
+    paddingLeft: 10
+  },
 
 });
 

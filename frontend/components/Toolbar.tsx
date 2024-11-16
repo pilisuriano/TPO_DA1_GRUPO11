@@ -1,16 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export default function Toolbar({ title = '', showBackButton = true }) {
-  const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <View style={styles.toolbar}>
       {showBackButton && (
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Image style={styles.icon} source={require('../../../assets/images/Arrow---Left-2.png')} />
-        </TouchableOpacity>
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Image resizeMode="cover" source={require('../assets/images/Arrow---Left-2.png')} />
+        </Pressable>
       )}
       <Text style={styles.title}>{title}</Text>
     </View>
@@ -20,19 +20,19 @@ export default function Toolbar({ title = '', showBackButton = true }) {
 const styles = StyleSheet.create({
   toolbar: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    backgroundColor: '#FFFFFF',
   },
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
+  backButton: {
+    position: 'absolute',
+    left: 0,
   },
   title: {
+    textAlign: "center",
     fontSize: 18,
-    fontFamily: 'Poppins-Bold',
     color: '#000',
+    fontFamily: 'Poppins-SemiBold',
   },
 });
