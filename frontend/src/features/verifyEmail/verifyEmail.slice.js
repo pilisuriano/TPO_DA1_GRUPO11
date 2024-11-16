@@ -12,7 +12,6 @@ const initialState = {
 export const verifyUserEmail = createAsyncThunk('auths/verify-email', async (data, thunkAPI) => {
   try {
     const response = await verifyEmail(data);
-    console.log(`RESPONSE: ${JSON.stringify(response.data)}`)
     if (!response.data) {
       throw new Error("Token not received")
     }

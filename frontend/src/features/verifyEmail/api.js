@@ -5,7 +5,6 @@ export const verifyEmail = async (userData) => {
     const response = await api.post('/auths/verify-email', userData);
     return response;
   } catch (error) {
-    console.log("mari: ", error)
     throw error.response;
   }
 };

@@ -23,7 +23,7 @@ const MYPROFILE = () => {
       			<Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
         				<Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")}/>
       			</Pressable>
-      			<Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile')}>
+      			<Pressable style={styles.myProfileItem} onPress={() => {}}>
       				<Text style={[styles.editarPerfil, styles.nivel4Typo]}>Editar Perfil</Text>
 				</Pressable>
       			<Text style={[styles.text, styles.textTypo]}>87</Text>

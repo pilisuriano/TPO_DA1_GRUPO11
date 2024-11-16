@@ -26,7 +26,6 @@ export const verifyUserOtp = createAsyncThunk('auths/verify-otp', async (data, t
       ...response.data
     };
   } catch (error) {
-    console.log(error)
     if (!error) {
       return thunkAPI.rejectWithValue("No se pudo conectar con el servidor. Verifica tu conexión a Internet.");
     }
