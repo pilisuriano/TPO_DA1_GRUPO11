@@ -11,9 +11,11 @@ const api = axios.create({
 api.interceptors.request.use(
   async (config) => {
     const token = await getAuthToken();
+    console.log('Token obtenido:', token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    console.log('Starting Request', config);
     return config;
   },
   (error) => Promise.reject(error)
@@ -22,12 +24,14 @@ api.interceptors.request.use(
 // Interceptor para manejar la respuesta
 api.interceptors.response.use(
   (response) => {
+    console.log('Response:', response);
     return {
       ...response,
       data: response.data,
     };
   },
   (error) => {
+    console.log('Error Response:', error);
     if (error.message === 'Network Error') {
       error.isNetworkError = true;
     }
