@@ -86,7 +86,7 @@ const verifyOTP = () => {
             ))}
           </View>
           {showInUI && (
-            <Text style={styles.errorText}>{errorRegistered}</Text>
+            <Text style={styles.errorText}>{error}</Text>
           )}
 
           <TouchableOpacity style={styles.resendContainer}>
