@@ -3,7 +3,7 @@ import { Image, StyleSheet, View, Text, Pressable, TextInput, TouchableOpacity, 
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyUserOtp } from "@/src/features/verifyOtp/verifyOtp.slice";
+import { resetError, verifyUserOtp } from "@/src/features/verifyOtp/verifyOtp.slice";
 import { saveItem } from '@/src/services/secureStore';
 
 const verifyOTP = () => {
@@ -14,7 +14,7 @@ const verifyOTP = () => {
   const [otp, setOtp] = useState(Array(length).fill(''));;
   const inputs = useRef([]);
   const dispatch = useDispatch();
-  const { verified, loading, error } = useSelector((state) => state.verifyOtp);
+  const { showInUI, verified, loading, error } = useSelector((state) => state.verifyOtp);
 
   const handleTextChange = (text, index) => {
     const newOtp = [...otp];
@@ -43,6 +43,7 @@ const verifyOTP = () => {
     if (email && otpJoin) {
       const data = { email: email, otp: otpJoin };
       dispatch(verifyUserOtp(data));
+      resetError()
     } else {
       console.error("Email or OTP is missing");
     }
@@ -71,16 +72,22 @@ const verifyOTP = () => {
             {otp.map((_, index) => (
               <TextInput
                 key={index}
-                style={styles.otpInput}
+                style={[styles.otpInput, showInUI && styles.inputError]}
                 keyboardType="numeric"
                 maxLength={1}
                 value={otp[index]}
-                onChangeText={(text) => handleTextChange(text, index)}
+                onChangeText={(text) => {
+                  if (showInUI) dispatch(resetError());
+                  handleTextChange(text, index)
+                }}
                 onKeyPress={(e) => handleKeyPress(e, index)}
                 ref={(input) => (inputs.current[index] = input)}
               />
             ))}
           </View>
+          {showInUI && (
+            <Text style={styles.errorText}>{errorRegistered}</Text>
+          )}
 
           <TouchableOpacity style={styles.resendContainer}>
             <Text style={styles.resendText}>¿No lo recibiste? </Text>
@@ -161,6 +168,15 @@ const styles = StyleSheet.create({
     color: '#7E5F5B',
     marginBottom: 32,
     fontFamily: 'Poppins-SemiBold',
+  },
+  errorText: {
+    color: '#BB4426',
+    fontSize: 14,
+    marginBottom: 16,
+  },
+  inputError: {
+    borderColor: '#BB4426',
+    borderWidth: 1,
   },
   resendContainer: {
     flexDirection: 'row',

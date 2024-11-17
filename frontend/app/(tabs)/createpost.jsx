@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView, ToastAndroid, FlatList, TouchableOpacity, Platform, StatusBar } from "react-native";
+import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView, ToastAndroid, FlatList, TouchableOpacity, Platform, StatusBar, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createUserPost, resetError } from "../../src/features/posts/postSlice";
@@ -78,65 +78,74 @@ const CreatePost = () => {
   return (
     <View style={[styles.post]}>
       <Toolbar title="Post" />
+      {loading ? (<View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#B5432A" />
+      </View>) : (
+        <>
+          <Text style={[styles.labelInputs, styles.selectMedia]}>Seleccionar imágen(es) y/o video</Text>
+          <View style={[styles.background]}>
+            <Pressable onPress={pickMedia}>
+              <Image style={[styles.icon]} source={require("../../assets/images/addGalery.png")} />
+            </Pressable>
 
-      <Text style={[styles.labelInputs, styles.selectMedia]}>Seleccionar imágen(es) y/o video</Text>
-      <View style={[styles.background]}>
-        <Pressable onPress={pickMedia}>
-          <Image style={[styles.icon]} source={require("../../assets/images/addGalery.png")} />
-        </Pressable>
+            {/* Mostrar imagenes seleccionadas */}
+            <FlatList
+              data={media}
+              horizontal
+              keyExtractor={(_, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <View style={styles.thumbnailContainer}>
+                  <Image source={{ uri: item.uri }} style={styles.thumbnail} />
+                  <Pressable style={styles.removeButton} onPress={() => removeMedia(index)}>
+                    <Text style={styles.removeButtonText}>×</Text>
+                  </Pressable>
+                </View>
+              )}
+            />
+          </View>
 
-        {/* Mostrar imagenes seleccionadas */}
-        <FlatList
-          data={media}
-          horizontal
-          keyExtractor={(_, index) => index.toString()}
-          renderItem={({ item, index }) => (
-            <View style={styles.thumbnailContainer}>
-              <Image source={{ uri: item.uri }} style={styles.thumbnail} />
-              <Pressable style={styles.removeButton} onPress={() => removeMedia(index)}>
-                <Text style={styles.removeButtonText}>×</Text>
-              </Pressable>
-            </View>
-          )}
-        />
-      </View>
+          <Text style={[styles.labelInputs]}>Agregar pie de foto</Text>
+          <View style={[styles.pie]}>
+            <TextInput
+              style={styles.inputAreaText}
+              multiline={true}
+              numberOfLines={3}
+              value={title}
+              onChangeText={setTitle}
+            />
+          </View>
 
-      <Text style={[styles.labelInputs]}>Agregar pie de foto</Text>
-      <View style={[styles.pie]}>
-        <TextInput
-          style={styles.inputAreaText}
-          multiline={true}
-          numberOfLines={3}
-          value={title}
-          onChangeText={setTitle}
-        />
-      </View>
+          <Text style={[styles.labelInputs]}>Agregar ubicación</Text>
+          <View style={[styles.pie]}>
+            <TextInput
+              style={styles.inputAreaText}
+              multiline={true}
+              numberOfLines={2}
+              value={locationPlace}
+              onChangeText={setLocationPlace}
+            />
+          </View>
 
-      <Text style={[styles.labelInputs]}>Agregar ubicación</Text>
-      <View style={[styles.pie]}>
-        <TextInput
-          style={styles.inputAreaText}
-          multiline={true}
-          numberOfLines={2}
-          value={locationPlace}
-          onChangeText={setLocationPlace}
-        />
-      </View>
-
-      <View>
-        <TouchableOpacity
-          style={[styles.postButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
-          disabled={!isButtonEnabled}
-          onPress={handleCreatePost}>
-          <Text style={styles.buttonText}>Publicar post</Text>
-        </TouchableOpacity>
-      </View>
-      {loading && <Text>Loading...</Text>}
+          <View>
+            <TouchableOpacity
+              style={[styles.postButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
+              disabled={!isButtonEnabled}
+              onPress={handleCreatePost}>
+              <Text style={styles.buttonText}>Publicar post</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   buttonText: {
     fontSize: 18,
     fontFamily: 'Poppins-SemiBold',

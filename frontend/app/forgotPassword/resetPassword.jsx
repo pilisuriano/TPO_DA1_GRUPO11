@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Image, StyleSheet, View, Text, Pressable, StatusBar, Platform, SafeAreaView, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { Image, StyleSheet, View, Text, Pressable, StatusBar, Platform, SafeAreaView, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { getItem } from "@/src/services/secureStore";
 import { useDispatch, useSelector } from "react-redux";
-import { resetUserPassword } from '@/src/features/resetPassword/resetPassword.slice';
+import { resetError, resetUserPassword } from '@/src/features/resetPassword/resetPassword.slice';
 
 const ResetPassword = () => {
   const dispatch = useDispatch();
   const router = useRouter()
-  const params = useLocalSearchParams();
-  const { fullName, gender, description } = params;
   const [userEmail, setUserEmail] = useState("");
   const [pwd, setPwd] = useState("");
   const [confirmPwd, setConfirmPwd] = useState("");
@@ -32,12 +30,13 @@ const ResetPassword = () => {
       setUserEmail(userEmail)
       dispatch(resetUserPassword({ email: userEmail, newPassword: pwd, confirmPassword: confirmPwd }))
     }
+    resetError()
   }
 
   useEffect(() => {
     if (passwordRecovery) {
-      dispatch(loginUser({email: userEmail, password: pwd}))
       router.replace("/forgotPassword/recovered")
+      resetError()
     }
   }, [passwordRecovery]);
 

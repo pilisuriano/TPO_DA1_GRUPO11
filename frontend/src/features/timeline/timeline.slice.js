@@ -6,6 +6,7 @@ const initialState = {
   hasMore: true,
   loading: false,
   error: null,
+  showEmptyTimeline: false
 };
 
 export const getTimeline = createAsyncThunk('timeline/fetchInitial', async (thunkAPI) => {
@@ -66,6 +67,7 @@ const timelineSlice = createSlice({
     resetError: (state) => {
       state.error = null;
       state.loading = false;
+      state.showEmptyTimeline = false
     },
   },
   extraReducers: (builder) => {
@@ -75,6 +77,13 @@ const timelineSlice = createSlice({
         state.error = null
       })
       .addCase(getTimeline.fulfilled, (state, action) => {
+        if (action.payload.posts.length === 0) {
+          state.showEmptyTimeline = true
+          state.posts = action.payload.posts;
+          state.hasMore = action.payload.hasMore ?? false;
+          state.loading = false;
+          return;
+        }
         state.posts = action.payload.posts;
         state.hasMore = action.payload.hasMore ?? false;
         state.loading = false;

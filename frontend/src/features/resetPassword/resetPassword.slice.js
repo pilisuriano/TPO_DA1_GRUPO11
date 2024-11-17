@@ -13,13 +13,11 @@ export const resetUserPassword = createAsyncThunk('auths/reset-password', async 
   try {
     const response = await changePassword(data);
     console.log(`RESPONSE: ${JSON.stringify(response.data)}`)
-    if (!response.data) {
-      throw new Error("Token not received")
-    }
     return {
       ...response.data
     };
   } catch (error) {
+    console.log(error)
     return thunkAPI.rejectWithValue(error);
   }
 });

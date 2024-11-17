@@ -45,6 +45,7 @@ export default function LoginScreen() {
   useEffect(() => {
     if (authenticated) {
       router.replace("/(tabs)/home")
+      resetError()
     }
   }, [authenticated]);
 

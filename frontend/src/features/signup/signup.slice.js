@@ -33,11 +33,15 @@ const signupSlice = createSlice({
       state.error = null;
       state.created = false;
       state.showInUI = false;
+      state.loading = false;
     },
     setError: (state, action) => {
       state.error = action.payload.message;
       state.showInUI = action.payload.showInUI;
     },
+    resetLoading: (state) => {
+      state.loading = false
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -59,6 +63,6 @@ const signupSlice = createSlice({
   },
 });
 
-export const { resetError } = signupSlice.actions;
+export const { resetError, setError, resetLoading } = signupSlice.actions;
 
 export default signupSlice.reducer;

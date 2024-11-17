@@ -5,6 +5,6 @@ export const verifyOtp = async (userData) => {
     const response = await api.post('/auths/verify-otp', userData);
     return response;
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network error");
+    throw error.response
   }
 };

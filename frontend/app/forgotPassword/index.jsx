@@ -42,6 +42,7 @@ const ForgotPassword = () => {
   useEffect(() => {
     if (emailSent && data?.email) {
       router.push({ pathname: "/forgotPassword/otp", params: { email: data.email } });
+      resetError()
     }
   }, [emailSent, data]);
 
@@ -111,6 +112,11 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     paddingHorizontal: 30,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   toolbar: {
     marginHorizontal: 25,

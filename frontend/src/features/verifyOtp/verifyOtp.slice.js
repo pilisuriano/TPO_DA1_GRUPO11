@@ -8,47 +8,28 @@ const initialState = {
   loadingRegistered: false,
   errorRegistered: null,
   verifiedRegistered: false,
+  showInUI: false,
 };
 
-// otp
-/*
-authsRoutes.post("/verify-otp", verifyOtp)
-/*
-*/
 export const verifyUserOtp = createAsyncThunk('auths/verify-otp', async (data, thunkAPI) => {
   try {
     const response = await verifyOtp(data);
-    console.log(`RESPONSE: ${JSON.stringify(response.data)}`)
-    if (!response.data) {
-      throw new Error("Token not received")
-    }
     return {
       ...response.data
     };
   } catch (error) {
-    if (!error) {
-      return thunkAPI.rejectWithValue("No se pudo conectar con el servidor. Verifica tu conexión a Internet.");
-    }
-    return thunkAPI.rejectWithValue(error.response.data.message || "Error inesperado del servidor");
+    return thunkAPI.rejectWithValue(error);
   }
 });
 
 export const verifyRegisteredUserOtp = createAsyncThunk('auths/verify-registered-otp', async (data, thunkAPI) => {
   try {
     const response = await verifyOtp(data);
-    console.log(`RESPONSE: ${JSON.stringify(response.data)}`)
-    if (!response.data) {
-      throw new Error("Token not received")
-    }
     return {
       ...response.data
     };
   } catch (error) {
-    console.log(error)
-    if (!error) {
-      return thunkAPI.rejectWithValue("No se pudo conectar con el servidor. Verifica tu conexión a Internet.");
-    }
-    return thunkAPI.rejectWithValue(error.response.data.message || "Error inesperado del servidor");
+    return thunkAPI.rejectWithValue(error);
   }
 });
 
@@ -60,6 +41,11 @@ const verifyOtpSlice = createSlice({
       state.error = null;
       state.verified = false;
       state.verifiedRegistered = false;
+      state.showInUI = false
+    },
+    setError: (state, action) => {
+      state.error = action.payload.message;
+      state.showInUI = action.payload.showInUI;
     },
   },
   extraReducers: (builder) => {
@@ -71,26 +57,30 @@ const verifyOtpSlice = createSlice({
       state.loading = false;
       state.verified = true;
       state.error = null;
+      state.showInUI = false
     })
     .addCase(verifyUserOtp.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload.data ? action.payload.data.message : null;
+      state.showInUI = action.payload.data ? true : false;
     })
     .addCase(verifyRegisteredUserOtp.pending, (state) => {
       state.loadingRegistered = true;
     })
     .addCase(verifyRegisteredUserOtp.fulfilled, (state, action) => {
       state.loadingRegistered = false;
-      state.verified = true;
-      state.error = null;
+      state.verifiedRegistered = true;
+      state.errorRegistered = null;
+      state.showInUI = false
     })
     .addCase(verifyRegisteredUserOtp.rejected, (state, action) => {
       state.loadingRegistered = false;
-      state.error = action.payload;
+      state.errorRegistered = action.payload.data ? action.payload.data.message : null;
+      state.showInUI = action.payload.data ? true : false;
     })
   },
 });
 
-export const { resetError } = verifyOtpSlice.actions;
+export const { resetError, setError } = verifyOtpSlice.actions;
 
 export default verifyOtpSlice.reducer;
