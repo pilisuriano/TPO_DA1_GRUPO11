@@ -1,17 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity, TextInput, Pressable, s, ActivityIndicator, StatusBar, Platform } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity, TextInput, Pressable, s, ActivityIndicator, StatusBar, Platform, Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from "react-redux";
 import { getTimeline, getTimelineNewPosts, getTimelineOlderPosts } from "../../src/features/timeline/timeline.slice"
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ToastAndroid, Linking } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
+import ImageModal from 'react-native-image-modal'
+import InfoMessage from '@/components/InfoMessage';
+
+const { width, height } = Dimensions.get('window');
 
 const Post = ({ post }) => {
   if (!post || !post.media || !post.media.length) {
     return null;
   }
+  const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+
+  const handleLayout = (event) => {
+    const { width, height } = event.nativeEvent.layout;
+    setContainerSize({ width, height });
+  };
 
   return (
     <View style={styles.postContainer}>
@@ -23,11 +33,51 @@ const Post = ({ post }) => {
           <Text style={styles.details}>{transformDate(post.createdAt)}  ·   { }</Text>
         </View>
       </View>
-      {/* Imagen de la publicación */}
+      {post.media.length === 1 ? (
+        <View
+          onLayout={handleLayout}
+          style={{
+            width: "100%",
+            borderRadius: 10,
+            borderColor: '#000000',
+            borderWidth: 1,
+            overflow: 'hidden', // Asegúrate de que no haya desbordes
+          }}>
+          <ImageModal
+            resizeMode='contain'
+            imageBackgroundColor='#f0f0f0'
+            source={{ uri: post.media[0]?.url }}
+            style={{
+              width: containerSize.width,
+              height: 185,
+            }}
+          />
+        </View>
 
-      <Image source={{ uri: post.media[0]?.url }} style={styles.postImage} />
+      ) : (
+        <Carousel
+          autoPlayInterval={1200}
+          width={width - 10}
+          height={250}
+          data={post.media}
+          pagingEnabled={true}
+          autoPlayReverse={false}
+          snapEnabled={true}
+          loop={false}
+          style={{
+            width: '100%',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          mode='parallax'
+          modeConfig={{
+            parallaxScrollingScale: 0.8,
+            parallaxScrollingOffset: 90
+          }}
+          renderItem={renderItem}
+        />
+      )}
 
-      {/* Pie de la publicación */}
       <View style={styles.footer}>
         <Text style={styles.comment}>{post.title}</Text>
         <View style={styles.reactions}>
@@ -48,30 +98,77 @@ const Post = ({ post }) => {
   )
 };
 
-const Ad = ({ post }) => (
+const renderItem = ({ item }) => {
 
-  <View style={styles.postContainer}>
-    <View style={styles.header}>
-      <Image source={{ uri: post.profilePic } || require("../../assets/images/Profile.png")} style={styles.profilePic} />
+  return (
 
-      <View style={styles.headerInfo}>
-        <Text style={styles.name}>{post.commerce}</Text>
-        {/* <Text style={styles.details}>{post.createdAt}  ·   {post.location.placeName}</Text> */}
+    <ImageModal
+      resizeMode='contain'
+      imageBackgroundColor='#f0f0f0'
+      style={{
+        width: 360,
+        height: 250,
+        borderRadius: 10,
+        borderColor: '#000000',
+        borderWidth: 1,
+      }}
+      source={{ uri: item.url }}
+    />
+
+  );
+}
+
+const Ad = ({ post }) => {
+  const [containerSizeAd, setContainerSizeAd] = useState({ width: 0, height: 0 });
+
+  const handleAdLayout = (event) => {
+    const { width, height } = event.nativeEvent.layout;
+    setContainerSizeAd({ width, height });
+  };
+
+  return (
+    <View style={styles.postContainer}>
+      <View style={styles.header}>
+
+        <Image source={{ uri: post.profilePic } || require("../../assets/images/Profile.png")} style={styles.profilePic} />
+
+        <View style={styles.headerInfo}>
+          <Text style={styles.name}>{post.commerce}</Text>
+          {/* <Text style={styles.details}>{post.createdAt}  ·   {post.location.placeName}</Text> */}
+        </View>
+      </View>
+
+
+      <View
+        onLayout={handleAdLayout}
+        style={{
+          width: "100%",
+          borderRadius: 10,
+          borderColor: '#000000',
+          borderWidth: 1,
+          overflow: 'hidden', // Asegúrate de que no haya desbordes
+        }}>
+        <ImageModal
+          resizeMode='contain'
+          imageBackgroundColor='#f0f0f0'
+          source={{ uri: post.imagePath[0]?.landscape }}
+          style={{
+            width: containerSizeAd.width,
+            height: 265,
+          }}
+        />
+      </View>
+      {/* Pie de la publicación */}
+      <View style={styles.footer}>
+        <Text style={styles.comment}> Visitanos en:
+          <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> nuestra web </Text>
+        </Text>
+        <View style={styles.reactions}>
+        </View>
       </View>
     </View>
-
-    <Image source={{ uri: post.imagePath[0]?.portraite }} style={styles.postImage} />
-
-    {/* Pie de la publicación */}
-    <View style={styles.footer}>
-      <Text style={styles.comment}> Visitanos en:
-        <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> nuestra web </Text>
-      </Text>
-      <View style={styles.reactions}>
-      </View>
-    </View>
-  </View>
-)
+  )
+}
 
 const handleLinkPress = async (url) => {
   try {
@@ -94,14 +191,12 @@ const transformDate = (date) => {
 }
 
 const Home = () => {
-  const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { posts, loading, hasMore, error } = useSelector((state) => state.timeline);
+  const { posts, loading, hasMore, error, showEmptyTimeline } = useSelector((state) => state.timeline);
 
 
   useEffect(() => {
     dispatch(getTimeline());
-    console.log({ loading, hasMore });
   }, [dispatch]);
 
   // Handler para refrescar posts más recientes
@@ -143,6 +238,7 @@ const Home = () => {
           <Image style={[styles.icon]} source={require("../../assets/images/Group 12.png")} />
         </View>
       </View>
+      {showEmptyTimeline && posts.length === 0 && <InfoMessage message="No tienes publicaciones para ver aún." />}
       {(loading && posts.length === 0) ? (<View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#B5432A" />
       </View>) : (
@@ -213,6 +309,8 @@ const styles = StyleSheet.create({
   },
   headerInfo: {
     flex: 1,
+    borderRadius: 40,
+    width: "100%"
   },
   details: {
     color: 'gray',
@@ -221,7 +319,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 200,
     borderRadius: 10,
-    marginBottom: 10,
     borderColor: '#000000',
     borderWidth: 1,
   },
@@ -249,7 +346,7 @@ const styles = StyleSheet.create({
     padding: 10,
     top: 10,
     paddingBottom: 120,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#f0f0f0',
   },
   cantComentarios: {
     color: 'gray',

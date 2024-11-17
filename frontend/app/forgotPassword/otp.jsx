@@ -3,7 +3,7 @@ import { Image, StyleSheet, View, Text, Pressable, TextInput, TouchableOpacity, 
 import { useNavigation } from '@react-navigation/native';
 import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
-import { verifyUserOtp } from "@/src/features/verifyOtp/verifyOtp.slice";
+import { verifyRegisteredUserOtp } from "@/src/features/verifyOtp/verifyOtp.slice";
 import { saveItem } from '@/src/services/secureStore';
 
 const VERIFICATION = () => {
@@ -42,7 +42,7 @@ const VERIFICATION = () => {
     const otpJoin = otp.join(''); // Une el OTP en un solo string
     if (email && otpJoin) {
       const data = { email: email, otp: otpJoin };
-      dispatch(verifyUserOtp(data));
+      dispatch(verifyRegisteredUserOtp(data));
     } else {
       console.error("Email or OTP is missing");
     }

@@ -13,7 +13,7 @@ const WELCOME = () => {
           <Text style={styles.title}>¡Te damos la bienvenida!</Text>
           <TouchableOpacity
               style={styles.registerButton}
-              onPress={() => router.replace('/signup')}
+              onPress={() => router.replace('/(tabs)/home')}
             >
               <Text style={styles.registerText}>Continuar</Text>
             </TouchableOpacity>

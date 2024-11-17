@@ -25,7 +25,8 @@ const ChooseUser = () => {
     return password.length > 6;
   };
   const isButtonEnabled = pwd.trim() !== '' && pwd.trim() !== '' && confirmPwd.trim() !== '' && isValidPassword(pwd) && isValidPassword(confirmPwd);
-  const { showInUI, created, loading, error } = useSelector((state) => state.signup);
+  const { showInUI, created, loading, error, resetLoading } = useSelector((state) => state.signup);
+  const { authenticated } = useSelector((state) => state.auth);
 
   const handleUsername = async () => {
     if (pwd !== confirmPwd) {
@@ -41,10 +42,12 @@ const ChooseUser = () => {
 
   useEffect(() => {
     if (created) {
-      dispatch(loginUser({email: userEmail, password: pwd}))
-      router.replace("/signup/welcome")
+      dispatch(loginUser({ email: userEmail, password: pwd }))
+      if (authenticated) {
+        router.replace("/signup/welcome")
+      }
     }
-  }, [created]);
+  }, [created, authenticated]);
 
 
   return (
@@ -74,7 +77,7 @@ const ChooseUser = () => {
           </View>
 
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Contraseña</Text> 
+            <Text style={styles.label}>Contraseña</Text>
             <TextInput
               value={pwd}
               onChangeText={(text) => {

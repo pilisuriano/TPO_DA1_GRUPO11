@@ -10,11 +10,6 @@ const initialState = {
   verifiedRegistered: false,
 };
 
-// otp
-/*
-authsRoutes.post("/verify-otp", verifyOtp)
-/*
-*/
 export const verifyUserOtp = createAsyncThunk('auths/verify-otp', async (data, thunkAPI) => {
   try {
     const response = await verifyOtp(data);
@@ -81,12 +76,12 @@ const verifyOtpSlice = createSlice({
     })
     .addCase(verifyRegisteredUserOtp.fulfilled, (state, action) => {
       state.loadingRegistered = false;
-      state.verified = true;
-      state.error = null;
+      state.verifiedRegistered = true;
+      state.errorRegistered = null;
     })
     .addCase(verifyRegisteredUserOtp.rejected, (state, action) => {
       state.loadingRegistered = false;
-      state.error = action.payload;
+      state.errorRegistered = action.payload;
     })
   },
 });
