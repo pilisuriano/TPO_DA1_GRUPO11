@@ -11,9 +11,7 @@ const errorMiddleware = ({ dispatch }) => next => action => {
       router.push('/error/internetConnection');
     } else if (error.status) {
       const statusCode = error.status;
-
       if (statusCode === 400) {
-        // action.payload.showInUI = true;
 				dispatch({
           type: `${action.type.split('/')[0]}/setError`,
           payload: { message: errorMessage, showInUI: true },
