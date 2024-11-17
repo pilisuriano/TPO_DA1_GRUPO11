@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar } from "react-native";
+import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, SafeAreaView, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { useRouter } from "expo-router";
 
