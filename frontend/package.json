@@ -40,6 +40,7 @@
     "react-native-gesture-handler": "~2.16.1",
     "react-native-image-modal": "^3.0.12",
     "react-native-image-resizer": "^1.4.5",
+    "react-native-image-viewing": "^0.2.2",
     "react-native-modal": "^13.0.1",
     "react-native-reanimated": "~3.10.1",
     "react-native-reanimated-carousel": "^3.5.1",
