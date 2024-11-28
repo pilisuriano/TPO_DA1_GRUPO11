@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Memento",
+    "slug": "Memento",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/splash.png",
@@ -13,17 +13,14 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.DA1Grupo11.memento"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Logo 2.png",
         "backgroundColor": "#ffffff"
       },
-      "softwareKeyboardLayoutMode": "pan",
-      "package": "com.DA1Grupo11.memento",
-      "versionCode": 1
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
@@ -37,6 +34,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "d5a105a2-34ff-4113-98dc-1361e9e23b9e"
+      }
     }
   }
 }
