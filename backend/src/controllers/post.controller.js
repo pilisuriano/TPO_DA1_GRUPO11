@@ -5,54 +5,44 @@ export const createPost = async (req, res) => {
 
   try {
     const userId = req.user._id;
-    const { title, location } = req.body;
+    const { title, location, images } = req.body;
     const mediaUrls = [];
 
-    if (!req.files || req.files.length === 0) {
+    if (!images || images.length === 0) {
      return res.status(400).json({ error: "No files uploaded" });
     }
 
-    /*console.log('Body:', req.body);  // Esto debería mostrar el título
-    console.log('Files:', req.files);  // Esto debería mostrar los archivos
-    // Procesa el post (guardar en DB o lo que sea necesario)
-    res.status(200).send({ message: 'Post created successfully' });*/
-
-    const uploadPromises = req.files.map(async (file) => {
-      return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload_stream(
-          { resource_type: 'auto', folder: 'posts' },
-          (error, result) => {
-            if (error) return reject(error);
-            resolve({ url: result.secure_url, type: result.resource_type });
-          }
-        ).end(file.buffer);
-      });
+    const uploadPromises = images.map(async (base64Image) => {
+      try {
+        const result = await cloudinary.uploader.upload(base64Image, {
+          resource_type: 'auto',
+          folder: 'posts'
+        });
+        return { url: result.secure_url, type: result.resource_type };
+      } catch (error) {
+        throw error
+      }
+      // return new Promise((resolve, reject) => {
+      //   cloudinary.uploader.upload_stream(
+      //     { resource_type: 'auto', folder: 'posts' },
+      //     (error, result) => {
+      //       if (error) return reject(error);
+      //       resolve({ url: result.secure_url, type: result.resource_type });
+      //     }
+      //   ).end(file.buffer);
+      // });
     });
 
     const results = await Promise.all(uploadPromises);
+    console.log(results)
     mediaUrls.push(...results);
 
-    // Crear el nuevo post en la base de datos con location obligatorio
-    // const newPost = await Post.create({
-    //   user: userId,
-    //   title,
-    //   location: {
-    //     placeName: location.placeName,
-    //     coordinates: {
-    //       latitude: location.coordinates.latitude,
-    //       longitude: location.coordinates.longitude,
-    //     },
-    //     placeId: location.placeId,
-    //   },
-    //   media: mediaUrls,
-    // });
     const newPost = {
       userId,
       title,
       media: mediaUrls,
     };
     
-    // Solo agregar `location` si existen los valores
     if (location && location.placeName && location.coordinates) {
       newPost.location = {
         placeName: location.placeName,

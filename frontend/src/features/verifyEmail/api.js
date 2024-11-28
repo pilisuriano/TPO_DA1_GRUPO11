@@ -5,6 +5,6 @@ export const verifyEmail = async (userData) => {
     const response = await api.post('/auths/verify-email', userData);
     return response;
   } catch (error) {
-    throw error.response ? error.response.data : new Error("Network error");
+    throw error.response;
   }
 };

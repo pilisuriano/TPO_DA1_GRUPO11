@@ -4,14 +4,13 @@ import { signup } from './api.js';
 const initialState = {
   loading: false,
   error: null,
-  created: false
+  created: false,
+  showInUI: false,
 };
 
-// signup REVISAR
 export const signupUser = createAsyncThunk('auths/signup', async (userData, thunkAPI) => {
   try {
     const response = await signup(userData);
-    console.log(`RESPONSE: ${JSON.stringify(response)}`)
     if (!response.data) {
       throw new Error("Token not received")
     }
@@ -19,7 +18,6 @@ export const signupUser = createAsyncThunk('auths/signup', async (userData, thun
       ...response.data
     };
   } catch (error) {
-    console.log(error)
     if (!error) {
       return thunkAPI.rejectWithValue("No se pudo conectar con el servidor. Verifica tu conexión a Internet.");
     }
@@ -33,26 +31,38 @@ const signupSlice = createSlice({
   reducers: {
     resetError: (state) => {
       state.error = null;
-      state.created = false
+      state.created = false;
+      state.showInUI = false;
+      state.loading = false;
     },
+    setError: (state, action) => {
+      state.error = action.payload.message;
+      state.showInUI = action.payload.showInUI;
+    },
+    resetLoading: (state) => {
+      state.loading = false
+    }
   },
   extraReducers: (builder) => {
     builder
     .addCase(signupUser.pending, (state) => {
       state.loading = true;
+      state.showInUI = false;
     })
     .addCase(signupUser.fulfilled, (state, action) => {
       state.loading = false;
+      state.showInUI = false;
       state.created = true;
       state.error = null;
     })
     .addCase(signupUser.rejected, (state, action) => {
       state.loading = false;
-      state.error = action.payload;
+      state.error = action.payload.data ? action.payload.data.message : null;
+      state.showInUI = action.payload.data ? true : false;
     })
   },
 });
 
-export const { resetError } = signupSlice.actions;
+export const { resetError, setError, resetLoading } = signupSlice.actions;
 
 export default signupSlice.reducer;

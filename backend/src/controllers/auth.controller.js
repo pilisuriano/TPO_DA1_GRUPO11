@@ -5,22 +5,12 @@ import { generateToken } from "../utils/generateToken.js"
 
 export const signup = async (req, res) => {
   try {
-    // por ahora agrego el mail porque necesito crear un usuario para probar
     const { email, fullName, gender, description, nickname, password } = req.body;
 
     const existingUser = await User.findOne({ nickname });
     if (existingUser) {
-      return res.status(400).json({ error: "Username is already taken" });
+      return res.status(400).json({ error: "UserExists", message: "Usuario existente" });
     }
-
-    // const existingEmail = await User.findOne({ email });
-    // if (existingEmail) {
-    // 	return res.status(400).json({ error: "Email is already taken" });
-    // }
-
-    // if (password.length < 6) {
-    // 	return res.status(400).json({ error: "Password must be at least 6 characters long" });
-    // }
 
     const newUser = new User({
       fullName,
@@ -65,12 +55,12 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ error: 'Authentication failed' });
+      return res.status(400).json({ error: 'Authentication failed', message: "Credenciales incorrectas" });
     }
 
     const passwordMatch = await user.comparePassword(password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Authentication failed' });
+      return res.status(400).json({ error: 'Authentication failed', message: "Credenciales incorrectas" });
     }
 
     const token = generateToken(user._id)
@@ -81,23 +71,6 @@ export const login = async (req, res) => {
   }
 }
 
-
-export const logout = async (req, res) => {
-  try {
-
-  } catch (error) {
-
-  }
-}
-
-/*
-  req: email, action [signup, password-reset]
-
-  se utiliza tanto para cuando el user se registra: 1er paso
-  y cuando quiere recuperar contrasenia (olvido de pass)
-
-  NO guarda en bd el usuario, guardo un otpSchema para mantener el otp con vencimiento
-*/
 export const verifyEmail = async (req, res) => {
   try {
     const { email, flow } = req.body
@@ -111,12 +84,12 @@ export const verifyEmail = async (req, res) => {
     if (flow === "signup") {
       user = await User.findOne({ email });
       if (user) {
-        return res.status(409).json({ error: "Email already registered" });
+        return res.status(400).json({ error: "Email already registered", message: "Email ya en uso" });
       }
     } else if (flow === "reset_password") {
       user = await User.findOne({ email });
       if (!user) {
-        return res.status(404).json({ error: "User not found" });
+        return res.status(400).json({ error: "User not found", message: "Credenciales incorrectas" });
       }
     }
 
@@ -144,29 +117,21 @@ export const verifyEmail = async (req, res) => {
   }
 }
 
-
-/*
-  req: otp, email
-  
-  verifica otp dentro del otpSchema
-  SI guarda el usuario
-*/
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    // const user = await User.findOne({ email });
     const userOtp = await Otp.findOne({ email });
 
     if (!userOtp || userOtp.otp !== otp) {
-      return res.status(400).json({ message: 'OTP incorrecto o usuario no encontrado' });
+      return res.status(400).json({ error: "Invalid OTP or not found", message: "OTP incorrecto" });
     }
 
     const otpExpiry = new Date(userOtp.expiresAt);
     if (otpExpiry < new Date()) {
       // Limpiar el OTP vencido
       await Otp.deleteOne({ email });
-      return res.status(400).json({ message: 'OTP expirado' });
+      return res.status(400).json({ error: "Expired OTP", message: 'OTP expirado' });
     }
 
     // Limpiar el OTP después de verificarlo
@@ -184,11 +149,11 @@ export const resetPassword = async (req, res) => {
 
     const user = await User.findOne({ email });
     if(!user) {
-      return res.status(400).json({ error: "Invalid user data" });
+      return res.status(400).json({ error: "Invalid user data", message: "Error en el envío" });
     }
 
     if(newPassword !== confirmPassword) {
-      return res.status(400).json({ error: "Passwords don't match" });
+      return res.status(400).json({ error: "Passwords don't match", message: "Las contraseñas no coinciden" });
     }
 
     user.password = newPassword;
