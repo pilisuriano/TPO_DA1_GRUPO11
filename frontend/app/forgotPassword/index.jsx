@@ -1,164 +1,199 @@
-import * as React from "react";
-import { Image, StyleSheet, View, Text, Pressable } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, View, Text, Pressable, StatusBar, Platform, SafeAreaView, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from "expo-router";
+import { useDispatch, useSelector } from "react-redux";
+import { resetState, verifyUserEmail } from "@/src/features/verifyEmail/verifyEmail.slice";
+import { resetError } from '@/src/features/signup/signup.slice';
 
+// igual al de signup/index
 const ForgotPassword = () => {
-  const navigation = useNavigation();
+  const router = useRouter();
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const isButtonEnabled = email.trim() !== ''  && isValidEmail(email) ;
+
+  const { emailSent, data, loading, error } = useSelector((state) => state.verifyEmail);
+  const [isFocused, setIsFocused] = useState(false);
+
+  // Resetea el estado al entrar a la pantalla
+  useEffect(() => {
+    dispatch(resetState());
+  }, [dispatch]);
+
+  const handleVerifyEmail = async () => {
+    try {
+      if (isButtonEnabled) {
+        dispatch(resetError())
+        var response = dispatch(verifyUserEmail({ email: email, flow: "reset_password" }));
+        console.log("OTP ", JSON.stringify(response))
+      }
+
+    } catch (err) {
+      console.error("Error during signup:", err);
+      Alert.alert("Error", "Could not log in. Please try again.");
+    }
+  };
+
+  useEffect(() => {
+    if (emailSent && data?.email) {
+      router.push({ pathname: "/forgotPassword/otp", params: { email: data.email } });
+      resetError()
+    }
+  }, [emailSent, data]);
+
+
   return (
-    <View style={[styles.forgotPassword, styles.iconLayout]}>
-      <View style={styles.forgotPasswordChild} />
-      <Text style={[styles.olvidoDeContrasea, styles.enviarTypo]}>Olvido de contraseña</Text>
-      <Text style={[styles.correoElectrnico, styles.teAyudaremosATypo]}>Correo electrónico</Text>
-      <Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={() => navigation.navigate('screens/login/loginotp')}>
-        <View style={[styles.groupChild, styles.groupChildLayout]} />
-        <Text style={[styles.enviar, styles.enviarTypo]}>Enviar</Text>
-      </Pressable>
-      <View style={[styles.forgotPasswordItem, styles.groupChildLayout]} />
-      <Text style={styles.martinsuarezhotmailcom}>martinsuarez@hotmail.com</Text>
-      <Text style={[styles.teAyudaremosA, styles.teAyudaremosATypo]}>Te ayudaremos a recuperar tu cuenta</Text>
-      <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('screens/login/login')}>
-        <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require('../../assets/images/Arrow---Left-2.png')} />
-      </Pressable>
-      <Pressable style={styles.yaTienesUnaContainer} onPress={() => navigation.navigate('/login')}>
-        <Text style={styles.text}>
-          <Text style={styles.yaTienesUna}>{`¿Ya tienes una cuenta? `}</Text>
-          <Text style={styles.iniciaSesin}>Inicia Sesión</Text>
-        </Text>
-      </Pressable>
-    </View>);
+    <SafeAreaView style={styles.safeArea}>
+
+      <StatusBar barStyle="dark-content" />
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#B5432A" />
+        </View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.title}>Olvido de contraseña</Text>
+          <Text style={styles.subtitle}>Te ayudaremos a recuperar tu cuenta</Text>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Correo electrónico</Text>
+            <TextInput
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              style={[styles.input, isFocused && styles.inputFocused]}
+              placeholderTextColor="#C7C7CD"
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
+          </View>
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity
+              style={[styles.signupButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
+              disabled={!isButtonEnabled}
+              onPress={handleVerifyEmail}>
+              <Text style={styles.signupButtonText}>Listo</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.replace('/login')}>
+              <Text style={styles.loginText}>
+                ¿Ya tienes una cuenta? <Text style={styles.loginLink}>Inicia Sesión</Text>
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+        </ScrollView>
+      )}
+
+    </SafeAreaView >
+
+  );
 };
 
 const styles = StyleSheet.create({
-  iconLayout: {
-    overflow: "hidden",
-    width: "100%"
-  },
-  groupChildPosition: {
-    left: 0,
-    top: 0
-  },
-  enviarTypo: {
-    textAlign: "left",
-    fontFamily: "Poppins-SemiBold",
-    fontWeight: "600",
-    position: "absolute"
-  },
-  teAyudaremosATypo: {
-    opacity: 0.7,
-    fontFamily: "Poppins-Medium",
-    fontWeight: "500",
-    textAlign: "left",
-    color: "#000",
-    left: 38,
-    position: "absolute"
-  },
-  groupChildLayout: {
-    height: 49,
-    width: 321,
-    position: "absolute"
-  },
-  blackBase21: {
-    width: 390,
-    height: 41,
-    position: "absolute"
-  },
-  forgotPasswordChild: {
-    top: 819,
-    left: 116,
-    backgroundColor: "#000",
-    width: 165,
-    height: 4,
-    borderRadius: 10,
-    position: "absolute"
-  },
-  olvidoDeContrasea: {
-    top: 128,
-    fontSize: 20,
-    width: 243,
-    color: "#000",
-    left: 38
-  },
-  correoElectrnico: {
-    top: 219,
-    width: 137,
-    fontSize: 14,
-    opacity: 0.7
-  },
-  groupChild: {
-    backgroundColor: "#bb4426",
-    borderRadius: 10,
-    left: 0,
-    top: 0
-  },
-  enviar: {
-    top: 11,
-    left: 132,
-    fontSize: 18,
-    color: "#fff"
-  },
-  rectangleParent: {
-    top: 635,
-    left: 38
-  },
-  forgotPasswordItem: {
-    top: 245,
-    backgroundColor: "#f2f2f2",
-    left: 38,
-    borderRadius: 10
-  },
-  martinsuarezhotmailcom: {
-    top: 261,
-    left: 53,
-    fontFamily: "Roboto-Medium",
-    color: "#1a1a1a",
-    opacity: 0.5,
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "left",
-    position: "absolute"
-  },
-  teAyudaremosA: {
-    top: 163,
-    fontSize: 16,
-    width: 310
-  },
-  icon: {
-    height: "100%",
-    maxWidth: "100%",
-    maxHeight: "100%"
-  },
-  iconlylightOutlinearrowL: {
-    left: "7.2%",
-    top: "8.99%",
-    right: "90.13%",
-    bottom: "88.76%",
-    width: "2.67%",
-    height: "2.25%",
-    position: "absolute"
-  },
-  yaTienesUna: {
-    color: "#000"
-  },
-  iniciaSesin: {
-    color: "#006175"
-  },
-  text: {
-    width: 261,
-    fontFamily: "Poppins-Medium",
-    fontWeight: "500",
-    fontSize: 14,
-    textAlign: "left"
-  },
-  yaTienesUnaContainer: {
-    left: 66,
-    top: 711,
-    position: "absolute"
-  },
-  forgotPassword: {
-    backgroundColor: "#fff",
+  container: {
     flex: 1,
-    height: 844
-  }
+    backgroundColor: '#FFFFFF',
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF', // color de fondo para evitar que se vea vacío
+    justifyContent: 'space-between',
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 100 : 100,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 30,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toolbar: {
+    marginHorizontal: 25,
+    paddingBottom: 40
+  },
+  title: {
+    fontSize: 20,
+    fontFamily: 'Poppins-Bold',
+    color: '#000',
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  subtitle: {
+    marginBottom: 30,
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
+    color: "#000",
+    opacity: 0.7,
+    fontWeight: '500',
+  },
+  inputContainer: {
+    marginBottom: 15,
+  },
+  label: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: "#000",
+    opacity: 0.7,
+    fontWeight: '500',
+    marginBottom: 5,
+  },
+  input: {
+    opacity: 0.5,
+    fontFamily: "Roboto-Medium",
+    fontWeight: "500",
+    backgroundColor: '#F2F2F2',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#000',
+  },
+  inputFocused: {
+    borderWidth: 0.5,
+    borderColor: '#7E5F5B'
+  },
+  footerContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 120,
+    width: '100%',
+    justifyContent: 'flex-end'
+  },
+  signupButton: {
+    backgroundColor: '#B5432A',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  signupButtonText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  loginText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: '#7D7D7D',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 30
+  },
+  loginLink: {
+    color: "#006175",
+    fontFamily: 'Poppins-SemiBold',
+  },
 });
 
 export default ForgotPassword;

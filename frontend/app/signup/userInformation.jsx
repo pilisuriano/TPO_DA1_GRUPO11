@@ -1,234 +1,207 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, View, Text, Pressable } from "react-native";
-import { useNavigation } from '@react-navigation/native';
-import { useRouter } from "expo-router";
+import React, { useEffect, useState } from 'react';
+import { Image, StyleSheet, View, Text, Pressable, StatusBar, Platform, SafeAreaView, ScrollView, TextInput, TouchableOpacity } from "react-native";
+import { Picker } from '@react-native-picker/picker';
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useDispatch } from 'react-redux';
+import { getItem } from '@/src/services/secureStore';
 
 const UserInformation = () => {
   const router = useRouter()
+  const [fullName, setFullName] = useState("");
+  const [gender, setGender] = useState("masculino");
+  const [description, setDescription] = useState("");
+  const [emailIsFocused, setEmailIsFocused] = useState(false);
+  const [descriptionIsFocused, setDescriptionIsFocused] = useState(false);
+  const isButtonEnabled = fullName.trim() !== '' && gender.trim() !== '';
+
+  const handleUserInformation = async () => {
+    if (isButtonEnabled) {
+      router.push({ pathname: "/signup/chooseUser", params: { fullName: fullName, gender: gender, description: description } });
+    }
+  }
 
   return (
-    <View style={styles.personalInformation}>
-      <View style={[styles.personalInformationChild, styles.childLayout]} />
-      <Text style={[styles.informacinPersonal, styles.siguienteTypo]}>Información Personal</Text>
-      <Text style={[styles.porFavorComplete, styles.gneroPosition]}>Por favor, complete lo siguiente</Text>
-      <Text style={[styles.nombreCompleto, styles.textTypo]}>Nombre completo</Text>
-      <Text style={[styles.gnero, styles.textTypo]}>Género</Text>
-      <Text style={[styles.sobreMi, styles.textTypo]}>Sobre mi</Text>
-      <Pressable style={styles.rectangleParent} onPress={() => router.push('chooseUser')}>
-        <View style={[styles.groupChild, styles.childLayout]} />
-        <Text style={[styles.siguiente, styles.siguienteTypo]}>Siguiente</Text>
-      </Pressable>
-      <View style={[styles.personalInformationItem, styles.personalPosition]} />
-      <Text style={[styles.martinSuarez, styles.masculinoTypo]}>Martin Suarez</Text>
-      <View style={[styles.personalInformationInner, styles.personalPosition]} />
-      <View style={[styles.rectangleView, styles.personalPosition]} />
-      <Text style={[styles.soyUnaPersona, styles.soyUnaPersonaTypo]}>Soy una persona positiva. Me encanta viajar y probar nuevas comidas.</Text>
-      <Image style={[styles.iconlyboldarrowDown2, styles.iconLayout]} resizeMode="cover" source="Iconly/Bold/Arrow---Down-2.png" />
-      <Text style={[styles.masculino, styles.masculinoTypo]}>Masculino</Text>
-    </View>);
+
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="dark-content" />
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.title}>Información Personal</Text>
+          <Text style={styles.subtitle}>Por favor, complete la siguiente Información: </Text>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Nombre completo</Text>
+            <TextInput
+              value={fullName}
+              onChangeText={setFullName}
+              keyboardType="default"
+              autoCapitalize="none"
+              style={[styles.input, emailIsFocused && styles.inputFocused]}
+              placeholderTextColor="#C7C7CD"
+              onFocus={() => setEmailIsFocused(true)}
+              onBlur={() => setEmailIsFocused(false)}
+            />
+          </View>
+
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Género</Text>
+            <Picker
+              selectedValue={gender}
+              onValueChange={(itemValue) => setGender(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Masculino" value="masculino" />
+              <Picker.Item label="Femenino" value="femenino" />
+              <Picker.Item label="Otro" value="otro" />
+            </Picker>
+            <Image source="Iconly/Bold/Arrow---Down-2.png" style={styles.icon} />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Sobre mi</Text>
+            <TextInput
+              value={description}
+              onChangeText={setDescription}
+              multiline={true}
+              numberOfLines={3}
+              style={[styles.input, styles.inputAreaText, descriptionIsFocused && styles.inputFocused]}
+              placeholderTextColor="#C7C7CD"
+              onFocus={() => setDescriptionIsFocused(true)}
+              onBlur={() => setDescriptionIsFocused(false)}
+            />
+          </View>
+
+
+          <View style={styles.footerContainer}>
+            <TouchableOpacity
+              style={[styles.signupButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
+              disabled={!isButtonEnabled}
+              onPress={handleUserInformation}>
+              <Text style={styles.signupButtonText}>Siguiente</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => router.replace('/login')}>
+              <Text style={styles.loginText}>
+                ¿Ya tienes una cuenta? <Text style={styles.loginLink}>Inicia Sesión</Text>
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+        </ScrollView>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-  groupChildPosition: {
-    left: 0,
-    top: 0
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
   },
-  childLayout: {
-    borderRadius: 10,
-    position: "absolute"
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF', // color de fondo para evitar que se vea vacío
+    justifyContent: 'space-between',
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 100 : 100,
   },
-  siguienteTypo: {
-    textAlign: "left",
-    fontFamily: "Poppins-SemiBold",
-    fontWeight: "600",
-    position: "absolute"
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 30,
   },
-  gneroPosition: {
-    opacity: 0.7,
+  toolbar: {
+    marginHorizontal: 25,
+    paddingBottom: 40
+  },
+  title: {
+    fontSize: 20,
+    fontFamily: 'Poppins-Bold',
+    color: '#000',
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  subtitle: {
+    marginBottom: 30,
+    fontSize: 16,
+    fontFamily: 'Poppins-Medium',
     color: "#000",
-    left: 33,
-    position: "absolute"
+    opacity: 0.7,
+    fontWeight: '500',
   },
-  textTypo: {
+  inputContainer: {
+    marginBottom: 15,
+  },
+  label: {
     fontSize: 14,
-    fontFamily: "Poppins-Medium",
-    fontWeight: "500",
-    textAlign: "left"
+    fontFamily: 'Poppins-Medium',
+    color: "#000",
+    opacity: 0.7,
+    fontWeight: '500',
+    marginBottom: 5,
   },
-  personalPosition: {
-    backgroundColor: "#f2f2f2",
-    left: 33,
-    borderRadius: 10,
-    position: "absolute"
-  },
-  masculinoTypo: {
+  input: {
     opacity: 0.5,
     fontFamily: "Roboto-Medium",
+    fontWeight: "500",
+    backgroundColor: '#F2F2F2',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 12,
     fontSize: 14,
-    fontWeight: "500",
-    textAlign: "left",
-    color: "#000",
-    position: "absolute"
+    color: '#000',
   },
-  soyUnaPersonaTypo: {
-    fontFamily: "Poppins-Medium",
-    fontWeight: "500",
-    textAlign: "left"
+  inputAreaText: {
+    textAlignVertical: 'top',
   },
-  iconLayout: {
-    maxHeight: "100%",
-    maxWidth: "100%",
-    overflow: "hidden"
-  },
-  blackBase21: {
-    width: 390,
-    height: 41,
-    position: "absolute"
-  },
-  personalInformationChild: {
-    top: 824,
-    backgroundColor: "#000",
-    width: 165,
-    height: 4,
-    left: 118
-  },
-  informacinPersonal: {
-    top: 143,
-    fontSize: 20,
-    width: 247,
-    color: "#000",
-    left: 33
-  },
-  porFavorComplete: {
-    top: 178,
-    fontSize: 16,
-    width: 263,
-    fontFamily: "Poppins-Medium",
-    fontWeight: "500",
-    textAlign: "left"
-  },
-  nombreCompleto: {
-    top: 223,
-    width: 140,
-    opacity: 0.7,
-    color: "#000",
-    left: 33,
-    position: "absolute"
-  },
-  gnero: {
-    top: 315,
-    width: 57,
-    opacity: 0.7,
-    color: "#000",
-    left: 33,
-    position: "absolute"
-  },
-  sobreMi: {
-    top: 406,
-    width: 78,
-    opacity: 0.7,
-    color: "#000",
-    left: 33,
-    position: "absolute"
-  },
-  groupChild: {
-    backgroundColor: "#bb4426",
-    height: 49,
-    width: 321,
-    left: 0,
-    top: 0
-  },
-  siguiente: {
-    top: 11,
-    fontSize: 18,
-    color: "#fff",
-    left: 118
-  },
-  rectangleParent: {
-    top: 649,
-    height: 49,
-    width: 321,
-    left: 33,
-    position: "absolute"
-  },
-  personalInformationItem: {
-    top: 249,
-    borderStyle: "solid",
-    borderColor: "#7e5f5b",
+  inputFocused: {
     borderWidth: 0.5,
-    height: 49,
-    width: 321
+    borderColor: '#7E5F5B'
   },
-  martinSuarez: {
-    top: 265,
-    left: 48
-  },
-  personalInformationInner: {
-    top: 341,
-    width: 131,
-    height: 49
-  },
-  rectangleView: {
-    top: 432,
-    height: 114,
-    width: 321
-  },
-  soyUnaPersona: {
-    top: 448,
-    left: 42,
-    fontSize: 12,
-    width: 317,
-    color: "#000",
-    position: "absolute"
-  },
-  iconlyboldarrowDown2: {
-    height: "0.98%",
-    width: "2.13%",
-    top: "44.55%",
-    right: "60.33%",
-    bottom: "54.47%",
-    left: "37.54%",
-    position: "absolute"
+  picker: {
+    flex: 1,
+    width: "50%",
+    opacity: 0.7,
+    fontFamily: "Roboto-Medium",
+    fontWeight: "500",
+    backgroundColor: '#F2F2F2',
+    borderRadius: 8,
+    fontSize: 14,
+    marginVertical: 0, paddingVertical: 0, height: 30
   },
   icon: {
-    height: "100%",
-    width: "100%",
-    maxWidth: "100%"
+    width: 20,
+    height: 20,
   },
-  iconlylightOutlinearrowL: {
-    left: "7.2%",
-    top: "7.64%",
-    right: "90.13%",
-    bottom: "90.11%",
-    width: "2.67%",
-    height: "2.25%",
-    position: "absolute"
+  footerContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 95,
+    width: '100%',
+    justifyContent: 'flex-end'
   },
-  yaTienesUna: {
-    color: "#000"
+  signupButton: {
+    backgroundColor: '#B5432A',
+    borderRadius: 8,
+    paddingVertical: 12,
+    alignItems: 'center',
   },
-  iniciaSesin: {
-    color: "#006175"
+  signupButtonText: {
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
-  text: {
-    width: 261
+  loginText: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: '#7D7D7D',
+    textAlign: 'center',
+    marginTop: 20,
+    marginBottom: 30
   },
-  yaTienesUnaContainer: {
-    left: 70,
-    top: 730,
-    position: "absolute"
+  loginLink: {
+    color: "#006175",
+    fontFamily: 'Poppins-SemiBold',
   },
-  masculino: {
-    top: 357,
-    left: 46
-  },
-  personalInformation: {
-    backgroundColor: "#fff",
-    flex: 1,
-    height: 844,
-    overflow: "hidden",
-    width: "100%"
-  }
 });
 
 export default UserInformation;

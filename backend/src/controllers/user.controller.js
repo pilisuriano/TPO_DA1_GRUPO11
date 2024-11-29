@@ -42,8 +42,9 @@ export const searchUser = async (req, res) => {
 export const getMe = async (req, res) => {
   try {
     const userId = req.user._id;
-    const user = await User.findById(userId).select('-password -email -createdAt');
-
+    const user = await User.findById(userId)
+      .populate('posts')  // Esto incluirá las publicaciones del usuario
+      .select('-password -email -createdAt');  // Excluye los campos no deseados
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }

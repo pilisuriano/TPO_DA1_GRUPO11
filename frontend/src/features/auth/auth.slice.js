@@ -6,29 +6,21 @@ const initialState = {
   token: null,
   loading: false,
   error: null,
-  authenticated: false
+  authenticated: false,
+  showInUI: false,
 };
 
 export const loginUser = createAsyncThunk('auths/login', async (credentials, thunkAPI) => {
   try {
     const response = await login(credentials);
-    console.log(`RESPONSE: ${JSON.stringify(response)}`)
-    console.log(`STATUS: ${JSON.stringify(response.status)}`)
-    if (!response.data.token) {
-      throw new Error("Token not received")
-    }
     const token = response.data.token;
-    await saveAuthToken('authToken', token);
+    await saveAuthToken(token);
     return {
       token,
       userId: { id: response.data.userId },
     };
   } catch (error) {
-    console.log(error)
-    if(!error) {
-      return thunkAPI.rejectWithValue("No se pudo conectar con el servidor. Verifica tu conexión a Internet.");
-    }
-    return thunkAPI.rejectWithValue(error.response.data.message || "Error inesperado del servidor");
+    return thunkAPI.rejectWithValue(error);
   }
 });
 
@@ -44,29 +36,37 @@ const authSlice = createSlice({
       state.token = null;
       state.authenticated = false;
     },
+    setError: (state, action) => {
+      state.error = action.payload.message;
+      state.showInUI = action.payload.showInUI;
+    },
     resetError: (state) => {
       state.error = null;
-      state.authenticated = false
+      state.authenticated = false;
+      state.showInUI = false;
     },
   },
   extraReducers: (builder) => {
     builder
-    .addCase(loginUser.pending, (state) => {
-      state.loading = true;
-    })
-    .addCase(loginUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.token = action.payload.token;
-      state.authenticated = true;
-      state.error = null;
-    })
-    .addCase(loginUser.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
+      .addCase(loginUser.pending, (state) => {
+        state.loading = true;
+        state.showInUI = false;
+      })
+      .addCase(loginUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.token;
+        state.authenticated = true;
+        state.error = null;
+        state.showInUI = false;
+      })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload.data ? action.payload.data.message : null;
+        state.showInUI = action.payload.data ? true : false;
+      })
   },
 });
 
-export const { setAuthToken, logoutUser, resetError } = authSlice.actions;
+export const { setAuthToken, logoutUser, setError, resetError } = authSlice.actions;
 
 export default authSlice.reducer;

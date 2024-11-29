@@ -1,12 +1,37 @@
-import * as React from "react";
+/*import * as React from "react";
 import {Image, StyleSheet, Pressable, View, Text} from "react-native";
+import { useNavigation } from '@react-navigation/native';*/
+import React, { useState, useEffect } from "react";
+import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, Pressable } from "react-native";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSearchUsers, clearUsers } from "../../src/features/search/searchSlice";
 import { useNavigation } from '@react-navigation/native';
 
 const Search = () => {
+	const [query, setQuery] = useState("");
+	const dispatch = useDispatch();
 	const navigation = useNavigation();
+	const { users, loading, error } = useSelector((state) => state.search);
+
+	const handleSearch = () => {
+		if (query.trim() === "") {
+		  dispatch(clearUsers());
+		} else {
+		  dispatch(fetchSearchUsers(query));
+		}
+	  };
+	
+	  useEffect(() => {
+		if (query.trim() === "") {
+		  dispatch(clearUsers());
+		} else {
+		  handleSearch();
+		}
+	  }, [query]);
+
 
   	return (
-    		<View style={styles.buscarUsuario2}>
+    		/*<View style={styles.buscarUsuario2}>
       			<Pressable style={styles.wrapper} onPress={()=>{}}>
         				<Image style={[styles.icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Group 12.png")} />
       			</Pressable>
@@ -24,11 +49,44 @@ const Search = () => {
       			</Pressable>
       			<Text style={[styles.martinPerez2, styles.martinTypo]}>Martin Perez</Text>
       			<Text style={[styles.martinPerezGutierrez, styles.martinTypo]}>Martin Perez Gutierrez</Text>
-    		</View>);
+    		</View>);*/
+			<View style={styles.container}>
+				<TextInput
+					style={styles.input}
+					placeholder="Buscar usuarios..."
+					value={query}
+					onChangeText={setQuery}
+					onSubmitEditing={handleSearch} // Manejar la búsqueda cuando se presiona "Enter"
+				/>
+				<Button title="Buscar" onPress={handleSearch} />
+				{loading && <Text>Cargando...</Text>}
+				{error && <Text style={styles.errorText}>{error}</Text>}
+				<FlatList
+					data={users}
+					keyExtractor={(item) => item._id.toString()}
+					renderItem={({ item }) => {
+					console.log('Renderizando item:', item);
+					return (
+						<View style={styles.userContainer}>
+						<Image style={styles.userImage} source={{ uri: item.profileImage }} />
+						<View>
+							<Text style={styles.userName}>{item.fullName}</Text>
+						</View>
+						</View>
+					);
+					}}
+					ListEmptyComponent={() => (
+					<View style={styles.emptyContainer}>
+						<Text style={styles.emptyText}>No se encontraron usuarios.</Text>
+					</View>
+					)}
+				/>
+				</View>
+);
 };
 
 const styles = StyleSheet.create({
-  	blackBase21Position: {
+  	/*blackBase21Position: {
     		width: 390,
     		left: 0,
     		position: "absolute"
@@ -180,7 +238,53 @@ const styles = StyleSheet.create({
     		overflow: "hidden",
     		width: "100%",
     		backgroundColor: "#fff"
-  	}
+  	}*/
+	  container: {
+		flex: 1,
+		padding: 20,
+	  },
+	  input: {
+		height: 40,
+		borderColor: 'gray',
+		borderWidth: 1,
+		marginBottom: 10,
+		paddingHorizontal: 10,
+	  },
+	  errorText: {
+		color: 'red',
+		textAlign: 'center',
+		marginTop: 10,
+	  },
+	  userContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		padding: 10,
+		borderBottomWidth: 1,
+		borderBottomColor: 'gray',
+	  },
+	  userImage: {
+		width: 50,
+		height: 50,
+		borderRadius: 25,
+		marginRight: 10,
+	  },
+	  userName: {
+		fontSize: 18,
+		fontWeight: 'bold',
+	  },
+	  userNickname: {
+		fontSize: 16,
+		color: 'gray',
+	  },
+	  emptyContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+	  },
+	  emptyText: {
+		fontSize: 18,
+		color: 'gray',
+	  },
 });
 
 export default Search;

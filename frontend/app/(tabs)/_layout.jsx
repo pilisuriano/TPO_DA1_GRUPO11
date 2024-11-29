@@ -42,6 +42,11 @@ export default function basetab() {
         }}
       />
       <Tabs.Screen
+        name="settings"
+        options={{
+          href: null, }}
+      />
+      <Tabs.Screen
         name="search"
         options={{
           href: null, }}
@@ -58,11 +63,6 @@ export default function basetab() {
       />
       <Tabs.Screen
         name="editarfoto"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="settings"
         options={{
           href: null, }}
       />

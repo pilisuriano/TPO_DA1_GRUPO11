@@ -1,65 +1,45 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createPost, getPost } from '../../services/api';
+import { createPost, getUserPosts} from '../../features/posts/api';
 
 const initialState = {
-  posts: [], // Estado inicial de posts como un array vacío
+  postCreated: false,
   loading: false,
   error: null,
 };
 
-const parseErrorResponse = (error) => {
-  if (error.response) {
-    const contentType = error.response.headers['content-type'];
-    if (contentType && contentType.includes('application/json')) {
-      return JSON.stringify(error.response.data);
-    } else if (contentType && contentType.includes('text/html')) {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(error.response.data, 'text/html');
-      const message = doc.querySelector('pre') ? doc.querySelector('pre').textContent : 'An error occurred: Bad Request';
-      return message;
-    } else {
-      return `An error occurred: ${JSON.stringify(error.response.data)}`;
-    }
-  } else {
-    return `An error occurred: ${error.message || 'Unknown error'}`;
-  }
-};
 
 // Acción para crear un nuevo post
-export const createUserPost = createAsyncThunk('posts/createPost', async (formData, thunkAPI) => {
+export const createUserPost = createAsyncThunk('posts/createPost', async (data, thunkAPI) => {
   try {
-    console.log("POST DATA:", formData);
-    const response = await createPost(formData);
-    console.log(`RESPONSE: ${JSON.stringify(response)}`)
-    return response.data;
+    const response = await createPost(data);
+    return {
+      ...response.data
+    }
   } catch (error) {
-    return thunkAPI.rejectWithValue(parseErrorResponse(error)); //(error.response.data)
+    return thunkAPI.rejectWithValue(error);
   }
 });
 
-// Acción para obtener un post
-export const getUserPost = createAsyncThunk('posts/getPost', async (postId, thunkAPI) => {
-  try {
-    const response = await getPost(postId);
-    return response.data;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data);
+// Acción asíncrona para obtener las publicaciones del usuario autenticado
+export const fetchUserPosts = createAsyncThunk(
+  'posts/fetchUserPosts',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getUserPosts();
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
-});
+);
 
 const postSlice = createSlice({
   name: 'post',
-  /*initialState: {
-    posts: [], // Estado inicial de posts como un array vacío
-    token: token,
-    loading: false,
-    error: null,
-    authenticated: !!token,
-  },*/
   initialState,
   reducers: {
     resetError: (state) => {
       state.error = null;
+      state.postCreated = false
     },
   },
   extraReducers: (builder) => {
@@ -70,23 +50,21 @@ const postSlice = createSlice({
       })
       .addCase(createUserPost.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts.push(action.payload);
+        state.postCreated = true;
       })
       .addCase(createUserPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(getUserPost.pending, (state) => {
+      .addCase(fetchUserPosts.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(getUserPost.fulfilled, (state, action) => {
+      .addCase(fetchUserPosts.fulfilled, (state, action) => {
         state.loading = false;
-        state.posts = state.posts.map((post) =>
-          post.id === action.payload.id ? action.payload : post
-        );
+        state.posts = action.payload;
       })
-      .addCase(getUserPost.rejected, (state, action) => {
+      .addCase(fetchUserPosts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
