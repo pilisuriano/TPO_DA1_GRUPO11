@@ -1,5 +1,6 @@
 import cloudinary from '../utils/cloudinaryConfig.js';
 import Post from '../models/post.model.js';
+import User from '../models/user.model.js'; 
 
 export const createPost = async (req, res) => {
 
@@ -54,14 +55,40 @@ export const createPost = async (req, res) => {
       };
     }
 
-    await Post.create(newPost)
-    res.status(201).json({newPost});
+    //await Post.create(newPost)
+    //res.status(201).json({newPost});
+    
+    // Crear el post
+    const savedPost = await Post.create(newPost);
 
+    // Actualizar el usuario con el ID del nuevo post
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $push: { posts: savedPost._id } },
+      { new: true }
+    ).populate('posts'); // Poblar las publicaciones
+
+    console.log("Updated user:", updatedUser);
+
+    // Poblar las publicaciones del usuario con el post recién creado
+    const populatedPost = await Post.findById(savedPost._id).populate('userId'); 
+
+    console.log("Populated post:", populatedPost);
+
+    // Devolver el post guardado y el usuario actualizado
+    res.status(201).json({ newPost: populatedPost, updatedUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
+
+/*/* // Devolver el post creado y el usuario actualizado
+    res.status(201).json({ newPost: savedPost, updatedUser });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }*/
 
 export const getPost = async (req, res) => {
   try {

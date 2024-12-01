@@ -1,9 +1,11 @@
 import * as React from "react";
 import {Image, StyleSheet, View, Text, Pressable} from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const POSTSFAVORITOS = () => {
     const navigation = useNavigation();
+	const { t } = useTranslation();
   	
   	return (
     		<View style={styles.postsFavoritos}>
@@ -15,7 +17,7 @@ const POSTSFAVORITOS = () => {
         				</View>
       			</View>
       			<Image style={[styles.image37Icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/image 37.png")} />
-      			<Text style={styles.misPostsFavoritos}>Mis Posts Favoritos</Text>
+      			<Text style={styles.misPostsFavoritos}>{t('favoritePosts')}</Text>
       			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('settings')}>
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>

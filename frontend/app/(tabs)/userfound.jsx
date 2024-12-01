@@ -1,31 +1,66 @@
-import * as React from "react";
-import {Image, StyleSheet, Text, View, Pressable} from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from "react";
+import {Image, StyleSheet, Text, View, Pressable, ActivityIndicator} from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
+import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 
 const USUARIOENCONTRADO = () => {
     const navigation = useNavigation();
+	const route = useRoute();
+	const { userId } = route.params;
+	const [user, setUser] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const { t } = useTranslation();
+
+	useEffect(() => {
+		const fetchUser = async () => {
+		  try {
+			const response = await axios.get(`https://tpo-da1-grupo11.onrender.com/users/${userId}`);
+			setUser(response.data);
+		  } catch (err) {
+			setError(err.message);
+		  } finally {
+			setLoading(false);
+		  }
+		};
+	
+		fetchUser();
+	  }, [userId]);
+	
+	  if (loading) {
+		return <ActivityIndicator size="large" color="#0000ff" />;
+	  }
+	
+	  if (error) {
+		return <Text style={styles.errorText}>Error: {error}</Text>;
+	  }
   	
   	return (
     		<View style={styles.usuarioEncontrado}>
       			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={require("../../assets/images/unsplash_4_QFycgpB4F.png")} />
-      			<Text style={[styles.perfil, styles.perfilTypo]}>Perfil</Text>
+      			<Text style={[styles.perfil, styles.perfilTypo]}>{t('profile')}</Text>
                 <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('search')}>
         		    <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
-      			<Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={require("../../assets/images/unsplash_ymo_yC_N_2o.png")} />
-      			<Text style={[styles.martinPerez, styles.perfilTypo]}>Martin Perez</Text>
-      			<Text style={styles.posts}>Posts</Text>
-      			<Text style={[styles.imAPostive, styles.seguirTypo]}>I’m a postive person. I love to travel and eat Always available for chat</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
-        				<View style={[styles.groupChild, styles.groupChildLayout]} />
-        				<Text style={[styles.seguir, styles.seguirTypo]}>Seguir</Text>
-      			</Pressable>
-      			<Text style={[styles.text, styles.textTypo]}>9</Text>
-      			<Text style={[styles.text1, styles.textTypo]}>870</Text>
-      			<Text style={[styles.k, styles.textTypo]}>15k</Text>
-      			<Text style={[styles.posts1, styles.posts1Typo]}>Posts</Text>
-      			<Text style={[styles.siguiendo, styles.posts1Typo]}>Siguiendo</Text>
-      			<Text style={[styles.seguidores, styles.posts1Typo]}>Seguidores</Text>
+				{user && (
+					<>
+						<Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
+						<Text style={[styles.martinPerez, styles.perfilTypo]}>{user.fullName}</Text>
+						<Text style={styles.posts}>{t('posts')}</Text>
+						<Text style={[styles.imAPostive, styles.seguirTypo]}>{user.description}</Text>
+						<Pressable style={[styles.rectangleParent, styles.groupChildLayout]} onPress={()=>{}}>
+								<View style={[styles.groupChild, styles.groupChildLayout]} />
+								<Text style={[styles.seguir, styles.seguirTypo]}>{t('follow')}</Text>
+						</Pressable>
+						<Text style={[styles.text, styles.textTypo]}>{user.posts.length}</Text>
+						<Text style={[styles.text1, styles.textTypo]}>{user.following}</Text>
+						<Text style={[styles.k, styles.textTypo]}>{user.followers}</Text>
+						<Text style={[styles.posts1, styles.posts1Typo]}>{t('posts')}</Text>
+						<Text style={[styles.siguiendo, styles.posts1Typo]}>{t('following')}</Text>
+						<Text style={[styles.seguidores, styles.posts1Typo]}>{t('followers')}</Text>
+				  	</>
+				)}
       			<View style={[styles.usuarioEncontradoItem, styles.lineViewLayout]} />
       			<Image style={styles.usuarioEncontradoInner} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
       			<View style={[styles.lineView, styles.lineViewLayout]} />

@@ -1,9 +1,11 @@
 import * as React from "react";
 import {StyleSheet, View, Image, Text, Pressable} from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const POSTPUBLICADO = () => {
     const navigation = useNavigation();
+	const { t } = useTranslation();
 
   	return (
     		<View style={styles.postPublicado}>
@@ -25,7 +27,7 @@ const POSTPUBLICADO = () => {
         				<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
           					<Image style={[styles.icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
         				</Pressable>
-        				<Text style={[styles.comentarios, styles.mikeJohnsTypo]}>Comentarios</Text>
+        				<Text style={[styles.comentarios, styles.mikeJohnsTypo]}>{t('comments')}</Text>
         				<Image style={[styles.imageIcon, styles.iconPosition]} resizeMode="cover" source={require("../../assets/images/image.png")} />
         				<Image style={styles.image34Icon} resizeMode="cover" source={require("../../assets/images/image 34.png")} />
         				<Image style={[styles.imageIcon, styles.iconPosition]} resizeMode="cover" source={require("../../assets/images/Rectangle 232.png")} />

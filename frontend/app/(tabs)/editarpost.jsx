@@ -1,9 +1,11 @@
 import * as React from "react";
 import {StyleSheet, View, Image, Text, Pressable} from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const EDITARPOST = () => {
     const navigation = useNavigation();
+	const { t } = useTranslation();
   	
   	return (
     		<View style={styles.editarPost}>
@@ -14,11 +16,11 @@ const EDITARPOST = () => {
       			<Image style={styles.editarPostChildLayout} resizeMode="cover" source={require("../../assets/images/unsplash_xEJoSsDCnR8.png")}/>
       			<Image style={[styles.unsplash76dgucmupv4Icon, styles.iconLayout3]} resizeMode="cover" source={require("../../assets/images/unsplash_76dgUcMupv4.png")} />
       			<Image style={[styles.unsplashmxfjwuffdi4Icon, styles.iconLayout3]} resizeMode="cover" source={require("../../assets/images/unsplash_MxFjwuFFDi4.png")}/>
-      			<Text style={[styles.editarMisPosts, styles.postsTypo]}>Editar mis posts</Text>
+      			<Text style={[styles.editarMisPosts, styles.postsTypo]}>{t('editMy')}</Text>
       			<Image style={[styles.unsplashmv38tbLjj8Icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_mv38TB_Ljj8.png")} />
       			<Image style={[styles.unsplashqbf59tu077qIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_qbf59TU077Q.png")} />
       			<Image style={[styles.editarPostItem, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Rectangle 276.png")} />
-      			<Text style={[styles.posts, styles.postsTypo]}>Posts</Text>
+      			<Text style={[styles.posts, styles.postsTypo]}>{t('posts')}</Text>
       			<Image style={[styles.unsplashig7vn6okgneIcon, styles.unsplashig7vn6okgneIconPosition]} resizeMode="cover" source={require("../../assets/images/unsplash_ig7vN6OkGNE.png")}/>
       			<Image style={[styles.unsplashig7vn6okgneIcon, styles.unsplashig7vn6okgneIconPosition]} resizeMode="cover" source={require("../../assets/images/unsplash_ig7vN6OkGNE.png")}/>
       			<Image style={[styles.unsplashig7vn6okgneIcon, styles.unsplashig7vn6okgneIconPosition]} resizeMode="cover" source={require("../../assets/images/unsplash_ig7vN6OkGNE.png")}/>

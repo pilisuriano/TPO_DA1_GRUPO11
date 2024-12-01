@@ -6,12 +6,14 @@ import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, Pressable }
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSearchUsers, clearUsers } from "../../src/features/search/searchSlice";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const Search = () => {
 	const [query, setQuery] = useState("");
 	const dispatch = useDispatch();
 	const navigation = useNavigation();
 	const { users, loading, error } = useSelector((state) => state.search);
+	const { t } = useTranslation();
 
 	const handleSearch = () => {
 		if (query.trim() === "") {
@@ -53,13 +55,13 @@ const Search = () => {
 			<View style={styles.container}>
 				<TextInput
 					style={styles.input}
-					placeholder="Buscar usuarios..."
+					placeholder={t('search')}
 					value={query}
 					onChangeText={setQuery}
 					onSubmitEditing={handleSearch} // Manejar la búsqueda cuando se presiona "Enter"
 				/>
-				<Button title="Buscar" onPress={handleSearch} />
-				{loading && <Text>Cargando...</Text>}
+				<Button title={t('searchU')} onPress={handleSearch} />
+				{loading && <Text>{t('loading')}</Text>}
 				{error && <Text style={styles.errorText}>{error}</Text>}
 				<FlatList
 					data={users}
@@ -67,17 +69,19 @@ const Search = () => {
 					renderItem={({ item }) => {
 					console.log('Renderizando item:', item);
 					return (
-						<View style={styles.userContainer}>
-						<Image style={styles.userImage} source={{ uri: item.profileImage }} />
-						<View>
-							<Text style={styles.userName}>{item.fullName}</Text>
-						</View>
-						</View>
+						<Pressable onPress={() => navigation.navigate('userfound', { userId: item._id })}>
+							<View style={styles.userContainer}>
+								<Image style={styles.userImage} source={{ uri: item.profileImage }} />
+								<View>
+								<Text style={styles.userName}>{item.fullName}</Text>
+								</View>
+							</View>
+						</Pressable>
 					);
 					}}
 					ListEmptyComponent={() => (
 					<View style={styles.emptyContainer}>
-						<Text style={styles.emptyText}>No se encontraron usuarios.</Text>
+						<Text style={styles.emptyText}>{t('noUser')}</Text>
 					</View>
 					)}
 				/>

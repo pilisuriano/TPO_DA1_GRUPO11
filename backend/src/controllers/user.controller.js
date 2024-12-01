@@ -55,13 +55,32 @@ export const getMe = async (req, res) => {
   }
 }
 
-// TODO
 export const updateMe = async (req, res) => {
+  try {
+    const userId = req.user._id; // Suponiendo que el ID del usuario está disponible en req.user._id
+    const updates = req.body; // Los datos actualizados se envían en el cuerpo de la solicitud
+
+    // Opcional: Validar los datos de actualización aquí
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updates, { new: true, runValidators: true });
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// TODO
+/*export const updateMe = async (req, res) => {
   try {
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
-  }
-}
+  }*/
 
 export const deleteMe = async (req, res) => {
   try {

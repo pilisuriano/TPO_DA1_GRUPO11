@@ -6,6 +6,7 @@ import { createUserPost, resetError } from "../../src/features/posts/postSlice";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import Toolbar from "@/components/Toolbar";
+import { useTranslation } from 'react-i18next';
 
 const CreatePost = () => {
   const router = useRouter()
@@ -13,6 +14,7 @@ const CreatePost = () => {
   const [title, setTitle] = useState("")
   const [media, setMedia] = useState([]);
   const [locationPlace, setLocationPlace] = useState("");
+  const { t } = useTranslation();
 
   const isButtonEnabled = title.trim() !== '' && media.length != 0;
   const { postCreated, loading, error } = useSelector((state) => state.post);
@@ -82,7 +84,7 @@ const CreatePost = () => {
         <ActivityIndicator size="large" color="#B5432A" />
       </View>) : (
         <>
-          <Text style={[styles.labelInputs, styles.selectMedia]}>Seleccionar imágen(es) y/o video</Text>
+          <Text style={[styles.labelInputs, styles.selectMedia]}>{t('images')}</Text>
           <View style={[styles.background]}>
             <Pressable onPress={pickMedia}>
               <Image style={[styles.icon]} source={require("../../assets/images/addGalery.png")} />
@@ -104,7 +106,7 @@ const CreatePost = () => {
             />
           </View>
 
-          <Text style={[styles.labelInputs]}>Agregar pie de foto</Text>
+          <Text style={[styles.labelInputs]}>{t('title')}</Text>
           <View style={[styles.pie]}>
             <TextInput
               style={styles.inputAreaText}
@@ -115,7 +117,7 @@ const CreatePost = () => {
             />
           </View>
 
-          <Text style={[styles.labelInputs]}>Agregar ubicación</Text>
+          <Text style={[styles.labelInputs]}>{t('location')}</Text>
           <View style={[styles.pie]}>
             <TextInput
               style={styles.inputAreaText}
@@ -131,7 +133,7 @@ const CreatePost = () => {
               style={[styles.postButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
               disabled={!isButtonEnabled}
               onPress={handleCreatePost}>
-              <Text style={styles.buttonText}>Publicar post</Text>
+              <Text style={styles.buttonText}>{t('createPost')}</Text>
             </TouchableOpacity>
           </View>
         </>

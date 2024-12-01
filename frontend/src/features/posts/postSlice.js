@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { createPost, getUserPosts} from '../../features/posts/api';
 
 const initialState = {
+  posts: [], // Agregar para almacenar publicaciones del usuario
   postCreated: false,
   loading: false,
   error: null,
@@ -51,6 +52,9 @@ const postSlice = createSlice({
       .addCase(createUserPost.fulfilled, (state, action) => {
         state.loading = false;
         state.postCreated = true;
+
+        const { newPost } = action.payload; // Asumiendo que el backend retorna el post creado
+        state.posts = [...state.posts, newPost]; // Agregar inmutablemente el nuevo post
       })
       .addCase(createUserPost.rejected, (state, action) => {
         state.loading = false;

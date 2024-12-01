@@ -1,32 +1,53 @@
-import * as React from "react";
+import React, { useState } from 'react';
 import {Image, StyleSheet, Text, Pressable, View} from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const CONFIGURACIONES = () => {
     const navigation = useNavigation();
+	const { t, i18n } = useTranslation();
+	const [isEnglish, setIsEnglish] = useState(i18n.language === 'en');
   	
+	const changeLanguage = (language) => {
+		i18n.changeLanguage(language);
+		setIsEnglish(language === 'en');
+	  };
+
   	return (
     		<View style={styles.configuraciones}>
-      			<Text style={styles.configuracin}>Configuración</Text>
+      			<Text style={styles.configuracin}>{t('settings')}</Text>
       			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
       			<Pressable style={[styles.rectangleParent, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
         				<View style={[styles.groupChild, styles.groupLayout]} />
-        				<Text style={[styles.cerrarSesin, styles.cerrarSesinTypo]}>Cerrar Sesión</Text>
+        				<Text style={[styles.cerrarSesin, styles.cerrarSesinTypo]}>{t('logout')}</Text>
       			</Pressable>
       			<Pressable style={[styles.rectangleGroup, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
         				<View style={[styles.groupItem, styles.groupLayout]} />
-        				<Text style={[styles.eliminarCuenta, styles.cerrarSesinTypo]}>Eliminar Cuenta</Text>
+        				<Text style={[styles.eliminarCuenta, styles.cerrarSesinTypo]}>{t('deleteAccount')}</Text>
       			</Pressable>
-      			<Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo]}>Activar Modo Oscuro</Text>
-        				<Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo]}>Mis Posts Favoritos</Text>
-      			<Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo]}>Cambiar idioma</Text>
+      			<Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo]}>{t('darkMode')}</Text>
+        		<Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo]}>{t('favoritePosts')}</Text>
+      			<Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo]}>{t('changeLanguage')}</Text>
+				<View style={styles.languageButtons}>
+				<Pressable
+					style={[styles.languageButton, isEnglish ? styles.activeButton : styles.inactiveButton]}
+					onPress={() => changeLanguage('en')}
+					>
+					<Text style={styles.languageButtonText}>English</Text>
+					</Pressable>
+					<Pressable
+						style={[styles.languageButton, !isEnglish ? styles.activeButton : styles.inactiveButton]}
+						onPress={() => changeLanguage('es')}
+					>
+					<Text style={styles.languageButtonText}>Español</Text>
+				</Pressable>
+				</View>
       			<Image style={styles.image31Icon} resizeMode="cover" source={require("../../assets/images/image 31.png")} />
       			<Pressable style={[styles.iconlylightOutlinearrowL1, styles.iconlylightPosition]} onPress={() => navigation.navigate('favoritos')}>
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       			</Pressable>
-      			<Image style={[styles.iconlylightOutlinearrowL2, styles.iconlylightPosition]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       			</View>);
       			};
       			
@@ -73,10 +94,11 @@ const CONFIGURACIONES = () => {
         				},
         				iconlylightPosition: {
           					right: "9.71%",
-          					left: "87.62%",
+          					left: 295,
           					height: "2.25%",
           					width: "2.67%",
-          					position: "absolute"
+          					position: "absolute",
+							top: "27.5%",
         				},
         				blackBase21: {
           					height: 41,
@@ -119,6 +141,12 @@ const CONFIGURACIONES = () => {
         				groupChild: {
           					backgroundColor: "#006175"
         				},
+						activeButton: {
+							backgroundColor: '#bb4426',
+						  },
+						  inactiveButton: {
+							backgroundColor: '#cccccc',
+						  },
         				cerrarSesin: {
           					top: 11,
           					left: 98,
@@ -181,6 +209,22 @@ const CONFIGURACIONES = () => {
           					top: 775,
           					height: 75
         				},
+						languageButtons: {
+							flexDirection: 'row',
+							justifyContent: 'space-around',
+							marginVertical: 10,
+						  },
+						  languageButton: {
+							padding: 10,
+							backgroundColor: '#007bff',
+							borderRadius: 5,
+							top: 300,
+						  },
+						  languageButtonText: {
+							color: '#fff',
+							fontFamily: "Poppins-SemiBold",
+          					fontWeight: "600",
+						  },
         				configuraciones: {
           					backgroundColor: "#fff",
           					flex: 1,

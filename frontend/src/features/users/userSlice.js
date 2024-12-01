@@ -27,6 +27,15 @@ export const fetchUserProfile = createAsyncThunk(
     }
   );
 
+export const updateUser = createAsyncThunk('user/updateUser', async (userData, { rejectWithValue }) => {
+  try {
+    const response = await axios.put('/api/users/me', userData);
+    return response.data;
+  } catch (error) {
+    return rejectWithValue(error.response.data);
+  }
+});
+
 const userSlice = createSlice({
   name: 'user',
   initialState: {
@@ -52,6 +61,18 @@ const userSlice = createSlice({
         state.posts = action.payload.posts || [];  // Asegúrate de que posts sea un array  // Aquí obtienes los posts del usuario
       })
       .addCase(fetchUserProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -1,28 +1,30 @@
 import * as React from "react";
 import {Image, StyleSheet, Text, View, Pressable} from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const EDITARPOST = () => {
     const navigation = useNavigation();
-  	
+	const { t } = useTranslation();
+
   	return (
     		<View style={styles.editarPost}>
                 <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
                     <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
                 </Pressable>
       			<Image style={styles.editarPostChild} resizeMode="cover" source={require("../../assets/images/Line 10.png")}/>
-      			<Text style={[styles.editarPieDe, styles.editarPieDeTypo]}>Editar pie de foto</Text>
+      			<Text style={[styles.editarPieDe, styles.editarPieDeTypo]}>{t('editTitle')}</Text>
       			<View style={styles.editarPostItem} />
       			<Text style={styles.elMejorMsico}>¡El mejor músico del mundo! Tour 2024 allá voy.</Text>
       			<Pressable style={[styles.rectangleParent, styles.groupLayout]} onPress={()=>{}}>
         				<View style={[styles.groupChild, styles.groupLayout]} />
-        				<Text style={[styles.actualizarPost, styles.postTypo]}>Actualizar Post</Text>
+        				<Text style={[styles.actualizarPost, styles.postTypo]}>{t('update')}</Text>
       			</Pressable>
       			<View style={[styles.rectangleGroup, styles.groupLayout]}>
         				<View style={[styles.groupChild, styles.groupLayout]} />
-        				<Text style={[styles.eliminarPost, styles.postTypo]}>Eliminar Post</Text>
+        				<Text style={[styles.eliminarPost, styles.postTypo]}>{t('deletePost')}</Text>
       			</View>
-      			<Text style={[styles.seleccionarImgenesYo, styles.editarPieDeTypo]}>Seleccionar imágen(es) y/o video</Text>
+      			<Text style={[styles.seleccionarImgenesYo, styles.editarPieDeTypo]}>{t('images')}</Text>
       			<View style={styles.editarPostInner} />
       			<Image style={[styles.iconlylightOutlinearrowL1, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       			<View style={[styles.rectangleView, styles.groupInnerBorder]} />

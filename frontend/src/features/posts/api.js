@@ -15,11 +15,11 @@ export const getUserPosts = async () => {
     const response = await api.get('/users/me');
     console.log('Respuesta recibida:', response);
 
-    // Comprobación de respuesta vacía
-    if (!response.data || response.data.length === 0) {
+    // Verificar si hay publicaciones en la respuesta
+    if (!response.data || !response.data.posts || response.data.posts.length === 0) {
       throw new Error("No posts found for the user.");
     }
-    return response.data;
+    return response.data.posts;  // Asumiendo que 'posts' es el campo que contiene las publicaciones
   } catch (error) {
     if (error.response) {
       // Error de respuesta del servidor (por ejemplo, error 400 o 500)

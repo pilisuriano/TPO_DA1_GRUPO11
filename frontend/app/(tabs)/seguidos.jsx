@@ -1,13 +1,15 @@
 import * as React from "react";
 import {Image, StyleSheet, Text, Pressable, View} from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const SEGUIDOS = () => {
     const navigation = useNavigation();
+	const { t } = useTranslation();
   	
   	return (
     		<View style={[styles.seguidos, styles.iconLayout2]}>
-      			<Text style={styles.seguidos1}>Seguidos</Text>
+      			<Text style={styles.seguidos1}>{t('following')}</Text>
       			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
         				<Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
