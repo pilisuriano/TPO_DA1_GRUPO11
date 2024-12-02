@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Pressable, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, Button, StyleSheet, Pressable, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUser, resetError } from '../../src/features/users/userSlice';
-import { useNavigation } from '@react-navigation/native';
+import { updateUserData, resetError, fetchUserProfile } from '../../src/features/users/userSlice';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar correctamente
 
 
 const EDITPROFILE = () => {
@@ -14,10 +16,108 @@ const EDITPROFILE = () => {
 	const [fullName, setFullName] = useState(user ? user.fullName : '');
 	const [gender, setGender] = useState(user ? user.gender : '');
 	const [profileDescription, setProfileDescription] = useState(user ? user.description : '');
+	const [profileImage, setProfileImage] = useState(user ? user.profileImage : '');
+	const [coverImage, setCoverImage] = useState(user ? user.coverImage : '');
+	const route = useRoute();
+	const [selectedImage, setSelectedImage] = useState(null);
+	const [selectedCover, setSelectedCover] = useState(null);
+	const [modalVisible, setModalVisible] = useState(false);
+	const [modalVisible2, setModalVisible2] = useState(false);
 
 	const handleUpdateProfile = () => {
+		const userId = route.params?.userId; // Asegúrate de que route.params no sea undefined
+		if (!userId) {
+		  console.error('User ID is missing');
+		  return;
+		}
+		console.log('Updating profile with:', { userId, fullName, gender, profileDescription});
 		dispatch(resetError());
-		dispatch(updateUser({ fullName, gender, description: profileDescription }));
+		dispatch(updateUserData({ userId, fullName, gender, description: profileDescription}));
+	};
+
+	const handleUpdatePicture = async () => {
+		const userId = route.params?.userId; // Asegúrate de que route.params no sea undefined
+		if (!userId) {
+		  console.error('User ID is missing');
+		  return;
+		}
+		console.log('Updating picture with:', { profileImage: selectedImage });
+		dispatch(resetError());
+		await dispatch(updateUserData({ userId, profileImage: selectedImage }));
+		await dispatch(fetchUserProfile()); // Obtener la imagen actualizada desde el backend
+		setModalVisible(false);
+	};
+
+	const handleUpdateCover = async () => {
+		const userId = route.params?.userId; // Asegúrate de que route.params no sea undefined
+		if (!userId) {
+		  console.error('User ID is missing');
+		  return;
+		}
+		console.log('Updating cover with:', { coverImage: selectedCover });
+		dispatch(resetError());
+		await dispatch(updateUserData({ userId, coverImage: selectedCover }));
+		await dispatch(fetchUserProfile()); // Obtener la imagen actualizada desde el backend
+		setModalVisible2(false);
+	};
+
+
+	useEffect(() => {
+		if (user && user.profileImage) {
+		  setProfileImage(user.profileImage);
+		}
+	  }, [user]);
+	  
+	useEffect(() => {
+	if (user && user.coverImage) {
+		  setCoverImage(user.coverImage);
+		}
+	}, [user]);
+
+	const pickMedia = async () => {
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsMultipleSelection: true,
+			quality: 0.5,
+			base64: true,
+		});
+
+		if (!result.canceled) {
+			setSelectedImage(result.assets[0].uri);
+			setModalVisible(true);
+		}
+	};
+
+	const pickCover = async () => {
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsMultipleSelection: true,
+			quality: 0.5,
+			base64: true,
+		});
+
+		if (!result.canceled) {
+			setSelectedCover(result.assets[0].uri);
+			setModalVisible2(true);
+		}
+	};
+
+	const confirmCover = () => {
+		handleUpdateCover();
+	};
+
+	const confirmImage = () => {
+		handleUpdatePicture();
+	};
+
+	const cancelImage = () => {
+		setSelectedImage(null);
+		setModalVisible(false);
+	};
+
+	const cancelCover = () => {
+		setSelectedCover(null);
+		setModalVisible2(false);
 	};
 
 	return (
@@ -27,19 +127,34 @@ const EDITPROFILE = () => {
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
       			<Image style={styles.unsplashhhcfgcgwqmyIcon} resizeMode="cover" source={require("../../assets/images/unsplash_hhcFGCGWQMY.png")} />
-      			<Text style={[styles.martinSurez, styles.miPerfilTypo]}>{user.fullName}</Text>
+				  <View style={styles.profileImageContainer} >
+						{user.profileImage ? (
+							<Image style={styles.profileImage} source={{ uri: profileImage }} />
+						) : (
+							<View style={styles.profileImagePlaceholder}>
+							<Text style={styles.profileImagePlaceholderText}>{t('Add Photo')}</Text>
+							</View>
+						)}
+						<Pressable style={styles.cameraIconContainer} onPress={pickMedia}>
+							<Icon name="camera-alt" size={24} color="#fff" />
+						</Pressable>
+					</View>
+      			<Text style={[styles.martinSurez, styles.miNombreTypo]}>{user.fullName}</Text>
+				<Text style={styles.nombreCompleto}>{t('fullName')}</Text>
 				<TextInput
 					style={[styles.input]}
 					placeholder={t('fullName')}
 					value={fullName}
 					onChangeText={setFullName}
 				/>
+				<Text style={styles.nombreCompleto}>{t('gender')}</Text>
 				<TextInput
 					style={[styles.input]}
 					placeholder={t('gender')}
 					value={gender}
 					onChangeText={setGender}
 				/>
+				<Text style={styles.nombreCompleto}>{t('profileDescription')}</Text>
 				<TextInput
 					style={[styles.input]}
 					placeholder={t('profileDescription')}
@@ -52,6 +167,56 @@ const EDITPROFILE = () => {
       			</Pressable>
 				{loading && <Text>{t('loading')}</Text>}
 				{error && <Text style={styles.errorText}>{error}</Text>}
+				<Modal
+					animationType="slide"
+					transparent={true}
+					visible={modalVisible}
+					onRequestClose={() => {
+					setModalVisible(!modalVisible);
+					}}
+				>
+					<View style={styles.modalView}>
+					<Text style={styles.modalText}>{t('Confirm Image')}</Text>
+					{selectedImage && (
+						<Image style={styles.modalImage} source={{ uri: selectedImage }} />
+					)}
+					<View style={styles.modalButtons}>
+						<Button title={t('Cancel')} onPress={cancelImage} />
+						<Button title={t('Confirm')} onPress={confirmImage} />
+					</View>
+					</View>
+				</Modal>
+				<Modal
+					animationType="slide"
+					transparent={true}
+					visible={modalVisible2}
+					onRequestClose={() => {
+					setModalVisible2(!modalVisible2);
+					}}
+				>
+					<View style={styles.modalView}>
+					<Text style={styles.modalText}>{t('Confirm Cover')}</Text>
+					{selectedCover && (
+						<Image style={styles.modalImage} source={{ uri: selectedCover }} />
+					)}
+					<View style={styles.modalButtons}>
+						<Button title={t('Cancel')} onPress={cancelCover} />
+						<Button title={t('Confirm')} onPress={confirmCover} />
+					</View>
+					</View>
+				</Modal>
+				<View style={styles.coverImageContainer}>
+					{user.coverImage ? (
+					<Image style={styles.coverImage} source={{ uri: user.coverImage }} />
+					) : (
+					<View style={styles.coverImagePlaceholder}>
+						<Text style={styles.coverImagePlaceholderText}>{t('Add Cover Photo')}</Text>
+					</View>
+					)}
+					<Pressable style={styles.cameraIconContainer2} onPress={pickCover}>
+					<Icon name="camera-alt" size={24} color="#fff" />
+					</Pressable>
+				</View>
     		</View>);
 };
 
@@ -82,7 +247,9 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		marginBottom: 10,
 		paddingHorizontal: 10,
-		borderRadius: 5,
+		borderRadius: 10,
+		top: 150,
+		marginHorizontal: 15,
 	  },
 	groupIconPosition: {
 		width: 390,
@@ -94,8 +261,16 @@ const styles = StyleSheet.create({
 		fontFamily: "Poppins-SemiBold",
 		fontWeight: "600",
 		fontSize: 18,
-		position: "absolute"
+		position: "absolute",
 		},
+		miNombreTypo: {
+			textAlign: "left",
+			fontFamily: "Poppins-SemiBold",
+			fontWeight: "600",
+			fontSize: 18,
+			position: "absolute",
+			padding: 5,
+			},
 		iconLayout: {
 		maxHeight: "100%",
 		maxWidth: "100%",
@@ -110,10 +285,32 @@ const styles = StyleSheet.create({
 		color: "#000",
 		position: "absolute"
 		},
+		unsplashiicyiapyggiIcon: {
+			borderRadius: 10,
+			flex: 1,
+			width: "100%",
+			height: 80
+			},
 		groupChildLayout: {
 		borderRadius: 10,
 		position: "absolute"
 		},
+		cameraIconContainer: {
+			position: 'absolute',
+			backgroundColor: '#000000',
+			borderRadius: 50,
+			padding: 5,
+			left: 80,
+			top: 170,
+		  },
+		  cameraIconContainer2: {
+			position: 'absolute',
+			backgroundColor: '#000000',
+			borderRadius: 50,
+			padding: 5,
+			left: 330,
+			top: 130,
+		  },
 		groupItemBorder: {
 		borderWidth: 0.5,
 		borderColor: "#7e5f5b",
@@ -142,6 +339,17 @@ const styles = StyleSheet.create({
 		top: 0,
 		width: 390
 		},
+		nombreCompleto: {
+			fontSize: 14,
+			fontWeight: "500",
+			fontFamily: "Poppins-Medium",
+			color: "#000",
+			textAlign: "left",
+			width: 149,
+			opacity: 0.7,
+			top: 150,
+			left: 15,
+			},
 		miPerfil: {
 		top: 70,
 		left: 162,
@@ -152,6 +360,92 @@ const styles = StyleSheet.create({
 		fontWeight: "600",
 		fontSize: 18
 		},
+		coverImageContainer: {
+			marginTop: 20,
+			height: 133,
+			width: '100%',
+		  },
+		  coverImage: {
+			height: 133,
+			width: '80%',
+			borderRadius: 10,
+			top: 140,
+			left: 40,
+		  },
+		  coverImagePlaceholder: {
+			height: 133,
+			width: '100%',
+			backgroundColor: '#cccccc',
+			justifyContent: 'center',
+			alignItems: 'center',
+		  },
+		  coverImagePlaceholderText: {
+			color: '#ffffff',
+			fontSize: 16,
+		  },
+		profileImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    marginVertical: 10,
+	top: 120,
+	left: 40,	
+  },
+  profileImagePlaceholder: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginVertical: 10,
+    backgroundColor: '#cccccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  rectangleView: {
+	borderRadius: 10,
+	backgroundColor: "#f2f2f2",
+	borderStyle: "solid",
+	borderColor: "#7e5f5b",
+	borderWidth: 0.5,
+	flex: 1,
+	width: "100%",
+	height: 133
+	},
+  profileImagePlaceholderText: {
+    color: '#ffffff',
+    fontSize: 16,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  modalImage: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    marginBottom: 15,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
 		icon: {
 		height: "100%",
 		width: "100%",
@@ -182,13 +476,6 @@ const styles = StyleSheet.create({
 		fontFamily: "Poppins-SemiBold",
 		fontWeight: "600",
 		fontSize: 18
-		},
-		nombreCompleto: {
-		top: 217,
-		width: 149,
-		opacity: 0.7,
-		fontSize: 14,
-		left: 35
 		},
 		gnero: {
 		top: 304,
@@ -222,7 +509,7 @@ const styles = StyleSheet.create({
 		fontSize: 18
 		},
 		rectangleParent: {
-		top: 686,
+		top: 640,
 		height: 49,
 		width: 321,
 		left: 36,

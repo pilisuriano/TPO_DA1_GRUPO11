@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getUserProfile } from './api'; // Asegúrate de importar correctamente
+import axios from 'axios';
+import { getAuthToken } from '../../services/secureStore';
+import { updateUser } from './api';
 
 /*// Acción asíncrona para obtener el perfil del usuario autenticado
 export const fetchUserProfile = createAsyncThunk(
@@ -27,14 +30,16 @@ export const fetchUserProfile = createAsyncThunk(
     }
   );
 
-export const updateUser = createAsyncThunk('user/updateUser', async (userData, { rejectWithValue }) => {
-  try {
-    const response = await axios.put('/api/users/me', userData);
-    return response.data;
-  } catch (error) {
-    return rejectWithValue(error.response.data);
-  }
-});
+  export const updateUserData = createAsyncThunk('user/updateUser', async (userData, thunkAPI) => {
+    try {
+      console.log("Sending user data:", userData);
+      const response = await updateUser(userData);
+      return response;
+    } catch (error) {
+      console.error('Error in updateUser thunk:', error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  });
 
 const userSlice = createSlice({
   name: 'user',
@@ -64,15 +69,16 @@ const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(updateUser.pending, (state) => {
+      .addCase(updateUserData.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase(updateUserData.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload;
+        state.user = { ...state.user, ...action.payload }; // Actualiza el estado del usuario con los nuevos datos
       })
-      .addCase(updateUser.rejected, (state, action) => {
+      .addCase(updateUserData.rejected, (state, action) => {
+        console.error('Error updating user:', action.payload); // Log detallado
         state.loading = false;
         state.error = action.payload;
       });

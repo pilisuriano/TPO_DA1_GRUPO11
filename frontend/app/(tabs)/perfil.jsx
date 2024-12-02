@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import InfoMessage from "@/components/InfoMessage";
 import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
-import i18n from '../../i18n';
 
 
 const MYPROFILE = () => {
@@ -58,7 +57,9 @@ const MYPROFILE = () => {
     </View>
   );*/
   <View style={styles.usuarioEncontrado}>
-      			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={require("../../assets/images/unsplash_4_QFycgpB4F.png")} />
+          {user ? (
+            <>
+      			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
       			<Text style={[styles.perfil, styles.perfilTypo]}>{t('profile')}</Text>
             <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('home')}>
               <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
@@ -73,7 +74,7 @@ const MYPROFILE = () => {
               <Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
                 <Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")} />
               </Pressable>
-              <Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile')}>
+              <Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile', { userId: user._id })}>
                 <Text style={[styles.editarPerfil, styles.nivel4Typo]}>{t('editProfile')}</Text>
               </Pressable>
               <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
@@ -102,6 +103,10 @@ const MYPROFILE = () => {
               </View>
 				  	</>
 				)}
+        </>
+        ) : (
+          <Text style={styles.errorText}>User not found</Text>
+        )}
     </View>
   );
 };

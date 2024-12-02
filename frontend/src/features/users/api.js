@@ -23,5 +23,15 @@ export const getUserProfile = async () => {
       }
     }
   };
+
+  export const updateUser = async (userData) => {
+    try {
+      const response = await api.put(`/users/me`, userData);
+      return response.data;
+    } catch (error) {
+      console.error('Error in updateUser:', error);
+      throw error;
+    }
+  };
   
   export default api;
