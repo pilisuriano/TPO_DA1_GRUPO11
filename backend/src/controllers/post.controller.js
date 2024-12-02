@@ -23,15 +23,6 @@ export const createPost = async (req, res) => {
       } catch (error) {
         throw error
       }
-      // return new Promise((resolve, reject) => {
-      //   cloudinary.uploader.upload_stream(
-      //     { resource_type: 'auto', folder: 'posts' },
-      //     (error, result) => {
-      //       if (error) return reject(error);
-      //       resolve({ url: result.secure_url, type: result.resource_type });
-      //     }
-      //   ).end(file.buffer);
-      // });
     });
 
     const results = await Promise.all(uploadPromises);
@@ -55,40 +46,21 @@ export const createPost = async (req, res) => {
       };
     }
 
-    //await Post.create(newPost)
-    //res.status(201).json({newPost});
-    
-    // Crear el post
     const savedPost = await Post.create(newPost);
-
-    // Actualizar el usuario con el ID del nuevo post
-    const updatedUser = await User.findByIdAndUpdate(
+    console.log("Saved Post:", savedPost);
+    
+    await User.findByIdAndUpdate(
       userId,
       { $push: { posts: savedPost._id } },
       { new: true }
-    ).populate('posts'); // Poblar las publicaciones
+    ).populate('posts');
 
-    console.log("Updated user:", updatedUser);
-
-    // Poblar las publicaciones del usuario con el post recién creado
-    const populatedPost = await Post.findById(savedPost._id).populate('userId'); 
-
-    console.log("Populated post:", populatedPost);
-
-    // Devolver el post guardado y el usuario actualizado
-    res.status(201).json({ newPost: populatedPost, updatedUser });
+    res.status(201).json({ newPost: savedPost });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-/*/* // Devolver el post creado y el usuario actualizado
-    res.status(201).json({ newPost: savedPost, updatedUser });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }*/
 
 export const getPost = async (req, res) => {
   try {
@@ -125,8 +97,25 @@ export const editPost = async (req, res) => {
 }
 
 export const deletePost = async (req, res) => {
-  try {
+    try {
+      const { postId } = req.params;
+      const userId = req.user._id;
 
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if (post.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await Post.findByIdAndDelete(postId);
+
+    await User.findByIdAndUpdate(userId, { $pull: { posts: postId } });
+
+    res.status(200).json({ message: `Post with ID: ${postId} deleted` });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
