@@ -1,5 +1,6 @@
 import cloudinary from '../utils/cloudinaryConfig.js';
 import Post from '../models/post.model.js';
+import User from '../models/user.model.js'; 
 
 export const createPost = async (req, res) => {
 
@@ -22,15 +23,6 @@ export const createPost = async (req, res) => {
       } catch (error) {
         throw error
       }
-      // return new Promise((resolve, reject) => {
-      //   cloudinary.uploader.upload_stream(
-      //     { resource_type: 'auto', folder: 'posts' },
-      //     (error, result) => {
-      //       if (error) return reject(error);
-      //       resolve({ url: result.secure_url, type: result.resource_type });
-      //     }
-      //   ).end(file.buffer);
-      // });
     });
 
     const results = await Promise.all(uploadPromises);
@@ -54,14 +46,21 @@ export const createPost = async (req, res) => {
       };
     }
 
-    await Post.create(newPost)
-    res.status(201).json({newPost});
+    const savedPost = await Post.create(newPost);
+    console.log("Saved Post:", savedPost);
+    
+    await User.findByIdAndUpdate(
+      userId,
+      { $push: { posts: savedPost._id } },
+      { new: true }
+    ).populate('posts');
 
+    res.status(201).json({ newPost: savedPost });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+};
 
 export const getPost = async (req, res) => {
   try {
@@ -98,8 +97,25 @@ export const editPost = async (req, res) => {
 }
 
 export const deletePost = async (req, res) => {
-  try {
+    try {
+      const { postId } = req.params;
+      const userId = req.user._id;
 
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    if (post.userId.toString() !== userId.toString()) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await Post.findByIdAndDelete(postId);
+
+    await User.findByIdAndUpdate(userId, { $pull: { posts: postId } });
+
+    res.status(200).json({ message: `Post with ID: ${postId} deleted` });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }

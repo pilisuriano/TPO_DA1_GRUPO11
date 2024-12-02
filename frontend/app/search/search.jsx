@@ -1,10 +1,20 @@
 import * as React from "react";
-import {Image, StyleSheet, Pressable, View, Text} from "react-native";
+import {Image, StyleSheet, Pressable, View, Text, TextInput, FlatList, Button} from "react-native";
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSearchUsers } from "../../src/features/search/searchSlice";
 
 const Search = () => {
-  	
+	const [name, setName] = useState("");
+	const dispatch = useDispatch();
+	const { users, loading, error } = useSelector((state) => state.search);
+  
+	const handleSearch = () => {
+	  dispatch(fetchSearchUsers(name));
+	};
+
+
   	return (
-    		<View style={styles.buscarUsuario2}>
+    		/*<View style={styles.buscarUsuario2}>
       			<Pressable style={styles.wrapper} onPress={()=>{}}>
         				<Image style={[styles.icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Group 12.png")} />
       			</Pressable>
@@ -22,7 +32,30 @@ const Search = () => {
       			</Pressable>
       			<Text style={[styles.martinPerez2, styles.martinTypo]}>Martin Perez</Text>
       			<Text style={[styles.martinPerezGutierrez, styles.martinTypo]}>Martin Perez Gutierrez</Text>
-    		</View>);
+    		</View>);*/
+
+			<View style={styles.container}>
+				<TextInput
+					style={styles.input}
+					placeholder="Buscar usuarios..."
+					value={name}
+					onChangeText={setName}
+				/>
+				<Button title="Buscar" onPress={handleSearch} />
+				{loading && <Text>Cargando...</Text>}
+				{error && <Text style={styles.errorText}>{error}</Text>}
+				<FlatList
+					data={users}
+					keyExtractor={(item) => item._id.toString()}
+					renderItem={({ item }) => (
+					<View style={styles.userContainer}>
+						<Text style={styles.userName}>{item.fullName}</Text>
+						<Text style={styles.userNickname}>{item.nickname}</Text>
+					</View>
+					)}
+				/>
+				</View>
+			);
 };
 
 const styles = StyleSheet.create({

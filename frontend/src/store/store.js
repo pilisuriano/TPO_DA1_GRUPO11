@@ -6,6 +6,8 @@ import verifyOtpReducer from "../features/verifyOtp/verifyOtp.slice";
 import resetPasswordReducer from "../features/resetPassword/resetPassword.slice"
 import postReducer from "../features/posts/postSlice";
 import timelineReducer from "../features/timeline/timeline.slice";
+import userReducer from "../features/users/userSlice";
+import searchReducer from "../features/search/searchSlice";
 import errorMiddleware from "../utils/errorMiddleware";
 
 const store = configureStore({
@@ -17,6 +19,8 @@ const store = configureStore({
     resetPassword: resetPasswordReducer,
     post: postReducer,
     timeline: timelineReducer,
+    user: userReducer,
+    search: searchReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

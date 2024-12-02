@@ -9,10 +9,14 @@ import { ToastAndroid, Linking } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import ImageModal from 'react-native-image-modal'
 import InfoMessage from '@/components/InfoMessage';
+import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import { transformDate } from '../../src/utils/dateUtils';
 
 const { width, height } = Dimensions.get('window');
 
 const Post = ({ post }) => {
+  const { t, i18n } = useTranslation();
   if (!post || !post.media || !post.media.length) {
     return null;
   }
@@ -30,7 +34,7 @@ const Post = ({ post }) => {
 
         <View style={styles.headerInfo}>
           <Text style={styles.name}>{post.userId.fullName}</Text>
-          <Text style={styles.details}>{transformDate(post.createdAt)}  ·   { }</Text>
+          <Text style={styles.details}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
         </View>
       </View>
       {post.media.length === 1 ? (
@@ -91,7 +95,7 @@ const Post = ({ post }) => {
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.cantComentarios}>{post.comments.length != 0 ? post.comments.length : "Todavia no hay comentarios"}</Text>
+          <Text style={styles.cantComentarios}>{post.comments.length != 0 ? post.comments.length : t('noCom')}</Text>
         </View>
       </View>
     </View>
@@ -120,6 +124,7 @@ const renderItem = ({ item }) => {
 
 const Ad = ({ post }) => {
   const [containerSizeAd, setContainerSizeAd] = useState({ width: 0, height: 0 });
+  const { t } = useTranslation();
 
   const handleAdLayout = (event) => {
     const { width, height } = event.nativeEvent.layout;
@@ -160,8 +165,8 @@ const Ad = ({ post }) => {
       </View>
       {/* Pie de la publicación */}
       <View style={styles.footer}>
-        <Text style={styles.comment}> Visitanos en:
-          <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> nuestra web </Text>
+        <Text style={styles.comment}> {t('visit')}
+          <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> {t('web')} </Text>
         </Text>
         <View style={styles.reactions}>
         </View>
@@ -183,16 +188,18 @@ const handleLinkPress = async (url) => {
   }
 };
 
-const transformDate = (date) => {
+/*const transformDate = (date) => {
   const postDate = parseISO(date);
   // Calcula la distancia de tiempo desde ahora
   const formattedDate = formatDistanceToNow(postDate, { addSuffix: true, locale: es });
   return formattedDate;
-}
+}*/
 
 const Home = () => {
   const dispatch = useDispatch();
   const { posts, loading, hasMore, error, showEmptyTimeline } = useSelector((state) => state.timeline);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { t } = useTranslation();
 
 
   useEffect(() => {
@@ -221,9 +228,19 @@ const Home = () => {
     }
   };
 
-  const showSearchMessage = () => {
+  // Handler para la navegación a la pantalla de búsqueda
+  const handleSearchPress = () => {
+    navigation.navigate('search', { query: searchQuery });
+  };
+
+  // Handler para la búsqueda cuando se presiona "Enter"
+  const handleSearchSubmit = () => {
+    handleSearchPress();
+  };
+
+  /*const showSearchMessage = () => {
     ToastAndroid.show('Proximamente vas a poder buscar otros usuarios!', ToastAndroid.LONG);
-  }
+  }*/
 
   return (
     <View>
@@ -231,8 +248,14 @@ const Home = () => {
       <View style={styles.containerInicio}>
         <Image style={[styles.memento]} source={require("../../assets/images/Marca 2.png")} />
         <View style={styles.searchBar}>
-          <Pressable style={[styles.timelinePublicidadChild, styles.searchPressable]} onPress={showSearchMessage} >
-            <Text style={styles.buscar}>Buscar...</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder={t('search')}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            onSubmitEditing={handleSearchSubmit} // Manejar la búsqueda cuando se presiona "Enter"
+          />
+          <Pressable style={[styles.timelinePublicidadChild, styles.searchPressable]} onPress={handleSearchPress} >
             <Image style={[styles.searchIcon]} source={require("../../assets/images/Search.png")} />
           </Pressable>
           <Image style={[styles.icon]} source={require("../../assets/images/Group 12.png")} />
