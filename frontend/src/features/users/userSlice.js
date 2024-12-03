@@ -34,8 +34,8 @@ export const fetchUserProfile = createAsyncThunk(
     'user/fetchAnotherUserProfile',
     async (userId, { rejectWithValue }) => {
       try {
-        const response = await getAnotherUserProfile();  // Aquí deberías obtener el perfil del usuario y sus posts
-        return response;  // Asegúrate de retornar los datos correctamente, si la respuesta es un objeto
+        const response = await getAnotherUserProfile(userId);  // Aquí deberías obtener el perfil del usuario y sus posts
+        return { user: response.user, posts: response.posts };  // Ajusta según sea necesario
       } catch (error) {
         return rejectWithValue(error.response.data);
       }

@@ -15,7 +15,7 @@ const Search = () => {
 	const { users, loading, error } = useSelector((state) => state.search);
 	const { t } = useTranslation();
 
-	const handleSearch = () => {
+	/*const handleSearch = () => {
 		if (query.trim() === "") {
 		  dispatch(clearUsers());
 		} else {
@@ -29,7 +29,21 @@ const Search = () => {
 		} else {
 		  handleSearch();
 		}
-	  }, [query]);
+	  }, [query]);*/
+
+	  const handleSearch = () => {
+		if (query.trim() === "") {
+		  dispatch(clearUsers());
+		} else {
+		  dispatch(fetchSearchUsers(query));
+		}
+	  };
+	
+	  useEffect(() => {
+		if (query.trim() === "") {
+		  dispatch(clearUsers());
+		}
+	  }, [query, dispatch]);
 
 
   	return (

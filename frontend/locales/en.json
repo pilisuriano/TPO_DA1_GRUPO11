@@ -42,5 +42,9 @@
   "follow": "Follow",
   "unfollow": "Unfollow",
   "editLocation": "Edit location",
-  "addPhoto": "Add photo"
+  "addPhoto": "Add photo",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "ConfirmImage": "Confirm Picture",
+  "ConfirmCover": "Confirm Cover"
 }

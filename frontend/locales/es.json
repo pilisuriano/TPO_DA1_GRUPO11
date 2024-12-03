@@ -42,5 +42,9 @@
   "follow": "Seguir",
   "unfollow": "Dejar de seguir",
   "editLocation": "Editar ubicación",
-  "addPhoto": "Añadir foto"
+  "addPhoto": "Añadir foto",
+  "confirm": "Confirmar",
+  "cancel": "Cancelar",
+  "ConfirmImage": "Confirmar Imagen",
+  "ConfirmCover": "Confirmar Portada"
 }
