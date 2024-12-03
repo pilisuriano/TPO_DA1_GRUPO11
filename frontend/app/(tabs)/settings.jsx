@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import {Image, StyleSheet, Text, Pressable, View} from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../i18n';
 
 const CONFIGURACIONES = () => {
     const navigation = useNavigation();
-	const { t, i18n } = useTranslation();
+	const {t} = useTranslation();
 	const [isEnglish, setIsEnglish] = useState(i18n.language === 'en');
   	
 	const changeLanguage = (language) => {

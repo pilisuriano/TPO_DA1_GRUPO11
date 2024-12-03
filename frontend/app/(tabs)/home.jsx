@@ -214,7 +214,7 @@ const Home = () => {
       dispatch(getTimelineNewPosts({ after_timestamp: latestPost.createdAt, after_postId: latestPost._id }))
         .then((response) => {
           if (response.payload.posts.length === 0) {
-            ToastAndroid.show('No hay nuevos posts', ToastAndroid.SHORT);
+            ToastAndroid.show(t('noNewPost'), ToastAndroid.SHORT);
           }
         })
     }

@@ -9,7 +9,7 @@ const EDITARPOST = () => {
 
   	return (
     		<View style={styles.editarPost}>
-                <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
+                <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('editarpost')}>
                     <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
                 </Pressable>
       			<Image style={styles.editarPostChild} resizeMode="cover" source={require("../../assets/images/Line 10.png")}/>
