@@ -32,7 +32,7 @@ const EDITARPOST = () => {
 		const firstMedia = item.media && item.media.length > 0 ? item.media[0].url : null;
 	  
 		return (
-			<Pressable onPress={() => navigation.navigate('editarfoto', { postId: item._id })} style={styles.itemContainer}>
+			<Pressable onPress={() => navigation.navigate('editarfoto', { postId: item._id, media: item.media, title: item.title, location: item.location})} style={styles.itemContainer}>
 				{firstMedia ? (
 				<Image source={{ uri: firstMedia }} style={styles.postImage} />
 				) : (
@@ -41,6 +41,8 @@ const EDITARPOST = () => {
 			</Pressable>
 		);
 	};
+
+	const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 	
   	return (
     		<View style={styles.editarPost}>
@@ -52,7 +54,7 @@ const EDITARPOST = () => {
 				  <View style={styles.container}>
 					{user ? (
 						<FlatList
-							data={user.posts}
+							data={sortedPosts}
 							renderItem={renderItem}
 							keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
 							numColumns={3} // Tres columnas fijas

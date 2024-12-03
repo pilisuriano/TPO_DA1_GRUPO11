@@ -38,4 +38,23 @@ export const getUserPosts = async () => {
   }
 };
 
+export const updatePost = async (postId, postData) => {
+  try {
+    const response = await api.put(`/posts/${postId}`, postData);
+    return response.data;
+  } catch (error) {
+    if (error.response) {
+      console.error("Error Response Status:", error.response.status);
+      console.error("Error Response Data:", error.response.data);
+      throw new Error(`Server responded with status ${error.response.status}: ${JSON.stringify(error.response.data)}`);
+    } else if (error.request) {
+      console.error("No response received:", error.request);
+      throw new Error("Network error: No response received from server");
+    } else {
+      console.error("Error setting up request:", error.message);
+      throw new Error(`Request error: ${error.message}`);
+    }
+  }
+};
+
 

@@ -40,5 +40,7 @@
   "loading": "Cargando...",
   "noUser": "No se encontraron usuarios",
   "follow": "Seguir",
-  "unfollow": "Dejar de seguir"
+  "unfollow": "Dejar de seguir",
+  "editLocation": "Editar ubicación",
+  "addPhoto": "Añadir foto"
 }
