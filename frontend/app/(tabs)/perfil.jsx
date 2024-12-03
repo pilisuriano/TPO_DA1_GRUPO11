@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList, ActivityIndicator, Alert, Button } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import Toolbar from "@/components/Toolbar";
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import InfoMessage from "@/components/InfoMessage";
@@ -27,6 +27,13 @@ const MYPROFILE = () => {
     }
   }, [user]);*/
 
+  // Disparar la acción para obtener el perfil cuando la página se enfoca
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(fetchUserProfile()); // Obtener el perfil y posts del usuario
+    }, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
+  );
+
   useEffect(() => {
     console.log('User:', user);
     console.log('Posts:', posts);
@@ -38,7 +45,33 @@ const MYPROFILE = () => {
     }
   }, [error]); // Este efecto se activará solo si el estado de error cambia
 
-  if (loading) return <Text>Cargando publicaciones...</Text>;
+  
+
+  //if (loading) return <Text>Cargando publicaciones...</Text>;
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#bb4426" />
+      </View>
+    );
+  }
+
+  const renderItem = ({ item }) => {
+    // Extraer la primera URL de 'media'
+    const firstMedia = item.media && item.media.length > 0 ? item.media[0].url : null;
+  
+    return (
+      <View style={styles.itemContainer}>
+        {firstMedia ? (
+          <Image source={{ uri: firstMedia }} style={styles.postImage} />
+        ) : (
+          <Text style={styles.noImageText}>No image</Text>
+        )}
+      </View>
+    );
+  };
+
 
   return (
     /*<View style={styles.myProfile}>
@@ -64,6 +97,21 @@ const MYPROFILE = () => {
             <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('home')}>
               <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
             </Pressable>
+            <View style={styles.container}>
+                {user ? (
+                  <FlatList
+                    data={user.posts}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
+                    numColumns={3} // Tres columnas fijas
+                    contentContainerStyle={styles.list}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
+                  />
+                ) : (
+                  <Text style={styles.errorText}>{t('userNotFound')}</Text>
+                )}
+                {error && <Text style={styles.errorText}>{error}</Text>}
+              </View>
       {user && (
 					<>
               <Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
@@ -132,6 +180,63 @@ const MYPROFILE = () => {
       {error && <Text style={styles.errorText}>{error}</Text>}*/
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+    backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0', // Color de fondo suave
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 18,
+    color: '#888',
+    fontWeight: '600',
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  list: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  postContainer: {
+    borderRadius: 7,
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+  },
+  postImage: {
+    width: 100,
+    height: 100,
+    resizeMode: 'cover',
+    borderRadius: 12,
+  },
+  itemContainer: {
+    margin: 4, // Espacio entre los ítems
+    alignItems: 'center',
+  },
+  noImageText: {
+    fontSize: 12,
+    textAlign: 'center',
+    padding: 10,
+    color: '#888',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+  },
+  separator: {
+    width: '100%',
+    height: 10, // Altura de la separación
+    backgroundColor: 'transparent', // O el color que prefieras
+  },
   groupIconPosition: {
     width: 390,
     left: 0,
@@ -156,6 +261,20 @@ perfilTypo: {
     fontSize: 18,
     color: "#000",
     position: "absolute"
+},
+container: {
+  flex: 1,
+  padding: 20,
+  top: 415,
+},
+header: {
+  fontSize: 24,
+  fontWeight: 'bold',
+  marginBottom: 10,
+},
+list: {
+  paddingBottom: 20,
+  paddingHorizontal: 10,
 },
 seguirTypo: {
     fontFamily: "Poppins-Medium",
@@ -255,11 +374,11 @@ chatLayout: {
   position: "absolute"
   },
   text2: {
-    left: 12,
+    left: 10,
     fontSize: 11,
     textAlign: "center",
     width: 11,
-    top: 23
+    top: 48,
     },
     vectorIcon: {
     height: "79.41%",
@@ -272,7 +391,7 @@ chatLayout: {
     },
     chat: {
     left: 0,
-    top: 0
+    top: -13,
     },
     iconlyboldchat: {
     top: 233,
@@ -290,13 +409,13 @@ chatLayout: {
         position: "absolute"
         },
 editarPerfil: {
-    top: 305,
-    left: 169,
+    left: 115,
+    top: 3,
     color: "#fff",
     fontFamily: "Poppins-SemiBold",
     fontWeight: "600",
     fontSize: 12,
-    position: "absolute"
+    position: "center"
     },
 editarPostsParent: {
       left: 253,
@@ -393,10 +512,6 @@ text2Typo: {
   fontWeight: "500",
   position: "absolute"
   },
-  nivel4Typo: {
-  fontSize: 12,
-  textAlign: "left"
-},
 usuarioEncontradoChild: {
     height: "2.25%",
     width: "2.67%",
@@ -414,7 +529,8 @@ unsplashp5bobf0xjuaIcon: {
     width: 67,
     height: 67,
     left: 33,
-    position: "absolute"
+    position: "absolute",
+    borderRadius: 35,
 },
 martinPerez: {
   top: 230,
@@ -441,7 +557,7 @@ posts: {
     position: "absolute"
 },
 imAPostive: {
-    top: 283,
+    top: 273,
     left: 57,
     width: 294,
     color: "#000",
