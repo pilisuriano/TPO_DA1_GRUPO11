@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {Image, StyleSheet, Text, View, Pressable, ActivityIndicator} from "react-native";
+import {Image, StyleSheet, Text, View, Pressable, ActivityIndicator, FlatList} from "react-native";
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
@@ -9,11 +9,11 @@ import { useDispatch, useSelector } from "react-redux";
 const USUARIOENCONTRADO = () => {
     const navigation = useNavigation();
 	const route = useRoute();
-	const { userId } = route.params;
+	const {user} = route.params;
 	//const { user, posts, loading, error } = useSelector((state) => state.user);
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
-	const { user, posts, loading, error } = useSelector((state) => state.user);
+	const {posts, loading, error} = useSelector((state) => state.user);
 
 
 	/*useEffect(() => {
@@ -31,9 +31,15 @@ const USUARIOENCONTRADO = () => {
 		fetchUser();
 	  }, [userId]);*/
 
-	  useEffect(() => {
+	  /*useEffect(() => {
 		dispatch(fetchAnotherUserProfile(userId));
-	  }, [dispatch, userId]);
+	  }, [dispatch, userId]);*/
+
+	  useFocusEffect(
+		React.useCallback(() => {
+		  dispatch(fetchAnotherUserProfile()); // Obtener el perfil y posts del usuario
+		}, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
+	  );
 
 	  /*useFocusEffect(
 		React.useCallback(() => {
@@ -44,7 +50,7 @@ const USUARIOENCONTRADO = () => {
 	  useEffect(() => {
 		console.log('User:', user);
 		console.log('Posts:', posts);
-	  }, [user]);
+	  }, [user, posts]);
 	
 	  if (loading) {
 		return <ActivityIndicator size="large" color="#0000ff" />;
@@ -88,8 +94,9 @@ const USUARIOENCONTRADO = () => {
 
 	  const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
+
   	return (
-    		<View style={styles.usuarioEncontrado}>
+    		/*<View style={styles.usuarioEncontrado}>
       			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={require("../../assets/images/unsplash_4_QFycgpB4F.png")} />
       			<Text style={[styles.perfil, styles.perfilTypo]}>{t('profile')}</Text>
                 <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('search')}>
@@ -128,10 +135,117 @@ const USUARIOENCONTRADO = () => {
                 )}
                 {error && <Text style={styles.errorText}>{error}</Text>}
               </View>
-    		</View>);
+    		</View>);*/
+			<View style={styles.usuarioEncontrado}>
+          {user ? (
+            <>
+      			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
+      			<Text style={[styles.perfil, styles.perfilTypo]}>{t('profile')}</Text>
+            <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('search')}>
+              <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
+            </Pressable>
+            <View style={styles.container}>
+                {user ? (
+                  <FlatList
+                    data={sortedPosts}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
+                    numColumns={3} // Tres columnas fijas
+                    contentContainerStyle={styles.list}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
+                  />
+                ) : (
+                  <Text style={styles.errorText}>{t('userNotFound')}</Text>
+                )}
+                {error && <Text style={styles.errorText}>{error}</Text>}
+              </View>
+      {user && (
+					<>
+              <Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
+              <Text style={[styles.martinPerez, styles.perfilTypo]}>{user.fullName}</Text>
+              <Text style={styles.posts}>{t('posts')}</Text>
+              <Text style={[styles.imAPostive, styles.seguirTypo]}>{user.description}</Text>
+              <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
+              <Text style={[styles.text, styles.textTypo]}>{user.posts.length}</Text>
+              <Text style={[styles.text1, styles.textTypo]}>{user.following}</Text>
+              <Text style={[styles.k, styles.textTypo]}>{user.followers}</Text>
+              <View style={[styles.lineView, styles.lineViewLayout]} />
+              <Text style={[styles.posts1, styles.posts1Typo]}>{t('posts')}</Text>
+              <Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
+                <Text style={styles.posts1Typo}>{t('following')}</Text>
+              </Pressable>
+              <Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
+                <Text style={styles.posts1Typo}>{t('followers')}</Text>
+              </Pressable>
+				  	</>
+				)}
+        </>
+        ) : (
+          <Text style={styles.errorText}>User not found</Text>
+        )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
+	separator: {
+		width: '100%',
+		height: 10, // Altura de la separación
+		backgroundColor: 'transparent', // O el color que prefieras
+	  },
+	  container: {
+		flex: 1,
+		padding: 10,
+		backgroundColor: '#fff',
+		top: 420,
+		left: 25,
+	  },
+	  loadingContainer: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		backgroundColor: '#f0f0f0', // Color de fondo suave
+	  },
+	  loadingText: {
+		marginTop: 10,
+		fontSize: 18,
+		color: '#888',
+		fontWeight: '600',
+	  },
+	  header: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		marginBottom: 10,
+	  },
+	  list: {
+		justifyContent: 'flex-start',
+	  },
+	  postContainer: {
+		borderRadius: 7,
+		overflow: 'hidden',
+		backgroundColor: '#f0f0f0',
+	  },
+	  postImage: {
+		width: 100,
+		height: 100,
+		resizeMode: 'cover',
+		borderRadius: 12,
+	  },
+	  itemContainer: {
+		margin: 4, // Espacio entre los ítems
+		alignItems: 'center',
+	  },
+	  noImageText: {
+		fontSize: 12,
+		textAlign: 'center',
+		padding: 10,
+		color: '#888',
+	  },
+	  errorText: {
+		color: 'red',
+		textAlign: 'center',
+		marginTop: 20,
+	  },
   	groupIconPosition: {
     		width: 390,
     		left: 0,

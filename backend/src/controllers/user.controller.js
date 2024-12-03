@@ -23,7 +23,8 @@ export const searchUser = async (req, res) => {
     const skip = (pageInt - 1) * limitInt;
 
     const users = await User.find(searchCriteria)
-      .select("_id fullName nickname profileImage")
+      .select("_id fullName nickname profileImage posts followers following coverImage description ")
+      .populate("posts")  // Si "posts" es una referencia a otro modelo 
       .limit(limitInt)
       .skip(skip);
 

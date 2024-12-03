@@ -131,7 +131,7 @@ const MYPROFILE = () => {
               <Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
                 <Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")} />
               </Pressable>
-              <Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile', { userId: user._id })}>
+              <Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile', { userId: user._id, posts: user.posts})}>
                 <Text style={[styles.editarPerfil, styles.nivel4Typo]}>{t('editProfile')}</Text>
               </Pressable>
               <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
@@ -162,7 +162,7 @@ const MYPROFILE = () => {
 				)}
         </>
         ) : (
-          <Text style={styles.errorText}>User not found</Text>
+          <Text style={styles.errorText}>{t('noUser')}</Text>
         )}
     </View>
   );

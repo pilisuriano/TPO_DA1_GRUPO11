@@ -176,13 +176,13 @@ const EDITPROFILE = () => {
 					}}
 				>
 					<View style={styles.modalView}>
-					<Text style={styles.modalText}>{t('Confirm Image')}</Text>
+					<Text style={styles.modalText}>{t('ConfirmImage')}</Text>
 					{selectedImage && (
 						<Image style={styles.modalImage} source={{ uri: selectedImage }} />
 					)}
 					<View style={styles.modalButtons}>
-						<Button title={t('Cancel')} onPress={cancelImage} />
-						<Button title={t('Confirm')} onPress={confirmImage} />
+						<Button title={t('cancel')} onPress={cancelImage} />
+						<Button title={t('confirm')} onPress={confirmImage} />
 					</View>
 					</View>
 				</Modal>
@@ -195,13 +195,13 @@ const EDITPROFILE = () => {
 					}}
 				>
 					<View style={styles.modalView}>
-					<Text style={styles.modalText}>{t('Confirm Cover')}</Text>
+					<Text style={styles.modalText}>{t('ConfirmCover')}</Text>
 					{selectedCover && (
 						<Image style={styles.modalImage} source={{ uri: selectedCover }} />
 					)}
 					<View style={styles.modalButtons}>
-						<Button title={t('Cancel')} onPress={cancelCover} />
-						<Button title={t('Confirm')} onPress={confirmCover} />
+						<Button title={t('cancel')} onPress={cancelCover} />
+						<Button title={t('confirm')} onPress={confirmCover} />
 					</View>
 					</View>
 				</Modal>
