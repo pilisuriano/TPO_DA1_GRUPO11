@@ -196,6 +196,7 @@ const handleLinkPress = async (url) => {
 }*/
 
 const Home = () => {
+  const navigation = useNavigation();
   const dispatch = useDispatch();
   const { posts, loading, hasMore, error, showEmptyTimeline } = useSelector((state) => state.timeline);
   const [searchQuery, setSearchQuery] = useState("");
