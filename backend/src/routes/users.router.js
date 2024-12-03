@@ -1,5 +1,5 @@
 import express from "express";
-import { searchUser, getMe, updateMe, deleteMe, getOtherUserProfile } from "../controllers/user.controller.js";
+import { searchUser, getMe, updateMe, deleteMe, getOtherUserProfile, getOtroUsuario } from "../controllers/user.controller.js";
 import { protectRoute } from "../middleware/protectRoute.js";
 
 const usersRoutes = express.Router();
@@ -9,7 +9,7 @@ usersRoutes.get("/", protectRoute, searchUser);
 usersRoutes.get("/me", protectRoute, getMe);
 usersRoutes.put("/me", protectRoute, updateMe); //TODO
 usersRoutes.delete("/me", protectRoute, deleteMe);
-usersRoutes.get("/:userId", protectRoute, getOtherUserProfile);
+usersRoutes.get("/:userId", protectRoute, getOtroUsuario);
 
 // TODO
 

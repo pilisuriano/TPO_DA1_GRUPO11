@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from "react";
 import {Image, StyleSheet, Text, View, Pressable, ActivityIndicator} from "react-native";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { fetchAnotherUserProfile } from "../../src/features/users/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const USUARIOENCONTRADO = () => {
     const navigation = useNavigation();
 	const route = useRoute();
 	const { userId } = route.params;
-	const [user, setUser] = useState(null);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	//const { user, posts, loading, error } = useSelector((state) => state.user);
+	const dispatch = useDispatch();
 	const { t } = useTranslation();
+	const { user, posts, loading, error } = useSelector((state) => state.user);
 
-	useEffect(() => {
+
+	/*useEffect(() => {
 		const fetchUser = async () => {
 		  try {
-			const response = await axios.get(`https://tpo-da1-grupo11.onrender.com/users/${userId}`);
+			const response = await axios.get(`api/users/${userId}`);
 			setUser(response.data);
 		  } catch (err) {
 			setError(err.message);
@@ -26,7 +29,22 @@ const USUARIOENCONTRADO = () => {
 		};
 	
 		fetchUser();
-	  }, [userId]);
+	  }, [userId]);*/
+
+	  useEffect(() => {
+		dispatch(fetchAnotherUserProfile(userId));
+	  }, [dispatch, userId]);
+
+	  /*useFocusEffect(
+		React.useCallback(() => {
+		  dispatch(fetchAnotherUserProfile()); // Obtener el perfil y posts del usuario
+		}, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
+	  );*/
+
+	  useEffect(() => {
+		console.log('User:', user);
+		console.log('Posts:', posts);
+	  }, [user]);
 	
 	  if (loading) {
 		return <ActivityIndicator size="large" color="#0000ff" />;
@@ -36,6 +54,40 @@ const USUARIOENCONTRADO = () => {
 		return <Text style={styles.errorText}>Error: {error}</Text>;
 	  }
   	
+
+	  if (loading) {
+		return (
+		  <View style={styles.loadingContainer}>
+			<ActivityIndicator size="large" color="#bb4426" />
+		  </View>
+		);
+	  }
+	
+	  if (!user) {
+		return (
+		  <View style={styles.loadingContainer}>
+			<Text>{t('userNotFound')}</Text>
+		  </View>
+		);
+	  }
+
+	  const renderItem = ({ item }) => {
+		// Extraer la primera URL de 'media'
+		const firstMedia = item.media && item.media.length > 0 ? item.media[0].url : null;
+	  
+		return (
+		  <View style={styles.itemContainer}>
+			{firstMedia ? (
+			  <Image source={{ uri: firstMedia }} style={styles.postImage} />
+			) : (
+			  <Text style={styles.noImageText}>No image</Text>
+			)}
+		  </View>
+		);
+	  };
+
+	  const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
   	return (
     		<View style={styles.usuarioEncontrado}>
       			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={require("../../assets/images/unsplash_4_QFycgpB4F.png")} />
@@ -61,24 +113,21 @@ const USUARIOENCONTRADO = () => {
 						<Text style={[styles.seguidores, styles.posts1Typo]}>{t('followers')}</Text>
 				  	</>
 				)}
-      			<View style={[styles.usuarioEncontradoItem, styles.lineViewLayout]} />
-      			<Image style={styles.usuarioEncontradoInner} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
-      			<View style={[styles.lineView, styles.lineViewLayout]} />
-      			<View style={[styles.groupView, styles.groupViewLayout]}>
-        				<View style={[styles.unsplashxejossdcnr8Parent, styles.groupViewLayout]}>
-          					<Image style={[styles.unsplashxejossdcnr8Icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_xEJoSsDCnR8.png")} />
-          					<Image style={[styles.unsplashhaznhev2wxqIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_haZNHEV2WXQ.png")} />
-          					<Image style={[styles.unsplash8nwfh8I9ugIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_8NWFh8_i9Ug.png")} />
-          					<Pressable style={[styles.unsplashuc0hzduitwy, styles.iconLayout1]} onPress={() => navigation.navigate('userfoundcomment')}>
-            						<Image style={styles.icon} resizeMode="cover" source={require("../../assets/images/imageasado.png")} />
-          					</Pressable>
-          					<Image style={[styles.unsplashcssvezachvqIcon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_cssvEZacHvQ.png")}/>
-          					<Image style={[styles.unsplash0boea7nbluuIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_0boeA7NBluU.png")} />
-          					<Image style={[styles.unsplashtld6icolyb0Icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_TLD6iCOlyb0.png")} />
-          					<Image style={[styles.unsplashkcaC3f3feIcon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/unsplash_kcA-c3f_3FE.png")} />
-          					<Image style={[styles.unsplashiicyiapyggiIcon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_IicyiaPYGGI.png")} />
-        				</View>
-      			</View>
+      			<View style={styles.container}>
+                {user ? (
+                  <FlatList
+                    data={sortedPosts}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
+                    numColumns={3} // Tres columnas fijas
+                    contentContainerStyle={styles.list}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
+                  />
+                ) : (
+                  <Text style={styles.errorText}>{t('userNotFound')}</Text>
+                )}
+                {error && <Text style={styles.errorText}>{error}</Text>}
+              </View>
     		</View>);
 };
 

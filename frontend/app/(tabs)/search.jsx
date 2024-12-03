@@ -69,7 +69,7 @@ const Search = () => {
 					renderItem={({ item }) => {
 					console.log('Renderizando item:', item);
 					return (
-						<Pressable onPress={() => navigation.navigate('userfound', { userId: item._id })}>
+						<Pressable onPress={() => navigation.navigate('userfound', { user: item })}>
 							<View style={styles.userContainer}>
 								<Image style={styles.userImage} source={{ uri: item.profileImage }} />
 								<View>

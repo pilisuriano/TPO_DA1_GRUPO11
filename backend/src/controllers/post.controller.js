@@ -87,14 +87,41 @@ export const getPost = async (req, res) => {
   }
 }
 
-// TODO
 export const editPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { title, media, location } = req.body;
+
+    // Buscar el post por ID y actualizarlo con los nuevos datos
+    const updatedPost = await Post.findByIdAndUpdate(
+      postId,
+      {
+        title,
+        media,
+        location,
+      },
+      { new: true, runValidators: true } // Devolver el documento actualizado y ejecutar validadores
+    );
+
+    if (!updatedPost) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.status(200).json(updatedPost);
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// TODO
+/*export const editPost = async (req, res) => {
   try {
 
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
-}
+}*/
 
 export const deletePost = async (req, res) => {
     try {

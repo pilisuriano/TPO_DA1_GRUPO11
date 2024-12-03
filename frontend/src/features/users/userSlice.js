@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getUserProfile } from './api'; // Asegúrate de importar correctamente
+import { getUserProfile, getAnotherUserProfile } from './api'; // Asegúrate de importar correctamente
 import axios from 'axios';
 import { getAuthToken } from '../../services/secureStore';
 import { updateUser } from './api';
@@ -23,6 +23,18 @@ export const fetchUserProfile = createAsyncThunk(
     async (_, { rejectWithValue }) => {
       try {
         const response = await getUserProfile();  // Aquí deberías obtener el perfil del usuario y sus posts
+        return response;  // Asegúrate de retornar los datos correctamente, si la respuesta es un objeto
+      } catch (error) {
+        return rejectWithValue(error.response.data);
+      }
+    }
+  );
+
+  export const fetchAnotherUserProfile = createAsyncThunk(
+    'user/fetchAnotherUserProfile',
+    async (userId, { rejectWithValue }) => {
+      try {
+        const response = await getAnotherUserProfile();  // Aquí deberías obtener el perfil del usuario y sus posts
         return response;  // Asegúrate de retornar los datos correctamente, si la respuesta es un objeto
       } catch (error) {
         return rejectWithValue(error.response.data);
@@ -79,6 +91,19 @@ const userSlice = createSlice({
       })
       .addCase(updateUserData.rejected, (state, action) => {
         console.error('Error updating user:', action.payload); // Log detallado
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchAnotherUserProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchAnotherUserProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.posts = action.payload.posts;
+      })
+      .addCase(fetchAnotherUserProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

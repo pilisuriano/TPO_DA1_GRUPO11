@@ -1,11 +1,68 @@
-import * as React from "react";
-import {Image, StyleSheet, Text, View, Pressable} from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from "react";
+import {Image, StyleSheet, Text, View, Pressable, TextInput, Alert, Modal, Button} from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import * as ImagePicker from 'expo-image-picker';
+import { updatePostData } from "../../src/features/posts/postSlice";
+import { useDispatch } from "react-redux";
+import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar correctamente
 
 const EDITARPOST = () => {
     const navigation = useNavigation();
 	const { t } = useTranslation();
+	const route = useRoute();
+	const dispatch = useDispatch();
+	const { postId, media, title: initialTitle, location: initialLocation } = route.params || {};
+	const [title, setTitle] = useState(initialTitle || '');
+	const [location, setLocation] = useState(initialLocation || '');
+	const [modalVisible, setModalVisible] = useState(false);
+	const [postImage, setPostImage] = useState(Array.isArray(media) ? media : []);
+
+	useEffect(() => {
+		console.log('Post ID:', postId);
+		console.log('Media:', media);
+		console.log('Title:', title);
+		console.log('Location:', initialLocation);
+		// Aquí puedes usar el postId para obtener los detalles del post o realizar otras acciones
+	}, [postId, media,title,initialLocation]);
+
+	const handleUpdatePost = async () => {
+		try {
+		  const postData = {
+			title,
+			location: { ...initialLocation, placeName: location },
+			media: postImage,
+		  };
+		  await dispatch(updatePostData({ postId, postData })).unwrap();
+		  Alert.alert('Success', 'Post updated successfully');
+		  navigation.navigate('editarpost');
+		} catch (error) {
+		  Alert.alert('Error', error.message);
+		}
+	  };
+	
+	  const pickMedia = async () => {
+		let result = await ImagePicker.launchImageLibraryAsync({
+			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			allowsMultipleSelection: true,
+			quality: 0.5,
+			base64: true,
+		});
+
+		if (!result.canceled) {
+			setPostImage([...postImage, ...result.assets.map(asset => ({ url: asset.uri, type: 'image' }))]);
+			setModalVisible(true);
+		}
+	};
+
+	const confirmImage = () => {
+		handleUpdatePost();
+	};
+
+	const cancelImage = () => {
+		setPostImage(null);
+		setModalVisible(false);
+	};
 
   	return (
     		<View style={styles.editarPost}>
@@ -15,8 +72,30 @@ const EDITARPOST = () => {
       			<Image style={styles.editarPostChild} resizeMode="cover" source={require("../../assets/images/Line 10.png")}/>
       			<Text style={[styles.editarPieDe, styles.editarPieDeTypo]}>{t('editTitle')}</Text>
       			<View style={styles.editarPostItem} />
-      			<Text style={styles.elMejorMsico}>¡El mejor músico del mundo! Tour 2024 allá voy.</Text>
-      			<Pressable style={[styles.rectangleParent, styles.groupLayout]} onPress={()=>{}}>
+				  <TextInput
+						style={styles.input}
+						placeholder={t('title')}
+						value={title}
+						onChangeText={setTitle}
+					/>
+				<Text style={[styles.editarPieDe2, styles.editarPieDeTypo]}>{t('editLocation')}</Text>
+					<TextInput
+						style={styles.input2}
+						placeholder={t('location')}
+						value={location.placeName}
+						onChangeText={setLocation}
+					/>
+				  {postImage && postImage.length > 0 ? (
+						postImage.map((image, index) => (
+						<Image key={index} source={{ uri: image.url }} style={[styles.unsplashig7vn6okgneIcon, styles.rectangleViewLayout]} />
+						))
+					) : (
+						<Text style={styles.noImageText}>No image</Text>
+					)}
+					<Pressable style={styles.cameraIconContainer} onPress={pickMedia}>
+						<Text style={styles.noImageText}>{t('addPhoto')}</Text>
+					</Pressable>
+      			<Pressable style={[styles.rectangleParent, styles.groupLayout]} onPress={handleUpdatePost}>
         				<View style={[styles.groupChild, styles.groupLayout]} />
         				<Text style={[styles.actualizarPost, styles.postTypo]}>{t('update')}</Text>
       			</Pressable>
@@ -29,14 +108,34 @@ const EDITARPOST = () => {
       			<Image style={[styles.iconlylightOutlinearrowL1, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       			<View style={[styles.rectangleView, styles.groupInnerBorder]} />
       			<View style={[styles.editarPostChild1, styles.groupInnerBorder]} />
-      			<Image style={[styles.unsplashig7vn6okgneIcon, styles.rectangleViewLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_ig7vN6OkGNE.png")} />
-      			<Image style={[styles.plusIcon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Plus.png")} />
       			<View style={[styles.rectangleContainer, styles.groupInnerLayout]}>
         				<View style={[styles.groupInner, styles.groupInnerLayout]} />
         				<Image style={[styles.deleteIcon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Group 81.png")} />
       			</View>
+				  <Modal
+					animationType="slide"
+					transparent={true}
+					visible={modalVisible}
+					onRequestClose={() => {
+					setModalVisible(!modalVisible);
+					}}
+				>
+					<View style={styles.modalView}>
+					<Text style={styles.modalText}>{t('Confirm Image')}</Text>
+					{postImage && (
+						<Image style={styles.modalImage} source={{ uri: postImage }} />
+					)}
+					<View style={styles.modalButtons}>
+						<Button title={t('Cancel')} onPress={cancelImage} />
+						<Button title={t('Confirm')} onPress={confirmImage} />
+					</View>
+					</View>
+				</Modal>
     		</View>);
 };
+/*      			<Image style={[styles.unsplashig7vn6okgneIcon, styles.rectangleViewLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_ig7vN6OkGNE.png")} />*/
+/*<Text style={styles.elMejorMsico}>¡El mejor músico del mundo! Tour 2024 allá voy.</Text>*/
+
 
 const styles = StyleSheet.create({
   	groupIconPosition: {
@@ -60,11 +159,40 @@ const styles = StyleSheet.create({
     		left: 35,
     		position: "absolute"
   	},
+	  cameraIconContainer: {
+		position: 'absolute',
+		backgroundColor: '#fff',
+		borderRadius: 50,
+		padding: 5,
+		left: 135,
+		top: 247,
+		zIndex: 1,
+	  },
   	groupLayout: {
     		height: 49,
     		width: 321,
     		position: "absolute"
   	},
+	  input: {
+		height: 40,
+		borderColor: 'gray',
+		borderWidth: 1,
+		marginBottom: 10,
+		paddingHorizontal: 10,
+		borderRadius: 10,
+		top: 300,
+		marginHorizontal: 15,
+	  },
+	  input2: {
+		height: 40,
+		borderColor: 'gray',
+		borderWidth: 1,
+		marginBottom: 10,
+		paddingHorizontal: 10,
+		borderRadius: 10,
+		top: 330,
+		marginHorizontal: 15,
+	  },
   	postTypo: {
     		color: "#fff",
     		fontFamily: "Poppins-SemiBold",
@@ -74,6 +202,12 @@ const styles = StyleSheet.create({
     		textAlign: "left",
     		position: "absolute"
   	},
+	  postImage: {
+		width: '100%',
+		height: 200,
+		borderRadius: 10,
+		marginBottom: 10,
+	  },
   	groupInnerBorder: {
     		opacity: 0.8,
     		borderWidth: 0.5,
@@ -86,7 +220,8 @@ const styles = StyleSheet.create({
     		height: 80,
     		width: 80,
     		top: 164,
-    		position: "absolute"
+    		position: "absolute",
+			zIndex: 1,
   	},
   	groupInnerLayout: {
     		height: 25,
@@ -115,14 +250,28 @@ const styles = StyleSheet.create({
     		position: "absolute"
   	},
   	editarPieDe: {
-    		top: 308,
+    		top: 290,
+    		width: 137
+  	},
+	  nombreCompleto: {
+		fontSize: 14,
+		fontWeight: "500",
+		fontFamily: "Poppins-Medium",
+		color: "#000",
+		textAlign: "left",
+		width: 149,
+		opacity: 0.7,
+		top: 150,
+		left: 15,
+		},
+	editarPieDe2: {
+    		top: 370,
     		width: 137
   	},
   	editarPostItem: {
     		top: 334,
     		height: 84,
     		width: 321,
-    		backgroundColor: "#f2f2f2",
     		borderRadius: 10,
     		left: 35,
     		position: "absolute"

@@ -57,6 +57,14 @@ const MYPROFILE = () => {
     );
   }
 
+  if (!user) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text>{t('userNotFound')}</Text>
+      </View>
+    );
+  }
+
   const renderItem = ({ item }) => {
     // Extraer la primera URL de 'media'
     const firstMedia = item.media && item.media.length > 0 ? item.media[0].url : null;
@@ -72,6 +80,7 @@ const MYPROFILE = () => {
     );
   };
 
+  const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
     /*<View style={styles.myProfile}>
@@ -100,7 +109,7 @@ const MYPROFILE = () => {
             <View style={styles.container}>
                 {user ? (
                   <FlatList
-                    data={user.posts}
+                    data={sortedPosts}
                     renderItem={renderItem}
                     keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
                     numColumns={3} // Tres columnas fijas
