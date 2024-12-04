@@ -6,7 +6,7 @@ import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import StartScreen from './app/screens/StartScreen'; // Asegúrate de que la ruta sea correcta
+import StartScreen from './app/startScreen/index';
 import store from './src/store/store'
 
 

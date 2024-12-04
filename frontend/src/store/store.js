@@ -8,6 +8,7 @@ import postReducer from "../features/posts/postSlice";
 import timelineReducer from "../features/timeline/timeline.slice";
 import userReducer from "../features/users/userSlice";
 import searchReducer from "../features/search/searchSlice";
+import followersReducer from '../features/folllowers/followers.slice'
 import errorMiddleware from "../utils/errorMiddleware";
 
 const store = configureStore({
@@ -21,6 +22,7 @@ const store = configureStore({
     timeline: timelineReducer,
     user: userReducer,
     search: searchReducer,
+    followers: followersReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

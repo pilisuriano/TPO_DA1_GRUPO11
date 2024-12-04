@@ -35,6 +35,7 @@ const authSlice = createSlice({
     logoutUser: (state) => {
       state.token = null;
       state.authenticated = false;
+      state.error = null;
     },
     setError: (state, action) => {
       state.error = action.payload.message;
