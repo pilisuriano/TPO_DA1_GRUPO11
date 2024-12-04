@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/google', googleAuth);
 
 // Ruta de callback de Google
-router.get('/google/callback', googleAuthCallback);
+router.get('auth/google/callback', googleAuthCallback);
 
 // Ruta protegida para home
 router.get('/', protectRoute, (req, res) => {
