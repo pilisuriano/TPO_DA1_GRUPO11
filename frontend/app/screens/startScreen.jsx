@@ -131,6 +131,25 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 844,
     overflow: "hidden"
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+  },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  googleButtonText: {
+    fontSize: 18,
+    color: '#000',
   }
 });
 
