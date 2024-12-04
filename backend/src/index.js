@@ -23,7 +23,7 @@ app.use('/auths', AuthsRoutes);
 app.use('/users', UsersRoutes);
 app.use('/posts', PostsRoutes);
 app.use('/timeline', TimelineRoute);
-app.use('/auth', gmailRoutes); // Usar las rutas de autenticación de Google
+app.use('/', gmailRoutes); // Usar las rutas de autenticación de Google
 
 // Configurar sesiones
 app.use(session({
