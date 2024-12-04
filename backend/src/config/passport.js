@@ -8,7 +8,7 @@ import User from '../models/user.model.js'; // Asegúrate de que la ruta sea cor
 passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL: '/auth/google/callback'
+  callbackURL: 'https://tpo-da1-grupo11.onrender.com/auth/google/callback'
 },
 async (accessToken, refreshToken, profile, done) => {
   try {
