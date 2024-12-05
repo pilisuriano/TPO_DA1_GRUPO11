@@ -66,56 +66,8 @@ const POSTSFAVORITOS = () => {
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       ) : (
-      <InfoMessage message={t('userDoesNotHaveFavorites')} />
+        <InfoMessage message={t('userDoesNotHaveFavorites')} />
       )}
-
-      {/* <Image style={[styles.unsplashxejossdcnr8Icon, styles.iconLayout3]} resizeMode="cover" source={require("../../assets/images/unsplash_xEJoSsDCnR8.png")} />
-      <View style={[styles.rectangleParent, styles.rectangleParentLayout]}>
-        <View style={[styles.groupChild, styles.groupChildPosition]} />
-        <View style={styles.groupChildPosition}>
-          <View style={[styles.groupChild, styles.groupChildPosition]} />
-        </View>
-      </View>
-      <Image style={[styles.image37Icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/image 37.png")} />
-      <Text style={styles.misPostsFavoritos}>{t('favoritePosts')}</Text>
-      <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('settings')}>
-        <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
-      </Pressable>
-      <Image style={[styles.unsplashqbf59tu077qIcon, styles.iconLayout3]} resizeMode="cover" source={require("../../assets/images/unsplash_qbf59TU077Q.png")} />
-      <View style={[styles.rectangleGroup, styles.rectangleParentLayout]}>
-        <View style={[styles.groupChild, styles.groupChildPosition]} />
-        <View style={styles.groupChildPosition}>
-          <View style={[styles.groupChild, styles.groupChildPosition]} />
-        </View>
-      </View>
-      <Image style={[styles.image35Icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/image 37.png")} />
-      <Pressable style={[styles.image, styles.imagePosition]} onPress={() => navigation.navigate('userfoundcomment')}>
-        <Image style={[styles.icon1, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/imageasado.png")} />
-      </Pressable>
-      <View style={[styles.groupView, styles.groupViewPosition]}>
-        <View style={[styles.groupChild, styles.groupChildPosition]} />
-        <View style={styles.groupChildPosition}>
-          <View style={[styles.groupChild, styles.groupChildPosition]} />
-        </View>
-      </View>
-      <Image style={[styles.image33Icon, styles.iconPosition]} resizeMode="cover" source={require("../../assets/images/image 37.png")} />
-      <Image style={[styles.unsplashclv9dfjlwacIcon, styles.imagePosition]} resizeMode="cover" source={require("../../assets/images/unsplash_Clv9DfJLwac.png")} />
-      <View style={[styles.rectangleParent1, styles.groupViewPosition]}>
-        <View style={[styles.groupChild, styles.groupChildPosition]} />
-        <View style={styles.groupChildPosition}>
-          <View style={[styles.groupChild, styles.groupChildPosition]} />
-        </View>
-      </View>
-      <Image style={[styles.image36Icon, styles.iconPosition]} resizeMode="cover" source={require("../../assets/images/image 37.png")} />
-      <Image style={[styles.unsplashq2b08qyxkc4Icon, styles.iconLayout3]} resizeMode="cover" source={require("../../assets/images/unsplash_Q2B08QyXKC4.png")} />
-      <View style={[styles.rectangleParent2, styles.rectangleParentLayout]}>
-        <View style={[styles.groupChild, styles.groupChildPosition]} />
-        <View style={styles.groupChildPosition}>
-          <View style={[styles.groupChild, styles.groupChildPosition]} />
-        </View>
-      </View>
-      <Image style={[styles.image34Icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/image 37.png")} />
-      <Image style={styles.postsFavoritosChild} resizeMode="cover" source={require("../../assets/images/Line 10.png")} /> */}
     </View>);
 };
 
@@ -140,8 +92,8 @@ const styles = StyleSheet.create({
   },
   separator: {
     width: '100%',
-    height: 10, // Altura de la separación
-    backgroundColor: 'transparent', // O el color que prefieras
+    height: 10,
+    backgroundColor: 'transparent',
   },
   postImage: {
     width: 100,
@@ -150,8 +102,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   itemContainer: {
-    margin: 4, // Espacio entre los ítems
+    margin: 4,
     alignItems: 'center',
+  },
+  iconButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 20,
+    padding: 5,
   },
   noImageText: {
     fontSize: 12,

@@ -102,21 +102,6 @@ export default function basetab() {
         options={{
           href: null, }}
       />
-      <Tabs.Screen
-        name="seguidos"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="favoritos"
-        options={{
-          href: null, }}
-      />
-      <Tabs.Screen
-        name="seguidores"
-        options={{
-          href: null, }}
-      />
     </Tabs>
   );
 }
