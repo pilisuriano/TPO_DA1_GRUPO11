@@ -9,6 +9,9 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    ```bash
    npm install
    ```
+   /// Si no anda el reproductor de video
+   
+   npx expo install expo-av
 
 2. Start the app
 
