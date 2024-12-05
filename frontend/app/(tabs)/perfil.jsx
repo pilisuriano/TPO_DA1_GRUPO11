@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList, ActivityIndicator, Alert } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList, ActivityIndicator, Alert, Button, useColorScheme } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import Toolbar from "@/components/Toolbar";
 import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from "expo-router";
+import { ThemeContext } from '../../src/context/ThemeContext'; // Importar el contexto de tema
 
 
 const MYPROFILE = () => {
@@ -14,6 +15,7 @@ const MYPROFILE = () => {
   const dispatch = useDispatch();
   const { user, posts, loading, error } = useSelector((state) => state.user);
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     dispatch(fetchUserProfile()); 
@@ -153,6 +155,83 @@ const MYPROFILE = () => {
             />
             {error && <Text style={styles.errorText}>{error}</Text>}
           </View>
+    {/* <View style={styles.myProfile}>
+      <Toolbar title="Post" />
+      <InfoMessage message="Próximamente podrás ver tu perfil y personalizar tu cuenta." />
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={post}
+          renderItem={renderPost}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
+      {error && <Text style={styles.errorText}>{error}</Text>}
+    </View>
+  );
+  <View style={[styles.usuarioEncontrado, { backgroundColor: theme.colors.background }]}>
+          {user ? (
+            <>
+      			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
+      			<Text style={[styles.perfil, styles.perfilTypo, { color: theme.colors.text }]}>{t('profile')}</Text>
+            <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('home')}>
+              <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
+            </Pressable>
+            <View style={styles.container}>
+                {user ? (
+                  <FlatList
+                    data={sortedPosts}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
+                    numColumns={3} // Tres columnas fijas
+                    contentContainerStyle={styles.list}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
+                  />
+                ) : (
+                  <Text style={[styles.errorText,{ color: theme.colors.text}] }>{t('userNotFound')}</Text>
+                )}
+                {error && <Text style={styles.errorText}>{error}</Text>}
+              </View>
+      {user && (
+					<>
+              <Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
+              <Text style={[styles.martinPerez, styles.perfilTypo, { color: theme.colors.text}]}>{user.fullName}</Text>
+              <Text style={[styles.posts, { color: theme.colors.text}]}>{t('posts')}</Text>
+              <Text style={[styles.imAPostive, styles.seguirTypo, { color: theme.colors.text}]}>{user.description}</Text>
+              <Text style={[styles.nivel4, styles.text2Typo]}>{t('level')} {user.gamificationLevel}</Text>
+              <Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
+                <Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")} />
+              </Pressable>
+              <Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile', { userId: user._id, posts: user.posts})}>
+                <Text style={[styles.editarPerfil, styles.nivel4Typo]}>{t('editProfile')}</Text>
+              </Pressable>
+              <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
+              <Text style={[styles.text, styles.textTypo, { color: theme.colors.text}]}>{user.posts.length}</Text>
+              <Text style={[styles.text1, styles.textTypo, { color: theme.colors.text}]}>{user.following}</Text>
+              <Text style={[styles.k, styles.textTypo, { color: theme.colors.text}]}>{user.followers}</Text>
+              <View style={[styles.lineView, styles.lineViewLayout]} />
+              <Text style={[styles.posts1, styles.posts1Typo, { color: theme.colors.text}]}>{t('posts')}</Text>
+              <Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text}]}>{t('following')}</Text>
+              </Pressable>
+              <Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text}]}>{t('followers')}</Text>
+              </Pressable>
+              <Pressable style={[styles.editarPostsParent, styles.image13IconLayout]} onPress={() => navigation.navigate('editarpost')}>
+                <Text style={[styles.editarPosts, styles.editarPostsTypo, { color: theme.colors.text}]}>{t('editPosts')}</Text>
+                <Image style={[styles.image13Icon, styles.image13IconLayout]} resizeMode="cover" source={require("../../assets/images/image 13.png")} />
+              </Pressable>
+              <View style={[styles.iconlyboldchat, styles.chatLayout]}>
+                  <View style={[styles.chat, styles.chatLayout]}>
+                  <View style={[styles.chat, styles.chatLayout]}>
+                    <Text style={[styles.text2, styles.text2Typo, { color: theme.colors.text}]}>{user.comments}</Text>
+                    <Image style={[styles.vectorIcon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Chat.png")} />
+                  </View>
+                </View>
+              </View>
+				  	</>
+				)} */}
         </>
       ) : (
         <Text style={styles.errorText}>{t('profileNotFound')}</Text>
@@ -283,6 +362,18 @@ const styles = StyleSheet.create({
   pressableContainer: {
     flexDirection: 'row',
 
+  },
+  darkBackground: {
+    backgroundColor: '#1A1A1A',
+  },
+  lightBackground: {
+    backgroundColor: '#F0F0F0',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#000000',
   },
   loadingText: {
     marginTop: 10,

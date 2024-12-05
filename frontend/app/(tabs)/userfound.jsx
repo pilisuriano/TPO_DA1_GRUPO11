@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {Image, StyleSheet, Text, View, Pressable, ActivityIndicator, FlatList} from "react-native";
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { fetchAnotherUserProfile } from "../../src/features/users/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 const USUARIOENCONTRADO = () => {
     const navigation = useNavigation();
@@ -14,6 +15,7 @@ const USUARIOENCONTRADO = () => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const {posts, loading, error} = useSelector((state) => state.user);
+	const { theme } = useContext(ThemeContext);
 
 
 	/*useEffect(() => {
@@ -136,15 +138,15 @@ const USUARIOENCONTRADO = () => {
                 {error && <Text style={styles.errorText}>{error}</Text>}
               </View>
     		</View>);*/
-			<View style={styles.usuarioEncontrado}>
+			<View style={[styles.usuarioEncontrado, { backgroundColor: theme.colors.background }]}>
           {user ? (
             <>
       			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
-      			<Text style={[styles.perfil, styles.perfilTypo]}>{t('profile')}</Text>
+      			<Text style={[styles.perfil, styles.perfilTypo, { color: theme.colors.text }]}>{t('profile')}</Text>
             <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('search')}>
               <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
             </Pressable>
-            <View style={styles.container}>
+            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
                 {user ? (
                   <FlatList
                     data={sortedPosts}
@@ -155,27 +157,27 @@ const USUARIOENCONTRADO = () => {
                     ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
                   />
                 ) : (
-                  <Text style={styles.errorText}>{t('userNotFound')}</Text>
+                  <Text style={[styles.errorText, { color: theme.colors.text }]}>{t('userNotFound')}</Text>
                 )}
                 {error && <Text style={styles.errorText}>{error}</Text>}
               </View>
       {user && (
 					<>
               <Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
-              <Text style={[styles.martinPerez, styles.perfilTypo]}>{user.fullName}</Text>
-              <Text style={styles.posts}>{t('posts')}</Text>
-              <Text style={[styles.imAPostive, styles.seguirTypo]}>{user.description}</Text>
+              <Text style={[styles.martinPerez, styles.perfilTypo, { color: theme.colors.text }]}>{user.fullName}</Text>
+              <Text style={[styles.posts, { color: theme.colors.text }]}>{t('posts')}</Text>
+              <Text style={[styles.imAPostive, styles.seguirTypo, { color: theme.colors.text }]}>{user.description}</Text>
               <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
-              <Text style={[styles.text, styles.textTypo]}>{user.posts.length}</Text>
-              <Text style={[styles.text1, styles.textTypo]}>{user.following}</Text>
-              <Text style={[styles.k, styles.textTypo]}>{user.followers}</Text>
+              <Text style={[styles.text, styles.textTypo, { color: theme.colors.text }]}>{user.posts.length}</Text>
+              <Text style={[styles.text1, styles.textTypo, { color: theme.colors.text }]}>{user.following}</Text>
+              <Text style={[styles.k, styles.textTypo, { color: theme.colors.text }]}>{user.followers}</Text>
               <View style={[styles.lineView, styles.lineViewLayout]} />
-              <Text style={[styles.posts1, styles.posts1Typo]}>{t('posts')}</Text>
+              <Text style={[styles.posts1, styles.posts1Typo, { color: theme.colors.text }]}>{t('posts')}</Text>
               <Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
-                <Text style={styles.posts1Typo}>{t('following')}</Text>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text }]}>{t('following')}</Text>
               </Pressable>
               <Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
-                <Text style={styles.posts1Typo}>{t('followers')}</Text>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text }]}>{t('followers')}</Text>
               </Pressable>
 				  	</>
 				)}

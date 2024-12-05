@@ -1,20 +1,24 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 export default function basetab() {
   const colorScheme = useColorScheme();
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
+        tabBarStyle: { backgroundColor: theme.colors.background },
+        tabBarLabelStyle: { fontWeight: 'bold', color: theme.colors.text }, // Hacer el texto de las pestañas más en negrita
       }}>
       <Tabs.Screen
         name="home"

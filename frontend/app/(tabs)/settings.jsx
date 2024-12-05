@@ -1,69 +1,54 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, Text, Pressable, View, Platform, StatusBar, Modal, ToastAndroid } from "react-native";
-import { CommonActions, useNavigation } from '@react-navigation/native';
+import React, { useContext, useState } from 'react';
+import { Image, StyleSheet, Text, Pressable, View, ActivityIndicator, useColorScheme, Switch } from "react-native";
+import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
-import Button from '@/components/Button';
-import Toolbar from '@/components/Toolbar';
-import { deleteAuthToken } from '@/src/services/secureStore';
-import { logoutUser } from '@/src/features/auth/auth.slice'
-import api from '@/src/services/api';
-import { useDispatch } from 'react-redux';
+import { ThemeContext } from '../../src/context/ThemeContext.js'; // Importar el contexto de tema
 
 const CONFIGURACIONES = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const colorScheme = useColorScheme();
   const [isEnglish, setIsEnglish] = useState(i18n.language === 'en');
-  const [modalVisible, setModalVisible] = useState(false);
+  const { isDarkMode, theme, toggleTheme } = useContext(ThemeContext); // Consumir del contexto
 
   const changeLanguage = (language) => {
     i18n.changeLanguage(language);
     setIsEnglish(language === 'en');
   };
 
-  const handleLogout = async () => {
-    try {
-      dispatch(logoutUser());
-
-      await deleteAuthToken()
-      navigation.dispatch(CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'login/index' }]
-      }))
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    try {
-      const response = await api.delete('/users/me');
-      if (response.status === 200) {
-        dispatch(logoutUser());
-        await deleteAuthToken()
-        setModalVisible(!modalVisible)
-        navigation.dispatch(CommonActions.reset({
-          index: 0,
-          routes: [{ name: 'startScreen/index' }]
-        }))
-      } else {
-        setModalVisible(!modalVisible)
-        ToastAndroid.show(t('error'), ToastAndroid.SHORT);
-      }
-    } catch (error) {
-      console.error(error);
-    }
+  // Usar toggleTheme en lugar de setIsDarkMode
+  const toggleDarkMode = (value) => {
+    toggleTheme(value);  // Utilizamos toggleTheme desde el contexto
   };
 
 
   return (
-    <View style={styles.configuraciones}>
-
-      <Toolbar title={t('settings')} />
-      <Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo]}>{t('darkMode')}</Text>
-      <Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo]}>{t('favoritePosts')}</Text>
-      <Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo]}>{t('changeLanguage')}</Text>
+    <View style={[styles.configuraciones, { backgroundColor: theme.colors.background }]}>
+      <Text style={[styles.configuracin, { color: theme.colors.text }]}>{t('settings')}</Text>
+      <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
+        <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
+      </Pressable>
+      <Pressable style={[styles.rectangleParent, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
+        <View style={[styles.groupChild, styles.groupLayout]} />
+        <Text style={[styles.cerrarSesin, styles.cerrarSesinTypo]}>{t('logout')}</Text>
+      </Pressable>
+      <Pressable style={[styles.rectangleGroup, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
+        <View style={[styles.groupItem, styles.groupLayout]} />
+        <Text style={[styles.eliminarCuenta, styles.cerrarSesinTypo]}>{t('deleteAccount')}</Text>
+      </Pressable>
+      <Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('darkMode')}</Text>
+      <View style={styles.switchContainer}>
+        <Switch
+          value={isDarkMode}
+          onValueChange={toggleDarkMode}
+          trackColor={{ false: '#006175', true: '#BB4426' }}
+          thumbColor={isDarkMode ? '#006175' : '#BB4426'}
+          ios_backgroundColor="#3e3e3e"
+        />
+      </View>
+      <Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('favoritePosts')}</Text>
+      <Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('changeLanguage')}</Text>
       <View style={styles.languageButtons}>
         <Pressable
           style={[styles.languageButton, isEnglish ? styles.activeButton : styles.inactiveButton]}
@@ -78,99 +63,13 @@ const CONFIGURACIONES = () => {
           <Text style={styles.languageButtonText}>Español</Text>
         </Pressable>
       </View>
-      <Image style={styles.image31Icon} resizeMode="cover" source={require("../../assets/images/image 31.png")} />
       <Pressable style={[styles.iconlylightOutlinearrowL1, styles.iconlylightPosition]} onPress={() => navigation.navigate('favoritos')}>
         <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       </Pressable>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {setModalVisible(!modalVisible)}}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{t('deleteAccountModalText')}</Text>
-            <View style={styles.buttonsModalView}>
-              <Pressable
-              style={[styles.button, styles.buttonAccept]}
-              onPress={handleDeleteAccount}>
-              <Text style={styles.textStyle}>{t('deleteAccountModalAccept')}</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}>
-              <Text style={styles.textStyle}>{t('deleteAccountModalDismiss')}</Text>
-            </Pressable>
-            </View>
-            
-          </View>
-        </View>
-      </Modal>
-
-      <View style={styles.footerContainer}>
-        <Button text={t('logout')} type='third' onPress={handleLogout} />
-        <Button text={t('deleteAccount')} onPress={() => setModalVisible(true)} />
-      </View>
     </View>);
 };
 
 const styles = StyleSheet.create({
-  // Modal
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  buttonsModalView: {
-    flexDirection: 'row'
-  },
-  button: {
-    borderRadius: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    elevation: 2,
-    marginHorizontal: 20
-  },
-  buttonAccept: {
-    backgroundColor: '#B5432A',
-  },
-  buttonClose: {
-    backgroundColor: '#006175',
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-
-  // Screen
-  footerContainer: {
-    position: 'absolute',
-    alignSelf: 'center',
-    bottom: 65,
-    width: '100%',
-    justifyContent: 'flex-end'
-  },
   blackBase21Position: {
     width: 390,
     left: 0,
@@ -224,6 +123,18 @@ const styles = StyleSheet.create({
     top: 0,
     width: 390
   },
+  darkBackground: {
+    backgroundColor: '#1A1A1A',
+  },
+  lightBackground: {
+    backgroundColor: '#F0F0F0',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#000000',
+  },
   configuracin: {
     top: 67,
     left: 134,
@@ -240,6 +151,10 @@ const styles = StyleSheet.create({
     width: "100%",
     maxHeight: "100%",
     maxWidth: "100%"
+  },
+  switchContainer: {
+    marginVertical: 123, // Ajusta el margen superior e inferior del contenedor del Switch
+    left: -40,
   },
   iconlylightOutlinearrowL: {
     left: "7.73%",
@@ -264,7 +179,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#bb4426',
   },
   inactiveButton: {
-    backgroundColor: '#cccccc',
+    backgroundColor: '#8A9597',
   },
   cerrarSesin: {
     top: 11,
@@ -337,7 +252,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#007bff',
     borderRadius: 5,
-    top: 300,
   },
   languageButtonText: {
     color: '#fff',
@@ -345,14 +259,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   configuraciones: {
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 26 : 26,
     backgroundColor: "#fff",
     flex: 1,
     height: 844,
     overflow: "hidden",
-    width: "100%",
-    paddingHorizontal: 30,
+    width: "100%"
   }
 });
 
 export default CONFIGURACIONES;
+
