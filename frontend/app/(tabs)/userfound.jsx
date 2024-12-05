@@ -10,15 +10,33 @@ import { ThemeContext } from '../../src/context/ThemeContext';
 const USUARIOENCONTRADO = () => {
 	const navigation = useNavigation();
 	const route = useRoute();
-	const { user } = route.params;
-	//const { user, posts, loading, error } = useSelector((state) => state.user);
+	const {user} = route.params;
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const { posts, loading, error } = useSelector((state) => state.user);
 	const { theme } = useContext(ThemeContext);
 
 
-	useFocusEffect(
+	useEffect(() => {
+		const fetchUser = async () => {
+		  try {
+			const response = await axios.get(`api/users/${user._id}`);
+			setUser(response.data);
+		  } catch (err) {
+			setError(err.message);
+		  } finally {
+			setLoading(false);
+		  }
+		};
+	
+		fetchUser();
+	  }, [user._id]);
+
+	  useEffect(() => {
+		dispatch(fetchAnotherUserProfile(user._id));
+	  }, [dispatch, user._id]);
+
+	  useFocusEffect(
 		React.useCallback(() => {
 			dispatch(fetchAnotherUserProfile(user._id)); // Obtener el perfil y posts del usuario
 		}, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
