@@ -1,12 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
-import {Image, StyleSheet, Text, View, Pressable, TextInput, Alert, Modal, Button} from "react-native";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import {Image, StyleSheet, Text, View, Pressable, TextInput, Alert, Modal, Button, ActivityIndicator} from "react-native";
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
-import { updatePostData } from "../../src/features/posts/postSlice";
+import { fetchUserPosts, updatePostData } from "../../src/features/posts/postSlice";
 import { useDispatch } from "react-redux";
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar correctamente
 import { ThemeContext } from '../../src/context/ThemeContext';
+import { fetchUserProfile } from "@/src/features/users/userSlice";
 
 
 const EDITARPOST = () => {
@@ -29,6 +30,34 @@ const EDITARPOST = () => {
 		console.log('Location:', initialLocation);
 		// Aquí puedes usar el postId para obtener los detalles del post o realizar otras acciones
 	}, [postId, media,title,initialLocation]);
+
+	useFocusEffect(
+		useCallback(() => {
+		  // Código que se ejecuta cada vez que la pantalla se enfoca
+		  const fetchPostDetails = async () => {
+			try {
+			  const userProfile = await dispatch(fetchUserProfile()).unwrap();
+			  const postDetails = userProfile.posts.find(post => post._id === postId);
+			  if (postDetails) {
+				setTitle(postDetails.title);
+				setLocation(postDetails.location.placeName);
+				setPostImage(postDetails.media);
+			  } else {
+				console.error('Post not found');
+			  }
+			} catch (error) {
+			  console.error('Failed to fetch post details:', error);
+			}
+		  };
+	
+		  fetchPostDetails();
+	
+		  return () => {
+			// Código que se ejecuta cuando la pantalla se desenfoca
+			console.log('Screen is unfocused');
+		  };
+		}, [dispatch, postId])
+	  );
 
 	const handleUpdatePost = async () => {
 		try {

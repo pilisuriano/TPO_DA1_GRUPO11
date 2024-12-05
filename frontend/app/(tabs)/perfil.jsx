@@ -3,7 +3,7 @@ import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import Toolbar from "@/components/Toolbar";
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { MaterialIcons } from '@expo/vector-icons';
 import InfoMessage from "@/components/InfoMessage";
 import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
@@ -130,12 +130,16 @@ const MYPROFILE = () => {
               <Text style={[styles.posts, { color: theme.colors.text}]}>{t('posts')}</Text>
               <Text style={[styles.imAPostive, styles.seguirTypo, { color: theme.colors.text}]}>{user.description}</Text>
               <Text style={[styles.nivel4, styles.text2Typo]}>{t('level')} {user.gamificationLevel}</Text>
-              <Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
-                <Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")} />
+              <Pressable style={styles.settingsButton} onPress={() => navigation.navigate('settings')}>
+                <MaterialIcons name="settings" size={30} color={theme.colors.text} />
               </Pressable>
               <Pressable style={styles.myProfileItem} onPress={() => navigation.navigate('editprofile', { userId: user._id, posts: user.posts})}>
                 <Text style={[styles.editarPerfil, styles.nivel4Typo]}>{t('editProfile')}</Text>
               </Pressable>
+              <Pressable style={styles.editPostsButton} onPress={() => navigation.navigate('editarpost')}>
+                <MaterialIcons name="edit" size={30} color={theme.colors.text} />
+              </Pressable>
+              <Text style={[styles.editarPosts, styles.editarPostsTypo, { color: theme.colors.text}]}>{t('editPosts')}</Text>
               <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
               <Text style={[styles.text, styles.textTypo, { color: theme.colors.text}]}>{user.posts.length}</Text>
               <Text style={[styles.text1, styles.textTypo, { color: theme.colors.text}]}>{user.following}</Text>
@@ -147,10 +151,6 @@ const MYPROFILE = () => {
               </Pressable>
               <Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
                 <Text style={[styles.posts1Typo, { color: theme.colors.text}]}>{t('followers')}</Text>
-              </Pressable>
-              <Pressable style={[styles.editarPostsParent, styles.image13IconLayout]} onPress={() => navigation.navigate('editarpost')}>
-                <Text style={[styles.editarPosts, styles.editarPostsTypo, { color: theme.colors.text}]}>{t('editPosts')}</Text>
-                <Image style={[styles.image13Icon, styles.image13IconLayout]} resizeMode="cover" source={require("../../assets/images/image 13.png")} />
               </Pressable>
               <View style={[styles.iconlyboldchat, styles.chatLayout]}>
                   <View style={[styles.chat, styles.chatLayout]}>
@@ -299,6 +299,11 @@ list: {
   paddingBottom: 20,
   paddingHorizontal: 10,
 },
+editPostsButton: {
+  position: 'absolute',
+  top: 395,
+  right: 35,
+},
 seguirTypo: {
     fontFamily: "Poppins-Medium",
     fontWeight: "500",
@@ -336,6 +341,11 @@ myProfileItem: {
   height: 28,
   borderRadius: 10,
   position: "absolute"
+  },
+  settingsButton: {
+    position: 'absolute',
+    top: 230,
+    right: 30,
   },
 lineViewLayout: {
     height: 44,
@@ -522,7 +532,10 @@ editarPostsTypo: {
   fontSize: 12,
   textAlign: "left",
   color: "#000",
-  position: "absolute"
+  zIndex: 17,
+  left: 198,
+  top: -311,
+  position: "justify-content",
   },
 perfil: {
     top: 74,
