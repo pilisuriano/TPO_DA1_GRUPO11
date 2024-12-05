@@ -20,6 +20,7 @@ import { addLike, removeLike } from '@/src/features/likes/likes.slice';
 const { width, height } = Dimensions.get('window');
 
 const Post = ({ post }) => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
@@ -118,7 +119,7 @@ const Post = ({ post }) => {
                 <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.likes}</Text>
               </TouchableOpacity>
             )}
-            <TouchableOpacity style={styles.iconContainer}>
+            <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('postpublicado', { postId: post._id })}>
               <Icon name="comment" size={20} color="gray" />
               <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.comments.length}</Text>
             </TouchableOpacity>
@@ -135,7 +136,14 @@ const Post = ({ post }) => {
 
           </View>
           <View>
-            <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{post.comments.length != 0 ? post.comments.length : t('noCom')}</Text>
+            {post.comments.length > 0 ? (
+              <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('postpublicado', { postId: post._id })}>
+                <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('hasComments')}</Text>
+              </TouchableOpacity>
+            ) : (
+                <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('noCom')}</Text>
+            )}
+
           </View>
         </View>
       </View>

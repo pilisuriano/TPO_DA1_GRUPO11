@@ -50,4 +50,21 @@ export const updatePost = async (postId, postData) => {
   }
 };
 
+export const getPost = async (postId) => {
+  try {
+    const response = await api.get(`/posts/${postId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response;
+  }
+};
 
+export const addComment = async (postId, comment) => {
+  try {
+    console.log(comment)
+    const response = await api.post(`/posts/${postId}/comment`, {text: comment});
+    return response.data;
+  } catch (error) {
+    throw error.response;
+  }
+};

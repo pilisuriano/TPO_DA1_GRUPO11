@@ -37,6 +37,7 @@
   "web": "Our website",
   "visit": "Visit us: ",
   "noCom": "No comments yet",
+  "hasComments": "See comments",
   "noPost": "No posts to visualize yet",
   "search": "Search users...",
   "searchusr": "Search for users",
@@ -57,5 +58,6 @@
   "deleteAccountModalDismiss": "No",
   "userDoesNotHaveFollowers": "You don't have followers.",
   "userDoesNotHaveFollowing": "You don't have users that you follow.",
-  "userDoesNotHaveFavorites": "You don't have favorite posts."
+  "userDoesNotHaveFavorites": "You don't have favorite posts.",
+  "writeComment": "Write a comment..."
 }
