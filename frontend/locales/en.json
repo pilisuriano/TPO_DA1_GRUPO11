@@ -53,5 +53,6 @@
   "deleteAccountModalText": "Are you sure you want to delete your account?",
   "deleteAccountModalAccept": "Yes",
   "deleteAccountModalDismiss": "No",
-  "userDoesNotHaveFollowers": "You don't have followers."
+  "userDoesNotHaveFollowers": "You don't have followers.",
+  "userDoesNotHaveFollowing": "You don't have users that you follow."
 }

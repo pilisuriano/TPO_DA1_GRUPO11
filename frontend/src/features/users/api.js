@@ -2,9 +2,7 @@ import api from '../../services/api.js';
 
 export const getUserProfile = async () => {
     try {
-      console.log('Iniciando solicitud para obtener el perfil del usuario');
       const response = await api.get('/users/me');
-      console.log('Respuesta recibida:', response);
       return response.data;
     } catch (error) {
       if (error.response) {
@@ -26,7 +24,6 @@ export const getUserProfile = async () => {
 
   export const getAnotherUserProfile = async (userId) => {
     try {
-      console.log('Iniciando solicitud para obtener el perfil del usuario');
       const response = await api.get(`/users/${userId}`);
       console.log('Respuesta recibida:', response.data);
       return response.data;

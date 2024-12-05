@@ -26,11 +26,6 @@ const MYPROFILE = () => {
   );
 
   useEffect(() => {
-    console.log('User:', user);
-    console.log('Posts:', posts);
-  }, [user, posts]);
-
-  useEffect(() => {
     if (error) {
       Alert.alert('Error', `Could not fetch user profile. Please try again. ${error}`);
     }
@@ -114,14 +109,22 @@ const MYPROFILE = () => {
               <Text style={styles.statLabel}>{t('profilePostsStat')}</Text>
             </View>
             <View style={styles.stat}>
-              <Pressable style={styles.stat} onPress={() => router.push({ pathname: "/(tabs)/following", params: { userId: user._id }})}>
+              <Pressable style={styles.stat} onPress={() => {
+                if (user.following > 0) {
+                  router.push({ pathname: "/(tabs)/following", params: { userId: user._id }})
+                }
+              }}>
                 <Text style={styles.statValue}>{user.following}</Text>
                 <Text style={styles.statLabel}>{t('following')}</Text>
               </Pressable>
             </View>
 
             <View style={styles.stat}>
-              <Pressable style={styles.stat} onPress={() => router.push({ pathname: "/(tabs)/followers", params: { userId: user._id }})}>
+              <Pressable style={styles.stat} onPress={() => {
+                if (user.followers > 0) {
+                  router.push({ pathname: "/(tabs)/followers", params: { userId: user._id }})
+                }
+              }}>
                 <Text style={styles.statValue}>{user.followers}</Text>
                 <Text style={styles.statLabel}>{t('followers')}</Text>
               </Pressable>

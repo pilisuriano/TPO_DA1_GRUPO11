@@ -11,9 +11,7 @@ export const createPost = async (data) => {
 
 export const getUserPosts = async () => {
   try {
-    console.log('Iniciando solicitud para obtener publicaciones del usuario');
     const response = await api.get('/users/me');
-    console.log('Respuesta recibida:', response);
 
     // Verificar si hay publicaciones en la respuesta
     if (!response.data || !response.data.posts || response.data.posts.length === 0) {
@@ -22,9 +20,6 @@ export const getUserPosts = async () => {
     return response.data.posts;  // Asumiendo que 'posts' es el campo que contiene las publicaciones
   } catch (error) {
     if (error.response) {
-      // Error de respuesta del servidor (por ejemplo, error 400 o 500)
-      console.error("Error Response Status:", error.response.status);
-      console.error("Error Response Data:", error.response.data);
       throw new Error(`Server responded with status ${error.response.status}: ${JSON.stringify(error.response.data)}`);
     } else if (error.request) {
       // La solicitud fue enviada pero no hubo respuesta
@@ -44,8 +39,6 @@ export const updatePost = async (postId, postData) => {
     return response.data;
   } catch (error) {
     if (error.response) {
-      console.error("Error Response Status:", error.response.status);
-      console.error("Error Response Data:", error.response.data);
       throw new Error(`Server responded with status ${error.response.status}: ${JSON.stringify(error.response.data)}`);
     } else if (error.request) {
       console.error("No response received:", error.request);
