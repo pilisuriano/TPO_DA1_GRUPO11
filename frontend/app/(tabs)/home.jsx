@@ -33,10 +33,6 @@ const Post = ({ post }) => {
     setContainerSize({ width, height });
   };
 
-  const handleFavorite = () => {
-
-  }
-
   return (
     <View style={[styles.elInicio, { backgroundColor: theme.colors.background }]}>
       <View style={[styles.postContainer, { backgroundColor: theme.colors.background }]}>
