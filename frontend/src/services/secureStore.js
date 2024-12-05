@@ -12,11 +12,9 @@ export const getAuthToken = async () => {
     return await SecureStore.getItemAsync('authToken');
 };
 
-export const deleteAuthToken = async (token) => {
-    if (token) {
-        await SecureStore.deleteItemAsync('authToken');
-        delete axios.defaults.headers.common['Authorization'];
-    }
+export const deleteAuthToken = async () => {
+    await SecureStore.deleteItemAsync('authToken');
+    delete axios.defaults.headers.common['Authorization'];
 };
 
 export const saveItem = async (key, value) => {
