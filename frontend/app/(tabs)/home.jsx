@@ -16,6 +16,7 @@ import { ThemeContext } from '../../src/context/ThemeContext';
 import { Video } from 'expo-av';
 import { addFavorite, removeFavorite } from '@/src/features/favorites/favorites.slice';
 import { addLike, removeLike } from '@/src/features/likes/likes.slice';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ const Post = ({ post }) => {
     setContainerSize({ width, height });
   };
   const handleVideoPress = () => {
-    setIsMuted(!isMuted); // Cambiar el estado de isMuted al hacer tap en el video
+    setIsMuted(!isMuted);
   };
   return (
     <View style={[styles.elInicio, { backgroundColor: theme.colors.background }]}>
@@ -45,7 +46,15 @@ const Post = ({ post }) => {
           <View style={styles.headerInfo}>
             <Text style={[styles.name, { color: theme.colors.text }]}>{post.userId.fullName}</Text>
             <Text style={[styles.details, { color: theme.colors.text }]}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
-            <Text style={[styles.cancunMexico, styles.chrisUilFlexBox, { color: theme.colors.text }]}>{post.location?.placeName ? post.location.placeName : ""}</Text>
+            {post.location?.placeName ? (
+              <View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5}}>
+              <MaterialIcons name='location-pin' color='black'/>
+              <Text style={[{ color: theme.colors.text }]}>{post.location?.placeName ? post.location.placeName : ""}</Text>
+            </View>
+            ) : (
+              <></>
+            )}
+            
           </View>
         </View>
         {post.media.length === 1 ? (
@@ -146,7 +155,7 @@ const Post = ({ post }) => {
                 <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('hasComments')}</Text>
               </TouchableOpacity>
             ) : (
-                <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('noCom')}</Text>
+              <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('noCom')}</Text>
             )}
 
           </View>
@@ -402,7 +411,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Poppins-Medium",
     color: "#000",
-    left: 200,
   },
   header: {
     flexDirection: 'row',
@@ -419,7 +427,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: 'bold',
-    top: 15,
   },
   headerInfo: {
     flex: 1,
@@ -428,7 +435,6 @@ const styles = StyleSheet.create({
   },
   details: {
     color: 'gray',
-    top: 15,
   },
   bringToFront: {
     position: 'absolute',

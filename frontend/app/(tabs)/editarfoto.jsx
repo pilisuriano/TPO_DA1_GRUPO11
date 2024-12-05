@@ -60,7 +60,7 @@ const EDITARPOST = () => {
 	};
 
 	const confirmImage = () => {
-		setModalVisible(false);
+		handleUpdatePost();
 	};
 
 	const cancelImage = () => {
