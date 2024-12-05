@@ -37,6 +37,7 @@
   "visit": "Visitanos en: ",
   "noPost": "No hay publicaciones para visualizar aún",
   "noCom": "Todavia no hay comentarios",
+  "hasComments": "Ver comentarios",
   "search": "Buscar usuarios...",
   "searchusr": "Busqueda de usuarios", 
   "searchU": "Buscar",
@@ -57,5 +58,6 @@
   "deleteAccountModalDismiss": "No",
   "userDoesNotHaveFollowers": "No tienes seguidores.",
   "userDoesNotHaveFollowing": "No tienes usuarios seguidos.",
-  "userDoesNotHaveFavorites": "No tienes posts favoritos"
+  "userDoesNotHaveFavorites": "No tienes posts favoritos",
+  "writeComment": "Escribe un comentario..."
 }
