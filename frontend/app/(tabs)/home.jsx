@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { transformDate } from '../../src/utils/dateUtils';
 import { ThemeContext } from '../../src/context/ThemeContext';
+import { Video } from 'expo-av';
 
 const { width, height } = Dimensions.get('window');
 
@@ -50,15 +51,31 @@ const Post = ({ post }) => {
             borderWidth: 1,
             overflow: 'hidden', // Asegúrate de que no haya desbordes
           }}>
-          <ImageModal
-            resizeMode='contain'
-            imageBackgroundColor='#f0f0f0'
-            source={{ uri: post.media[0]?.url }}
-            style={{
-              width: containerSize.width,
-              height: 185,
-            }}
-          />
+          {post.media[0]?.type === 'video' ? (
+            <Video
+              source={{ uri: post.media[0]?.url }}
+              rate={1.0}
+              volume={1.0}
+              isMuted={false}
+              resizeMode="contain"
+              shouldPlay
+              isLooping
+              style={{
+                width: containerSize.width,
+                height: 185,
+              }}
+            />
+          ) : (
+            <ImageModal
+              resizeMode='contain'
+              imageBackgroundColor='#f0f0f0'
+              source={{ uri: post.media[0]?.url }}
+              style={{
+                width: containerSize.width,
+                height: 185,
+              }}
+            />
+          )}
         </View>
 
       ) : (
@@ -110,18 +127,37 @@ const renderItem = ({ item }) => {
 
   return (
 
-    <ImageModal
-      resizeMode='contain'
-      imageBackgroundColor='#f0f0f0'
-      style={{
-        width: 360,
-        height: 250,
-        borderRadius: 10,
-        borderColor: '#000000',
-        borderWidth: 1,
-      }}
-      source={{ uri: item.url }}
-    />
+    item.type === 'video' ? (
+      <Video
+        source={{ uri: item.url }}
+        rate={1.0}
+        volume={1.0}
+        isMuted={false}
+        resizeMode="contain"
+        shouldPlay
+        isLooping
+        style={{
+          width: 360,
+          height: 250,
+          borderRadius: 10,
+          borderColor: '#000000',
+          borderWidth: 1,
+        }}
+      />
+    ) : (
+      <ImageModal
+        resizeMode='contain'
+        imageBackgroundColor='#f0f0f0'
+        style={{
+          width: 360,
+          height: 250,
+          borderRadius: 10,
+          borderColor: '#000000',
+          borderWidth: 1,
+        }}
+        source={{ uri: item.url }}
+      />
+    )
 
   );
 }
