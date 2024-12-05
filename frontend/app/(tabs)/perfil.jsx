@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
-import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList, ActivityIndicator, Alert, Button, useColorScheme } from "react-native";
+import { Image, StyleSheet, View, Text, Pressable, ScrollView, Platform, StatusBar, FlatList, ActivityIndicator, Alert, Button, useColorScheme } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import Toolbar from "@/components/Toolbar";
 import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
 import { ThemeContext } from '../../src/context/ThemeContext'; // Importar el contexto de tema
-import { Video } from 'expo-av'; 
+import { Video } from 'expo-av';
 
 const MYPROFILE = () => {
   const navigation = useNavigation();
@@ -84,7 +85,7 @@ const MYPROFILE = () => {
   const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {user ? (
         <>
           <Toolbar title={t('profile')} />
@@ -98,33 +99,33 @@ const MYPROFILE = () => {
             </View>
 
             <View>
-              <Text style={[styles.fullName]}>{user.fullName}</Text>
+              <Text style={[styles.fullName, { color: theme.colors.text }]}>{user.fullName}</Text>
               <View style={styles.rowContainer}>
                 <Text style={[styles.gamificationLevel]}>{t('level')} {user.gamificationLevel}</Text>
                 <Image style={[styles.vectorIcon]} resizeMode="cover" source={require("../../assets/images/Chat.png")} />
-                <Text style={styles.comments}>{user.comments}</Text>
+                <Text style={[styles.comments, { color: theme.colors.text }]}>{user.comments}</Text>
 
                 {/* boton settings */}
-                <Pressable style={{ marginLeft: 'auto' }} onPress={() => router.push('/(tabs)/settings')}>
-                  <Image style={[styles.iconSettings]} resizeMode="cover" source={require("../../assets/images/Setting.png")} />
+                <Pressable style={styles.settingsButton} onPress={() => navigation.navigate('settings')}>
+                  <MaterialIcons name="settings" size={30} color={theme.colors.text} />
                 </Pressable>
               </View>
             </View>
 
 
-            <Text style={[styles.description]}>{user.description}</Text>
+            <Text style={[styles.description, { color: theme.colors.text }]}>{user.description}</Text>
           </View>
 
           {/* boton editar perfil */}
-          <Pressable style={styles.editProfileButton} >
+          <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('editarpost')} >
             <Text style={[styles.editProfileText, styles.nivel4Typo]}>{t('editProfile')}</Text>
           </Pressable>
 
           {/* Posts, Siguiendo, Seguidores */}
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
-              <Text style={styles.statValue}>{user.posts.length}</Text>
-              <Text style={styles.statLabel}>{t('profilePostsStat')}</Text>
+              <Text style={[styles.statValue, { color: theme.colors.text }]}>{user.posts.length}</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.text }]}>{t('profilePostsStat')}</Text>
             </View>
             <View style={styles.stat}>
               <Pressable style={styles.stat} onPress={() => {
@@ -132,8 +133,8 @@ const MYPROFILE = () => {
                   router.push({ pathname: "/(tabs)/following", params: { userId: user._id }})
                 }
               }}>
-                <Text style={styles.statValue}>{user.following}</Text>
-                <Text style={styles.statLabel}>{t('following')}</Text>
+                <Text style={[styles.statValue, { color: theme.colors.text }]}>{user.following}</Text>
+                <Text style={[styles.statLabel, { color: theme.colors.text }]}>{t('following')}</Text>
               </Pressable>
             </View>
 
@@ -143,8 +144,8 @@ const MYPROFILE = () => {
                   router.push({ pathname: "/(tabs)/followers", params: { userId: user._id }})
                 }
               }}>
-                <Text style={styles.statValue}>{user.followers}</Text>
-                <Text style={styles.statLabel}>{t('followers')}</Text>
+                <Text style={[styles.statValue, { color: theme.colors.text }]}>{user.followers}</Text>
+                <Text style={[styles.statLabel, { color: theme.colors.text }]}>{t('followers')}</Text>
               </Pressable>
             </View>
 
@@ -154,10 +155,10 @@ const MYPROFILE = () => {
           <View style={styles.postsContainer}>
 
             <View style={styles.postsRowContainer}>
-              <Text style={styles.postsTitle}>{t('profilePostsStat')}</Text>
-              <Pressable style={styles.pressableContainer} onPress={() => navigation.navigate('editarpost')}>
-                <Text style={styles.editPostsLabel}>{t('editPosts')}</Text>
-                <Image style={styles.editProfileIcon} resizeMode="cover" source={require("../../assets/images/image 13.png")} />
+              <Text style={[styles.postsTitle, { color: theme.colors.text }]}>{t('profilePostsStat')}</Text>
+              <Pressable style={styles.editPostsButton} onPress={() => navigation.navigate('editarpost')}>
+                <MaterialIcons name="edit" size={30} color={theme.colors.text} />
+                <Text style={[styles.editPostsLabel, { color: theme.colors.text }]}>{t('editPosts')}</Text>
               </Pressable>
             </View>
 
@@ -345,6 +346,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginVertical: 20,
   },
+  editPostsButton: {
+    left: 55,
+  },
   stat: { alignItems: 'center' },
   loadingContainer: {
     flex: 1,
@@ -357,6 +361,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000000',
     fontFamily: "Poppins-Regular"
+  },
+  settingsButton: {
+    left: 75,
   },
   postsTitle: {
     fontSize: 14,
@@ -371,6 +378,8 @@ const styles = StyleSheet.create({
   editPostsLabel: {
     color: '#000000',
     opacity: 0.8,
+    left: -80,
+    top: -30,
   },
   editProfileIcon: {
     marginLeft: 5
