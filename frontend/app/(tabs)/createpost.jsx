@@ -8,6 +8,7 @@ import { useRouter } from "expo-router";
 import Toolbar from "@/components/Toolbar";
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../../src/context/ThemeContext';
+import * as FileSystem from "expo-file-system"; // Importar para manejar archivos
 
 const CreatePost = () => {
   const router = useRouter()
@@ -32,8 +33,10 @@ const CreatePost = () => {
     try {
       dispatch(resetError());
       const imagesBase64 = media.map((item) => `data:image/jpeg;base64,${item.base64}`);
+      const videoBase64 = media.map((item) => `data:video/mp4;base64,${item.base64}`);
+
       const locationData = { ...locationCoordinates, placeName: locationPlace }
-      dispatch(createUserPost({ title, location: locationData, images: imagesBase64 }));
+       dispatch(createUserPost({ title, location: locationData, images: imagesBase64 || videoBase64}));
       // dispatch(createUserPost({ title: title, location: locationData, images: [`data:image/jpeg;base64,${image}`] }));
     } catch (err) {
       console.error("Error during post creation:", err);
@@ -41,20 +44,37 @@ const CreatePost = () => {
     }
   };
 
+  const convertVideoToBase64 = async (uri) => {
+    try {
+      // Leer el archivo del video como binario en base64
+      const videoBase64 = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      return videoBase64;
+    } catch (error) {
+      console.error('Error reading video file:', error);
+      return null;
+    }
+  };
+
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsMultipleSelection: true,
       quality: 0.5,
       base64: true,
     });
 
     if (!result.canceled) {
-      // setImage(result.assets[0].base64); // Llama a la función de subida con la imagen en base64
-      // Agrega las imágenes seleccionadas al array `media`
-      const selectedMedia = result.assets.map((asset) => ({
-        uri: asset.uri,
-        base64: asset.base64
+      const selectedMedia = await Promise.all(result.assets.map(async (asset) => {
+        if (asset.type === 'video') {
+          // Convertir video a base64
+          const videoBase64 = await convertVideoToBase64(asset.uri);
+          return { uri: asset.uri, type: 'video', base64: videoBase64 };
+        } else {
+          // Si es imagen, ya tiene base64
+          return { uri: asset.uri, type: 'image', base64: asset.base64 };
+        }
       }));
       setMedia((prev) => [...prev, ...selectedMedia]); // Concatenar con imágenes existentes
     }
@@ -177,6 +197,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 10,
     alignItems: "center"
+  },
+  thumbnailText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "bold"
   },
   thumbnail: {
     width: 100,
