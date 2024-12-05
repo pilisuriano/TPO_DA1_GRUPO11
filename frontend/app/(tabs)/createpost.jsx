@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useContext} from "react";
 import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView, ToastAndroid, FlatList, TouchableOpacity, Platform, StatusBar, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,6 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import Toolbar from "@/components/Toolbar";
 import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 const CreatePost = () => {
   const router = useRouter()
@@ -15,6 +16,7 @@ const CreatePost = () => {
   const [media, setMedia] = useState([]);
   const [locationPlace, setLocationPlace] = useState("");
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
   const isButtonEnabled = title.trim() !== '' && media.length != 0;
   const { postCreated, loading, error } = useSelector((state) => state.post);
@@ -78,14 +80,14 @@ const CreatePost = () => {
   }
 
   return (
-    <View style={[styles.post]}>
-      <Toolbar title="Post" />
+    <View style={[styles.post, { backgroundColor: theme.colors.background }]}>
+      <Toolbar title={t('createPost')} />
       {loading ? (<View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#B5432A" />
       </View>) : (
         <>
-          <Text style={[styles.labelInputs, styles.selectMedia]}>{t('images')}</Text>
-          <View style={[styles.background]}>
+          <Text style={[styles.labelInputs, styles.selectMedia, { color: theme.colors.text }]}>{t('images')}</Text>
+          <View style={[styles.background, { backgroundColor: theme.colors.background }]}>
             <Pressable onPress={pickMedia}>
               <Image style={[styles.icon]} source={require("../../assets/images/addGalery.png")} />
             </Pressable>
@@ -106,10 +108,10 @@ const CreatePost = () => {
             />
           </View>
 
-          <Text style={[styles.labelInputs]}>{t('title')}</Text>
-          <View style={[styles.pie]}>
+          <Text style={[styles.labelInputs, { color: theme.colors.text }]}>{t('title')}</Text>
+          <View style={[styles.pie, { backgroundColor: theme.colors.background }]}>
             <TextInput
-              style={styles.inputAreaText}
+              style={[styles.inputAreaText, { color: theme.colors.text }]}
               multiline={true}
               numberOfLines={3}
               value={title}
@@ -117,10 +119,10 @@ const CreatePost = () => {
             />
           </View>
 
-          <Text style={[styles.labelInputs]}>{t('location')}</Text>
-          <View style={[styles.pie]}>
+          <Text style={[styles.labelInputs, { color: theme.colors.text }]}>{t('location')}</Text>
+          <View style={[styles.pie, { backgroundColor: theme.colors.background }]}>
             <TextInput
-              style={styles.inputAreaText}
+              style={[styles.inputAreaText, { color: theme.colors.text }]}
               multiline={true}
               numberOfLines={2}
               value={locationPlace}
@@ -163,7 +165,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputAreaText: {
-    opacity: 0.5,
     fontFamily: 'Poppins-Medium',
     fontWeight: "500",
     borderRadius: 8,
@@ -208,7 +209,6 @@ const styles = StyleSheet.create({
   labelInputs: {
     color: "#00000",
     textAlign: 'left',
-    opacity: 0.7,
     fontSize: 14,
     marginTop: 10,
     fontFamily: 'Poppins-Medium',

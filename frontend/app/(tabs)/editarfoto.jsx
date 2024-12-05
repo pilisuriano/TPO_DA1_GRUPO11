@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {Image, StyleSheet, Text, View, Pressable, TextInput, Alert, Modal, Button} from "react-native";
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -6,6 +6,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { updatePostData } from "../../src/features/posts/postSlice";
 import { useDispatch } from "react-redux";
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar correctamente
+import { ThemeContext } from '../../src/context/ThemeContext';
+
 
 const EDITARPOST = () => {
     const navigation = useNavigation();
@@ -17,6 +19,8 @@ const EDITARPOST = () => {
 	const [location, setLocation] = useState(initialLocation || '');
 	const [modalVisible, setModalVisible] = useState(false);
 	const [postImage, setPostImage] = useState(Array.isArray(media) ? media : []);
+	const { theme } = useContext(ThemeContext);
+
 
 	useEffect(() => {
 		console.log('Post ID:', postId);
@@ -65,22 +69,22 @@ const EDITARPOST = () => {
 	};
 
   	return (
-    		<View style={styles.editarPost}>
+    		<View style={[styles.editarPost, { backgroundColor: theme.colors.background }]}>
                 <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('editarpost')}>
                     <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
                 </Pressable>
       			<Image style={styles.editarPostChild} resizeMode="cover" source={require("../../assets/images/Line 10.png")}/>
-      			<Text style={[styles.editarPieDe, styles.editarPieDeTypo]}>{t('editTitle')}</Text>
+      			<Text style={[styles.editarPieDe, styles.editarPieDeTypo, { color: theme.colors.text }]}>{t('editTitle')}</Text>
       			<View style={styles.editarPostItem} />
 				  <TextInput
-						style={styles.input}
+						style={[styles.input,{ color: theme.colors.text }]}
 						placeholder={t('title')}
 						value={title}
 						onChangeText={setTitle}
 					/>
-				<Text style={[styles.editarPieDe2, styles.editarPieDeTypo]}>{t('editLocation')}</Text>
+				<Text style={[styles.editarPieDe2, styles.editarPieDeTypo, { color: theme.colors.text }]}>{t('editLocation')}</Text>
 					<TextInput
-						style={styles.input2}
+						style={[styles.input2, { color: theme.colors.text }]}
 						placeholder={t('location')}
 						value={location.placeName}
 						onChangeText={setLocation}
@@ -92,8 +96,8 @@ const EDITARPOST = () => {
 					) : (
 						<Text style={styles.noImageText}>No image</Text>
 					)}
-					<Pressable style={styles.cameraIconContainer} onPress={pickMedia}>
-						<Text style={styles.noImageText}>{t('addPhoto')}</Text>
+					<Pressable style={[styles.cameraIconContainer,{ backgroundColor: theme.colors.background }] } onPress={pickMedia}>
+						<Text style={[{ color: theme.colors.text }]}>{t('addPhoto')}</Text>
 					</Pressable>
       			<Pressable style={[styles.rectangleParent, styles.groupLayout]} onPress={handleUpdatePost}>
         				<View style={[styles.groupChild, styles.groupLayout]} />
@@ -103,8 +107,7 @@ const EDITARPOST = () => {
         				<View style={[styles.groupChild, styles.groupLayout]} />
         				<Text style={[styles.eliminarPost, styles.postTypo]}>{t('deletePost')}</Text>
       			</View>
-      			<Text style={[styles.seleccionarImgenesYo, styles.editarPieDeTypo]}>{t('images')}</Text>
-      			<View style={styles.editarPostInner} />
+      			<Text style={[styles.seleccionarImgenesYo, styles.editarPieDeTypo, { color: theme.colors.text }]}>{t('images')}</Text>
       			<Image style={[styles.iconlylightOutlinearrowL1, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       			<View style={[styles.rectangleView, styles.groupInnerBorder]} />
       			<View style={[styles.editarPostChild1, styles.groupInnerBorder]} />

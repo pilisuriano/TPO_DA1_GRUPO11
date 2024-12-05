@@ -2,8 +2,9 @@ import axios from 'axios';
 import { getAuthToken } from './secureStore';
 
 const api = axios.create({
-  baseURL: 'https://tpo-da1-grupo11.onrender.com',
+  //baseURL: 'https://tpo-da1-grupo11.onrender.com',
   //baseURL: 'http://10.0.2.2:5000',
+  baseURL: 'https://tpo-da1-grupo11-1gzi.onrender.com',
   /*headers: {
     'Content-Type': 'application/json',
   },*/
