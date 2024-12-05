@@ -47,14 +47,14 @@ const Post = ({ post }) => {
             <Text style={[styles.name, { color: theme.colors.text }]}>{post.userId.fullName}</Text>
             <Text style={[styles.details, { color: theme.colors.text }]}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
             {post.location?.placeName ? (
-              <View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5}}>
-              <MaterialIcons name='location-pin' color='black'/>
-              <Text style={[{ color: theme.colors.text }]}>{post.location?.placeName ? post.location.placeName : ""}</Text>
-            </View>
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5 }}>
+                <MaterialIcons name='location-pin' color='black' />
+                <Text style={[{ color: theme.colors.text }]}>{post.location?.placeName ? post.location.placeName : ""}</Text>
+              </View>
             ) : (
               <></>
             )}
-            
+
           </View>
         </View>
         {post.media.length === 1 ? (
@@ -155,13 +155,15 @@ const Post = ({ post }) => {
                 <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('hasComments')}</Text>
               </TouchableOpacity>
             ) : (
-              <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('noCom')}</Text>
+              <TouchableOpacity onPress={() => navigation.navigate('postpublicado', { postId: post._id })}>
+                <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('noCom')}</Text>
+              </TouchableOpacity>
             )}
 
           </View>
         </View>
       </View>
-    </View>
+    </View >
   )
 };
 

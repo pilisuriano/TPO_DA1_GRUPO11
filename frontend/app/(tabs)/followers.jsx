@@ -76,7 +76,7 @@ const Followers = () => {
       {data && data.followers.length > 0 ? (
         <FlatList
           data={data.followers}
-          keyExtractor={(item) => item._id.toString()}
+          keyExtractor={(item) => item._id}
           renderItem={renderItem}
           ListHeaderComponent={<Text style={styles.headerText}>Hoy</Text>}
           contentContainerStyle={styles.listContainer}

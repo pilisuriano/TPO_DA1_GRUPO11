@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     		top: 0
   	},
   	actualizarPost: {
-    		left: 93
+    		left: 110
   	},
   	rectangleParent: {
     		top: 603,
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     		height: 49
   	},
   	eliminarPost: {
-    		left: 102
+    		left: 70
   	},
   	rectangleGroup: {
     		top: 665,
