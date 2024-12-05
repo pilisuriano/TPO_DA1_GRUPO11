@@ -1,12 +1,14 @@
 /*import * as React from "react";
 import {Image, StyleSheet, Pressable, View, Text} from "react-native";
 import { useNavigation } from '@react-navigation/native';*/
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { View, TextInput, Button, FlatList, Text, StyleSheet, Image, Pressable } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchSearchUsers, clearUsers } from "../../src/features/search/searchSlice";
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../src/context/ThemeContext';
+import Toolbar from "@/components/Toolbar";
 
 const Search = () => {
 	const [query, setQuery] = useState("");
@@ -14,6 +16,7 @@ const Search = () => {
 	const navigation = useNavigation();
 	const { users, loading, error } = useSelector((state) => state.search);
 	const { t } = useTranslation();
+	const { theme } = useContext(ThemeContext);
 
 	/*const handleSearch = () => {
 		if (query.trim() === "") {
@@ -66,39 +69,41 @@ const Search = () => {
       			<Text style={[styles.martinPerez2, styles.martinTypo]}>Martin Perez</Text>
       			<Text style={[styles.martinPerezGutierrez, styles.martinTypo]}>Martin Perez Gutierrez</Text>
     		</View>);*/
-			<View style={styles.container}>
-				<TextInput
-					style={styles.input}
-					placeholder={t('search')}
-					value={query}
-					onChangeText={setQuery}
-					onSubmitEditing={handleSearch} // Manejar la búsqueda cuando se presiona "Enter"
-				/>
-				<Button title={t('searchU')} onPress={handleSearch} />
-				{loading && <Text>{t('loading')}</Text>}
-				{error && <Text style={styles.errorText}>{error}</Text>}
-				<FlatList
-					data={users}
-					keyExtractor={(item) => item._id.toString()}
-					renderItem={({ item }) => {
-					console.log('Renderizando item:', item);
-					return (
-						<Pressable onPress={() => navigation.navigate('userfound', { user: item })}>
-							<View style={styles.userContainer}>
-								<Image style={styles.userImage} source={{ uri: item.profileImage }} />
-								<View>
-								<Text style={styles.userName}>{item.fullName}</Text>
+			<View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+				<Toolbar title={t('searchusr')} />
+					<TextInput
+						style={[styles.input, { color: theme.colors.text }]}
+						placeholder={t('search')}
+						placeholderTextColor={ theme.colors.text }
+						value={query}
+						onChangeText={setQuery}
+						onSubmitEditing={handleSearch} // Manejar la búsqueda cuando se presiona "Enter"
+					/>
+					<Button title={t('searchU')} onPress={handleSearch} />
+					{loading && <Text>{t('loading')}</Text>}
+					{error && <Text style={styles.errorText}>{error}</Text>}
+					<FlatList
+						data={users}
+						keyExtractor={(item) => item._id.toString()}
+						renderItem={({ item }) => {
+						console.log('Renderizando item:', item);
+						return (
+							<Pressable onPress={() => navigation.navigate('userfound', { user: item })}>
+								<View style={styles.userContainer}>
+									<Image style={styles.userImage} source={{ uri: item.profileImage }} />
+									<View>
+									<Text style={[styles.userName, { color: theme.colors.text }]}>{item.fullName}</Text>
+									</View>
 								</View>
-							</View>
-						</Pressable>
-					);
-					}}
-					ListEmptyComponent={() => (
-					<View style={styles.emptyContainer}>
-						<Text style={styles.emptyText}>{t('noUser')}</Text>
-					</View>
-					)}
-				/>
+							</Pressable>
+						);
+						}}
+						ListEmptyComponent={() => (
+						<View style={styles.emptyContainer}>
+							<Text style={[styles.emptyText , { color: theme.colors.text }]}>{t('noUser')}</Text>
+						</View>
+						)}
+					/>
 				</View>
 );
 };

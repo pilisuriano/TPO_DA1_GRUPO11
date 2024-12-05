@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
-import {Image, StyleSheet, Text, Pressable, View} from "react-native";
+import React, { useContext, useState } from 'react';
+import {Image, StyleSheet, Text, Pressable, View, ActivityIndicator, useColorScheme, Switch} from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
+import { ThemeContext } from '../../src/context/ThemeContext.js'; // Importar el contexto de tema
 
 const CONFIGURACIONES = () => {
     const navigation = useNavigation();
 	const {t} = useTranslation();
+	const colorScheme = useColorScheme();
 	const [isEnglish, setIsEnglish] = useState(i18n.language === 'en');
-  	
+	const { isDarkMode, theme, toggleTheme } = useContext(ThemeContext); // Consumir del contexto
+
 	const changeLanguage = (language) => {
 		i18n.changeLanguage(language);
 		setIsEnglish(language === 'en');
-	  };
+	};
+
+	// Usar toggleTheme en lugar de setIsDarkMode
+    const toggleDarkMode = (value) => {
+        toggleTheme(value);  // Utilizamos toggleTheme desde el contexto
+    };
+	
 
   	return (
-    		<View style={styles.configuraciones}>
-      			<Text style={styles.configuracin}>{t('settings')}</Text>
+			<View style={[styles.configuraciones, { backgroundColor: theme.colors.background }]}>
+      			<Text style={[styles.configuracin, { color: theme.colors.text }]}>{t('settings')}</Text>
       			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
@@ -28,9 +37,18 @@ const CONFIGURACIONES = () => {
         				<View style={[styles.groupItem, styles.groupLayout]} />
         				<Text style={[styles.eliminarCuenta, styles.cerrarSesinTypo]}>{t('deleteAccount')}</Text>
       			</Pressable>
-      			<Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo]}>{t('darkMode')}</Text>
-        		<Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo]}>{t('favoritePosts')}</Text>
-      			<Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo]}>{t('changeLanguage')}</Text>
+      			<Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('darkMode')}</Text>
+				  <View style={styles.switchContainer}>
+				  	<Switch
+						value={isDarkMode}
+						onValueChange={toggleDarkMode}
+						trackColor={{ false: '#006175', true: '#BB4426' }}
+						thumbColor={isDarkMode ? '#006175' : '#BB4426'}
+						ios_backgroundColor="#3e3e3e"
+					/>
+					</View>
+        		<Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('favoritePosts')}</Text>
+      			<Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('changeLanguage')}</Text>
 				<View style={styles.languageButtons}>
 				<Pressable
 					style={[styles.languageButton, isEnglish ? styles.activeButton : styles.inactiveButton]}
@@ -45,12 +63,11 @@ const CONFIGURACIONES = () => {
 					<Text style={styles.languageButtonText}>Español</Text>
 				</Pressable>
 				</View>
-      			<Image style={styles.image31Icon} resizeMode="cover" source={require("../../assets/images/image 31.png")} />
       			<Pressable style={[styles.iconlylightOutlinearrowL1, styles.iconlylightPosition]} onPress={() => navigation.navigate('favoritos')}>
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       			</Pressable>
       			</View>);
-      			};
+};
       			
       			const styles = StyleSheet.create({
         				blackBase21Position: {
@@ -106,6 +123,18 @@ const CONFIGURACIONES = () => {
           					top: 0,
           					width: 390
         				},
+						darkBackground: {
+							backgroundColor: '#1A1A1A',
+						  },
+						  lightBackground: {
+							backgroundColor: '#F0F0F0',
+						  },
+						  darkText: {
+							color: '#FFFFFF',
+						  },
+						  lightText: {
+							color: '#000000',
+						  },
         				configuracin: {
           					top: 67,
           					left: 134,
@@ -123,6 +152,10 @@ const CONFIGURACIONES = () => {
           					maxHeight: "100%",
           					maxWidth: "100%"
         				},
+						switchContainer: {
+							marginVertical: 123, // Ajusta el margen superior e inferior del contenedor del Switch
+							left: -40,
+						  },
         				iconlylightOutlinearrowL: {
           					left: "7.73%",
           					top: "8.87%",
@@ -146,7 +179,7 @@ const CONFIGURACIONES = () => {
 							backgroundColor: '#bb4426',
 						  },
 						  inactiveButton: {
-							backgroundColor: '#cccccc',
+							backgroundColor: '#8A9597',
 						  },
         				cerrarSesin: {
           					top: 11,
@@ -219,7 +252,6 @@ const CONFIGURACIONES = () => {
 							padding: 10,
 							backgroundColor: '#007bff',
 							borderRadius: 5,
-							top: 300,
 						  },
 						  languageButtonText: {
 							color: '#fff',

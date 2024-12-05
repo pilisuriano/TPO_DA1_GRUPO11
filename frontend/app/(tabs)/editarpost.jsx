@@ -1,16 +1,18 @@
-import * as React from "react";
+import React, {useContext} from "react";
 import {StyleSheet, View, Image, Text, Pressable, FlatList, ActivityIndicator} from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from "react-redux";
 import { useFocusEffect } from "expo-router";
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 const EDITARPOST = () => {
     const navigation = useNavigation();
 	const dispatch = useDispatch();
 	const { user, posts, loading, error } = useSelector((state) => state.user);
 	const { t } = useTranslation();
+	const { theme } = useContext(ThemeContext);
 
 	// Disparar la acción para obtener el perfil cuando la página se enfoca
 	useFocusEffect(
@@ -45,13 +47,13 @@ const EDITARPOST = () => {
 	const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 	
   	return (
-    		<View style={styles.editarPost}>
-				<Text style={[styles.editarMisPosts, styles.postsTypo]}>{t('editMy')}</Text>
+    		<View style={[styles.editarPost, { backgroundColor: theme.colors.background }]}>
+				<Text style={[styles.editarMisPosts, styles.postsTypo, { color: theme.colors.text }]}>{t('editMy')}</Text>
       			<View style={[styles.editarPostChild, styles.editarPostChildLayout]} />
                 <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
         			<Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
-				  <View style={styles.container}>
+				  <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
 					{user ? (
 						<FlatList
 							data={sortedPosts}

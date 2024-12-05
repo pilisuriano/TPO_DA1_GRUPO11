@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList, ActivityIndicator, Alert, Button } from "react-native";
+import React, { useState, useEffect, useContext } from "react";
+import { Image, StyleSheet, View, Text, Pressable, Platform, StatusBar, FlatList, ActivityIndicator, Alert, Button, useColorScheme } from "react-native";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import Toolbar from "@/components/Toolbar";
@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import InfoMessage from "@/components/InfoMessage";
 import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../src/context/ThemeContext'; // Importar el contexto de tema
 
 
 const MYPROFILE = () => {
@@ -14,6 +15,7 @@ const MYPROFILE = () => {
   const dispatch = useDispatch();
   const { user, posts, loading, error } = useSelector((state) => state.user);
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
   useEffect(() => {
     dispatch(fetchUserProfile()); // Disparar la acción para obtener el perfil del usuario
@@ -98,11 +100,11 @@ const MYPROFILE = () => {
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );*/
-  <View style={styles.usuarioEncontrado}>
+  <View style={[styles.usuarioEncontrado, { backgroundColor: theme.colors.background }]}>
           {user ? (
             <>
       			<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
-      			<Text style={[styles.perfil, styles.perfilTypo]}>{t('profile')}</Text>
+      			<Text style={[styles.perfil, styles.perfilTypo, { color: theme.colors.text }]}>{t('profile')}</Text>
             <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('home')}>
               <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
             </Pressable>
@@ -117,16 +119,16 @@ const MYPROFILE = () => {
                     ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
                   />
                 ) : (
-                  <Text style={styles.errorText}>{t('userNotFound')}</Text>
+                  <Text style={[styles.errorText,{ color: theme.colors.text}] }>{t('userNotFound')}</Text>
                 )}
                 {error && <Text style={styles.errorText}>{error}</Text>}
               </View>
       {user && (
 					<>
               <Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
-              <Text style={[styles.martinPerez, styles.perfilTypo]}>{user.fullName}</Text>
-              <Text style={styles.posts}>{t('posts')}</Text>
-              <Text style={[styles.imAPostive, styles.seguirTypo]}>{user.description}</Text>
+              <Text style={[styles.martinPerez, styles.perfilTypo, { color: theme.colors.text}]}>{user.fullName}</Text>
+              <Text style={[styles.posts, { color: theme.colors.text}]}>{t('posts')}</Text>
+              <Text style={[styles.imAPostive, styles.seguirTypo, { color: theme.colors.text}]}>{user.description}</Text>
               <Text style={[styles.nivel4, styles.text2Typo]}>{t('level')} {user.gamificationLevel}</Text>
               <Pressable style={styles.iconlylightOutlinesetting} onPress={() => navigation.navigate('settings')}>
                 <Image style={[styles.icon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Setting.png")} />
@@ -135,25 +137,25 @@ const MYPROFILE = () => {
                 <Text style={[styles.editarPerfil, styles.nivel4Typo]}>{t('editProfile')}</Text>
               </Pressable>
               <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
-              <Text style={[styles.text, styles.textTypo]}>{user.posts.length}</Text>
-              <Text style={[styles.text1, styles.textTypo]}>{user.following}</Text>
-              <Text style={[styles.k, styles.textTypo]}>{user.followers}</Text>
+              <Text style={[styles.text, styles.textTypo, { color: theme.colors.text}]}>{user.posts.length}</Text>
+              <Text style={[styles.text1, styles.textTypo, { color: theme.colors.text}]}>{user.following}</Text>
+              <Text style={[styles.k, styles.textTypo, { color: theme.colors.text}]}>{user.followers}</Text>
               <View style={[styles.lineView, styles.lineViewLayout]} />
-              <Text style={[styles.posts1, styles.posts1Typo]}>{t('posts')}</Text>
+              <Text style={[styles.posts1, styles.posts1Typo, { color: theme.colors.text}]}>{t('posts')}</Text>
               <Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
-                <Text style={styles.posts1Typo}>{t('following')}</Text>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text}]}>{t('following')}</Text>
               </Pressable>
               <Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
-                <Text style={styles.posts1Typo}>{t('followers')}</Text>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text}]}>{t('followers')}</Text>
               </Pressable>
               <Pressable style={[styles.editarPostsParent, styles.image13IconLayout]} onPress={() => navigation.navigate('editarpost')}>
-                <Text style={[styles.editarPosts, styles.editarPostsTypo]}>{t('editPosts')}</Text>
+                <Text style={[styles.editarPosts, styles.editarPostsTypo, { color: theme.colors.text}]}>{t('editPosts')}</Text>
                 <Image style={[styles.image13Icon, styles.image13IconLayout]} resizeMode="cover" source={require("../../assets/images/image 13.png")} />
               </Pressable>
               <View style={[styles.iconlyboldchat, styles.chatLayout]}>
                   <View style={[styles.chat, styles.chatLayout]}>
                   <View style={[styles.chat, styles.chatLayout]}>
-                    <Text style={[styles.text2, styles.text2Typo]}>{user.comments}</Text>
+                    <Text style={[styles.text2, styles.text2Typo, { color: theme.colors.text}]}>{user.comments}</Text>
                     <Image style={[styles.vectorIcon, styles.iconLayout2]} resizeMode="cover" source={require("../../assets/images/Chat.png")} />
                   </View>
                 </View>
@@ -199,6 +201,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0', // Color de fondo suave
+  },
+  darkBackground: {
+    backgroundColor: '#1A1A1A',
+  },
+  lightBackground: {
+    backgroundColor: '#F0F0F0',
+  },
+  darkText: {
+    color: '#FFFFFF',
+  },
+  lightText: {
+    color: '#000000',
   },
   loadingText: {
     marginTop: 10,
@@ -686,7 +700,6 @@ nivel4: {
   textAlign: "left"
   },
 usuarioEncontrado: {
-    backgroundColor: "#fff",
     flex: 1,
     height: 844,
     overflow: "hidden",
