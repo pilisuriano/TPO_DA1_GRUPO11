@@ -74,6 +74,7 @@ export const getPost = async (req, res) => {
       .populate({
         path: "comments",
         select: "userId text createdAt",
+        options: { sort: { createdAt: -1 } },
         populate: {
           path: "userId",
           select: "fullName profileImg",

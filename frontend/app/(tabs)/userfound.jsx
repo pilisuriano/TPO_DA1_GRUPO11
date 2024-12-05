@@ -39,7 +39,7 @@ const USUARIOENCONTRADO = () => {
 
 	  useFocusEffect(
 		React.useCallback(() => {
-		  dispatch(fetchAnotherUserProfile()); // Obtener el perfil y posts del usuario
+		  dispatch(fetchAnotherUserProfile(user._id)); // Obtener el perfil y posts del usuario
 		}, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
 	  );
 
