@@ -159,6 +159,7 @@ export const getFavoritesPosts = async (req, res) => {
 export const getFollowers = async (req, res) => {
   try {
     const { userId } = req.params;
+    const currentUserId = req.user._id;
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
@@ -170,12 +171,24 @@ export const getFollowers = async (req, res) => {
 
     const totalFollowers = await Follower.countDocuments({ userId });
 
+    // Verificar si cada seguidor también está seguido por el usuario autenticado
+    const followersWithStatus = await Promise.all(
+      followers.map(async (f) => {
+        const isFollowed = await Follower.exists({
+          userId: f.followerId._id,
+          followerId: currentUserId,
+        });
+        return {
+          _id: f.followerId._id,
+          fullName: f.followerId.fullName,
+          profileImage: f.followerId.profileImage,
+          isFollowed: !!isFollowed,
+        };
+      })
+    );
+
     res.status(200).json({
-      followers: followers.map(f => ({
-        _id: f.followerId._id,
-        fullName: f.followerId.fullName,
-        profileImage: f.followerId.profileImage,
-      })),
+      followers: followersWithStatus,
       total: totalFollowers,
       page,
       limit,
@@ -188,6 +201,7 @@ export const getFollowers = async (req, res) => {
 export const getFollowing = async (req, res) => {
   try {
     const { userId } = req.params;
+    const currentUserId = req.user._id;
     const limit = parseInt(req.query.limit) || 10;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
@@ -199,12 +213,24 @@ export const getFollowing = async (req, res) => {
 
     const totalFollowing = await Follower.countDocuments({ followerId: userId });
 
+    // Verificar si cada usuario seguido está siendo seguido por el usuario autenticado
+    const followingWithStatus = await Promise.all(
+      following.map(async (f) => {
+        const isFollowed = await Follower.exists({
+          userId: f.userId._id,
+          followerId: currentUserId,
+        });
+        return {
+          _id: f.userId._id,
+          fullName: f.userId.fullName,
+          profileImage: f.userId.profileImage,
+          isFollowed: !!isFollowed,
+        };
+      })
+    );
+
     res.status(200).json({
-      following: following.map(f => ({
-        _id: f.userId._id,
-        fullName: f.userId.fullName,
-        profileImage: f.userId.profileImage,
-      })),
+      following: followingWithStatus,
       total: totalFollowing,
       page,
       limit,
