@@ -42,6 +42,10 @@ const CreatePost = () => {
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
       });
+      // Fetch the location name using reverse geocoding
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.coords.latitude}&lon=${location.coords.longitude}`);
+      const data = await response.json();
+      setLocationPlace(data.display_name);
     })();
   }, []);
 
@@ -112,6 +116,7 @@ const CreatePost = () => {
     setMedia([])
     setLocationPlace("")
   }
+  
 
   return (
     <ScrollView style={[styles.post, { backgroundColor: theme.colors.background }]}>
@@ -165,9 +170,10 @@ const CreatePost = () => {
           </View>
 
           {/* Mapa con marcador para seleccionar ubicación */}
-          <MapView
+           {/* Mapa con marcador para seleccionar ubicación */}
+           <MapView
             style={styles.map}
-            initialRegion={{
+            region={{
               latitude: locationCoordinates.latitude,
               longitude: locationCoordinates.longitude,
               latitudeDelta: 0.0922,
