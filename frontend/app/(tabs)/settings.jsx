@@ -9,6 +9,7 @@ import { logoutUser } from '@/src/features/auth/auth.slice';
 import { deleteAuthToken } from '@/src/services/secureStore';
 import api from '@/src/services/api';
 import Toolbar from '@/components/Toolbar';
+import Button from '@/components/Button';
 
 const CONFIGURACIONES = () => {
   const navigation = useNavigation();
@@ -65,30 +66,30 @@ const CONFIGURACIONES = () => {
   return (
     <View style={[styles.configuraciones, { backgroundColor: theme.colors.background }]}>
       <Toolbar title={t('settings')} />
-      {/* <Text style={[styles.configuracin, { color: theme.colors.text }]}>{t('settings')}</Text>
-      <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
-        <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
-      </Pressable> */}
-      {/* <Pressable style={[styles.rectangleParent, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
-        <View style={[styles.groupChild, styles.groupLayout]} />
-        <Text style={[styles.cerrarSesin, styles.cerrarSesinTypo]}>{t('logout')}</Text>
-      </Pressable>
-      <Pressable style={[styles.rectangleGroup, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
-        <View style={[styles.groupItem, styles.groupLayout]} />
-        <Text style={[styles.eliminarCuenta, styles.cerrarSesinTypo]}>{t('deleteAccount')}</Text>
-      </Pressable> */}
-      <Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('darkMode')}</Text>
-      <View style={styles.switchContainer}>
-        <Switch
-          value={isDarkMode}
-          onValueChange={toggleDarkMode}
-          trackColor={{ false: '#006175', true: '#BB4426' }}
-          thumbColor={isDarkMode ? '#006175' : '#BB4426'}
-          ios_backgroundColor="#3e3e3e"
-        />
+
+      <View style={styles.rowContainer}>
+        <Text style={[styles.configOption, { color: theme.colors.text }]}>{t('darkMode')}</Text>
+        <View style={styles.switchContainer}>
+          <Switch
+            value={isDarkMode}
+            onValueChange={toggleDarkMode}
+            trackColor={{ false: '#006175', true: '#BB4426' }}
+            thumbColor={isDarkMode ? '#006175' : '#BB4426'}
+            ios_backgroundColor="#3e3e3e"
+          />
+        </View>
+
       </View>
-      <Text style={[styles.misPostsFavoritos, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('favoritePosts')}</Text>
-      <Text style={[styles.cambiarIdioma, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('changeLanguage')}</Text>
+
+      <Pressable onPress={() => navigation.navigate('favorites')}>
+        <View style={styles.rowContainer}>
+          <Text style={[styles.configOption, { color: theme.colors.text }]}>{t('favoritePosts')}</Text>
+          <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/ArrowRight.png")} />
+        </View>
+      </Pressable>
+
+      <Text style={[styles.configOption, { color: theme.colors.text }]}>{t('changeLanguage')}</Text>
+
       <View style={styles.languageButtons}>
         <Pressable
           style={[styles.languageButton, isEnglish ? styles.activeButton : styles.inactiveButton]}
@@ -103,11 +104,6 @@ const CONFIGURACIONES = () => {
           <Text style={styles.languageButtonText}>Español</Text>
         </Pressable>
       </View>
-      <Pressable style={[styles.iconlylightOutlinearrowL1, styles.iconlylightPosition]} onPress={() => navigation.navigate('favoritos')}>
-        <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
-      </Pressable>
-
-
 
       <Modal
         animationType="slide"
@@ -272,101 +268,15 @@ const styles = StyleSheet.create({
     position: "absolute"
   },
   icon: {
-    height: "100%",
-    width: "100%",
-    maxHeight: "100%",
-    maxWidth: "100%"
-  },
-  switchContainer: {
-    marginVertical: 123, // Ajusta el margen superior e inferior del contenedor del Switch
-    left: -40,
-  },
-  iconlylightOutlinearrowL: {
-    left: "7.73%",
-    top: "8.87%",
-    right: "89.6%",
-    bottom: "88.88%",
-    height: "2.25%",
-    width: "2.67%",
-    position: "absolute"
-  },
-  configuracionesChild: {
-    top: 742,
-    left: 38,
-    width: 318,
-    height: 1,
-    position: "absolute"
-  },
-  groupChild: {
-    backgroundColor: "#006175"
+    height: 19,
+    width: 10.5,
+    marginRight: 16
   },
   activeButton: {
     backgroundColor: '#bb4426',
   },
   inactiveButton: {
     backgroundColor: '#8A9597',
-  },
-  cerrarSesin: {
-    top: 11,
-    left: 98,
-    textAlign: "left"
-  },
-  rectangleParent: {
-    top: 606,
-    left: 40,
-    width: 321,
-    position: "absolute"
-  },
-  groupItem: {
-    backgroundColor: "#bb4426"
-  },
-  eliminarCuenta: {
-    textAlign: "center",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    height: 49,
-    width: 321,
-    left: 0,
-    color: "#fff",
-    top: 0
-  },
-  rectangleGroup: {
-    top: 662,
-    left: 40,
-    width: 321,
-    position: "absolute"
-  },
-  activarModoOscuro: {
-    top: 137
-  },
-  misPostsFavoritos: {
-    top: 198
-  },
-  cambiarIdioma: {
-    top: 250
-  },
-  image31Icon: {
-    top: 125,
-    left: 312,
-    width: 45,
-    height: 45,
-    position: "absolute"
-  },
-  iconlylightOutlinearrowL1: {
-    top: "24.38%",
-    bottom: "73.36%"
-  },
-  iconlylightOutlinearrowL2: {
-    top: "30.42%",
-    bottom: "67.33%",
-    maxHeight: "100%",
-    maxWidth: "100%",
-    overflow: "hidden"
-  },
-  configuracionesItem: {
-    top: 775,
-    height: 75
   },
   languageButtons: {
     flexDirection: 'row',
@@ -391,7 +301,20 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     width: "100%",
     paddingHorizontal: 30,
-  }
+  },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+
+  },
+  configOption: {
+    opacity: 0.7,
+    fontSize: 14,
+    fontFamily: "Poppins-Medium",
+    color: "#000000",
+    paddingVertical: 16
+  },
 });
 
 export default CONFIGURACIONES;

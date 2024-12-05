@@ -56,5 +56,6 @@
   "deleteAccountModalAccept": "Yes",
   "deleteAccountModalDismiss": "No",
   "userDoesNotHaveFollowers": "You don't have followers.",
-  "userDoesNotHaveFollowing": "You don't have users that you follow."
+  "userDoesNotHaveFollowing": "You don't have users that you follow.",
+  "userDoesNotHaveFavorites": "You don't have favorite posts."
 }
