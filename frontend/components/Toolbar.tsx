@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
+import { ThemeContext } from '../src/context/ThemeContext';
 
 export default function Toolbar({ title = '', showBackButton = true }) {
   const router = useRouter();
+  const { theme } = useContext(ThemeContext);
 
   return (
-    <View style={styles.toolbar}>
+    <View style={[styles.toolbar]}>
       {showBackButton && (
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <Image resizeMode="cover" source={require('../assets/images/Arrow---Left-2.png')} />
         </Pressable>
       )}
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title, { color: theme.colors.text }]}>{title}</Text>
     </View>
   );
 }
@@ -32,7 +34,6 @@ const styles = StyleSheet.create({
   title: {
     textAlign: "center",
     fontSize: 18,
-    color: '#000',
     fontFamily: 'Poppins-SemiBold',
   },
 });

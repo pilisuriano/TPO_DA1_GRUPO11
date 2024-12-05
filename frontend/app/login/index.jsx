@@ -21,6 +21,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
+import GoogleButton from '../../components/GoogleButton';
 
 export default function LoginScreen() {
   const navigation = useNavigation();
@@ -100,6 +101,7 @@ export default function LoginScreen() {
           <TouchableOpacity onPress={() => router.push('/forgotPassword')}>
             <Text style={styles.forgotPassword}>¿Olvidó su contraseña?</Text>
           </TouchableOpacity>
+          <GoogleButton />
           <View style={styles.footerContainer}>
             <TouchableOpacity
               style={[styles.loginButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}

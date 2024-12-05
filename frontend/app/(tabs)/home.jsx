@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, View, Text, TouchableOpacity, TextInput, Pressable, s, ActivityIndicator, StatusBar, Platform, Dimensions } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useDispatch, useSelector } from "react-redux";
@@ -12,11 +12,12 @@ import InfoMessage from '@/components/InfoMessage';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { transformDate } from '../../src/utils/dateUtils';
-import { Video } from 'expo-av';
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 const { width, height } = Dimensions.get('window');
 
 const Post = ({ post }) => {
+  const { theme } = useContext(ThemeContext);
   const { t, i18n } = useTranslation();
   if (!post || !post.media || !post.media.length) {
     return null;
@@ -29,13 +30,14 @@ const Post = ({ post }) => {
   };
 
   return (
-    <View style={styles.postContainer}>
+    <View style={[styles.elInicio, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.postContainer, { backgroundColor: theme.colors.background }]}>
       <View style={styles.header}>
-        <Image source={post.profilePic ? { uri: post.profilePic } : require("../../assets/images/Profile.png")} style={styles.profilePic} />
-
+        <Image source={post.userId.profileImage ? { uri: post.userId.profileImage } : require("../../assets/images/Profile.png")} style={styles.profilePic} />
         <View style={styles.headerInfo}>
-          <Text style={styles.name}>{post.userId.fullName}</Text>
-          <Text style={styles.details}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
+          <Text style={[styles.name, { color: theme.colors.text }]}>{post.userId.fullName}</Text>
+          <Text style={[styles.details, { color: theme.colors.text }]}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
+          <Text style={[styles.cancunMexico, styles.chrisUilFlexBox, { color: theme.colors.text }]}>{post.location.placeName}</Text>
         </View>
       </View>
       {post.media.length === 1 ? (
@@ -48,31 +50,15 @@ const Post = ({ post }) => {
             borderWidth: 1,
             overflow: 'hidden', // Asegúrate de que no haya desbordes
           }}>
-          {post.media[0]?.type === 'video' ? (
-            <Video
-              source={{ uri: post.media[0]?.url }}
-              rate={1.0}
-              volume={1.0}
-              isMuted={false}
-              resizeMode="contain"
-              shouldPlay
-              isLooping
-              style={{
-                width: containerSize.width,
-                height: 185,
-              }}
-            />
-          ) : (
-            <ImageModal
-              resizeMode='contain'
-              imageBackgroundColor='#f0f0f0'
-              source={{ uri: post.media[0]?.url }}
-              style={{
-                width: containerSize.width,
-                height: 185,
-              }}
-            />
-          )}
+          <ImageModal
+            resizeMode='contain'
+            imageBackgroundColor='#f0f0f0'
+            source={{ uri: post.media[0]?.url }}
+            style={{
+              width: containerSize.width,
+              height: 185,
+            }}
+          />
         </View>
 
       ) : (
@@ -100,21 +86,22 @@ const Post = ({ post }) => {
       )}
 
       <View style={styles.footer}>
-        <Text style={styles.comment}>{post.title}</Text>
+        <Text style={[styles.comment, { color: theme.colors.text }]}>{post.title}</Text>
         <View style={styles.reactions}>
           <TouchableOpacity style={styles.iconContainer}>
             <Icon name="heart" size={20} color="red" />
-            <Text style={styles.reactionText}>{post.likes}</Text>
+            <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.likes}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconContainer}>
             <Icon name="comment" size={20} color="gray" />
-            <Text style={styles.reactionText}>{post.comments.length}</Text>
+            <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.comments.length}</Text>
           </TouchableOpacity>
         </View>
         <View>
-          <Text style={styles.cantComentarios}>{post.comments.length != 0 ? post.comments.length : t('noCom')}</Text>
+          <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{post.comments.length != 0 ? post.comments.length : t('noCom')}</Text>
         </View>
       </View>
+    </View>
     </View>
   )
 };
@@ -123,37 +110,18 @@ const renderItem = ({ item }) => {
 
   return (
 
-    item.type === 'video' ? (
-      <Video
-        source={{ uri: item.url }}
-        rate={1.0}
-        volume={1.0}
-        isMuted={false}
-        resizeMode="contain"
-        shouldPlay
-        isLooping
-        style={{
-          width: 360,
-          height: 250,
-          borderRadius: 10,
-          borderColor: '#000000',
-          borderWidth: 1,
-        }}
-      />
-    ) : (
-      <ImageModal
-        resizeMode='contain'
-        imageBackgroundColor='#f0f0f0'
-        style={{
-          width: 360,
-          height: 250,
-          borderRadius: 10,
-          borderColor: '#000000',
-          borderWidth: 1,
-        }}
-        source={{ uri: item.url }}
-      />
-    )
+    <ImageModal
+      resizeMode='contain'
+      imageBackgroundColor='#f0f0f0'
+      style={{
+        width: 360,
+        height: 250,
+        borderRadius: 10,
+        borderColor: '#000000',
+        borderWidth: 1,
+      }}
+      source={{ uri: item.url }}
+    />
 
   );
 }
@@ -161,6 +129,7 @@ const renderItem = ({ item }) => {
 const Ad = ({ post }) => {
   const [containerSizeAd, setContainerSizeAd] = useState({ width: 0, height: 0 });
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
   const handleAdLayout = (event) => {
     const { width, height } = event.nativeEvent.layout;
@@ -168,46 +137,48 @@ const Ad = ({ post }) => {
   };
 
   return (
-    <View style={styles.postContainer}>
-      <View style={styles.header}>
+    <View style={[styles.elInicio, { backgroundColor: theme.colors.background }]}>
+      <View style={[styles.postContainer, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.header}>
 
-        <Image source={{ uri: post.profilePic } || require("../../assets/images/Profile.png")} style={styles.profilePic} />
+          <Image source={{ uri: post.profilePic } || require("../../assets/images/Profile.png")} style={styles.profilePic} />
 
-        <View style={styles.headerInfo}>
-          <Text style={styles.name}>{post.commerce}</Text>
-          {/* <Text style={styles.details}>{post.createdAt}  ·   {post.location.placeName}</Text> */}
+          <View style={styles.headerInfo}>
+            <Text style={styles.name}>{post.commerce}</Text>
+            {/* <Text style={styles.details}>{post.createdAt}  ·   {post.location.placeName}</Text> */}
+          </View>
         </View>
-      </View>
 
 
-      <View
-        onLayout={handleAdLayout}
-        style={{
-          width: "100%",
-          borderRadius: 10,
-          borderColor: '#000000',
-          borderWidth: 1,
-          overflow: 'hidden', // Asegúrate de que no haya desbordes
-        }}>
-        <ImageModal
-          resizeMode='contain'
-          imageBackgroundColor='#f0f0f0'
-          source={{ uri: post.imagePath[0]?.landscape }}
+        <View
+          onLayout={handleAdLayout}
           style={{
-            width: containerSizeAd.width,
-            height: 265,
-          }}
-        />
-      </View>
-      {/* Pie de la publicación */}
-      <View style={styles.footer}>
-        <Text style={styles.comment}> {t('visit')}
-          <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> {t('web')} </Text>
-        </Text>
-        <View style={styles.reactions}>
+            width: "100%",
+            borderRadius: 10,
+            borderColor: '#000000',
+            borderWidth: 1,
+            overflow: 'hidden', // Asegúrate de que no haya desbordes
+          }}>
+          <ImageModal
+            resizeMode='contain'
+            imageBackgroundColor='#f0f0f0'
+            source={{ uri: post.imagePath[0]?.landscape }}
+            style={{
+              width: containerSizeAd.width,
+              height: 265,
+            }}
+          />
+        </View>
+        {/* Pie de la publicación */}
+        <View style={styles.footer}>
+          <Text style={[styles.comment, { color: theme.colors.text }]}> {t('visit')}
+            <Text style={styles.link} onPress={() => handleLinkPress(post.Url)}> {t('web')} </Text>
+          </Text>
+          <View style={styles.reactions}>
+          </View>
         </View>
       </View>
-    </View>
+      </View>
   )
 }
 
@@ -237,6 +208,7 @@ const Home = () => {
   const { posts, loading, hasMore, error, showEmptyTimeline } = useSelector((state) => state.timeline);
   const [searchQuery, setSearchQuery] = useState("");
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
 
   useEffect(() => {
@@ -280,13 +252,13 @@ const Home = () => {
   }*/
 
   return (
-    <View>
+    <View style={[styles.unInicio, { backgroundColor: theme.colors.background }]}>
       {/* Barra de búsqueda */}
-      <View style={styles.containerInicio}>
+      <View style={[styles.containerInicio, { backgroundColor: theme.colors.background }]}>
         <Image style={[styles.memento]} source={require("../../assets/images/Marca 2.png")} />
-        <View style={styles.searchBar}>
+        <View style={[styles.searchBar,{ backgroundColor: theme.colors.background }]}>
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, styles.bringToFront]}
             placeholder={t('search')}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -298,7 +270,7 @@ const Home = () => {
           <Image style={[styles.icon]} source={require("../../assets/images/Group 12.png")} />
         </View>
       </View>
-      {showEmptyTimeline && posts.length === 0 && <InfoMessage message="No tienes publicaciones para ver aún." />}
+      {showEmptyTimeline && posts.length === 0 && <InfoMessage message={t('noPost')} />}
       {(loading && posts.length === 0) ? (<View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#B5432A" />
       </View>) : (
@@ -308,7 +280,7 @@ const Home = () => {
             item.type === "post" ? <Post post={item} /> : <Ad post={item} />
           }
           keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.container}
+          contentContainerStyle={[styles.container, { backgroundColor: theme.colors.background }]}
           onEndReached={loadMorePosts}
           onEndReachedThreshold={0.5}
           refreshing={loading && posts.length > 0}
@@ -343,6 +315,10 @@ const styles = StyleSheet.create({
     borderStyle: "solid",
     backgroundColor: "#ffffff",
   },
+  searchInput: {
+    left: 70,
+    top: 2,
+  },
   postContainer: {
     marginBottom: 20,
     backgroundColor: '#f0f0f0',
@@ -350,6 +326,14 @@ const styles = StyleSheet.create({
     padding: 10,
     borderColor: '#000000',
     borderWidth: 1,
+    opacity: 0.9,
+  },
+  cancunMexico: {
+    fontSize: 13,
+    fontWeight: "500",
+    fontFamily: "Poppins-Medium",
+    color: "#000",
+    left: 200,
   },
   header: {
     flexDirection: 'row',
@@ -358,14 +342,15 @@ const styles = StyleSheet.create({
   },
 
   profilePic: {
-    width: 22,
-    height: 22,
-    borderRadius: 20,
+    width: 45,
+    height: 45,
+    borderRadius: 25,
     marginLeft: 16,
     marginRight: 10,
   },
   name: {
     fontWeight: 'bold',
+    top: 15,
   },
   headerInfo: {
     flex: 1,
@@ -374,6 +359,11 @@ const styles = StyleSheet.create({
   },
   details: {
     color: 'gray',
+    top:15,
+  },
+  bringToFront: {
+    position: 'absolute',
+    zIndex: 10,
   },
   postImage: {
     width: '100%',
@@ -413,7 +403,6 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     position: "static",
-    backgroundColor: "#ffffff",
     width: "100%",
     top: 10,
     height: 50,
@@ -441,8 +430,8 @@ const styles = StyleSheet.create({
   searchIcon: {
     width: 15,
     height: 15,
-    position: 'relative',
     marginRight: 10,
+    left: 200,
   },
   searchPressable: {
     borderWidth: 1,

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Memento",
-    "slug": "Memento",
+    "name": "frontend",
+    "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/splash.png",
@@ -13,14 +13,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.DA1Grupo11.memento"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/Logo 2.png",
         "backgroundColor": "#ffffff"
       },
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.DA1Grupo11.memento",
+      "versionCode": 1
     },
     "web": {
       "bundler": "metro",
@@ -40,8 +43,14 @@
         "origin": false
       },
       "eas": {
-        "projectId": "d5a105a2-34ff-4113-98dc-1361e9e23b9e"
+        "projectId": "fcfeac7d-a5d2-439c-80bb-356d2966fbeb"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/fcfeac7d-a5d2-439c-80bb-356d2966fbeb"
     }
   }
 }

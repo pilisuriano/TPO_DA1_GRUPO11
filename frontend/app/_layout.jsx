@@ -6,6 +6,8 @@ import 'react-native-reanimated';
 import store from '../src/store/store'
 import React from 'react';
 import { Provider, useDispatch, useSelector } from 'react-redux';
+import { CustomDefaultTheme, CustomDarkTheme } from '../src/themes'; // Importar los temas personalizados
+import { ThemeProvider, ThemeContext } from '../src/context/ThemeContext'; // Importar el contexto de tema
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -38,7 +40,7 @@ const StackLayout = () => {
   useEffect(() => {
     setTimeout(() => {
       onLayoutRootView();
-    }, 5000); // Mantener la pantalla de carga visible por al menos 1.5 segundos
+    }, 200); // Mantener la pantalla de carga visible por al menos 1.5 segundos
 
   }, [onLayoutRootView]);
 
@@ -57,29 +59,38 @@ const StackLayout = () => {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="login/index" options={{ headerShown: false }} />
-      <Stack.Screen name="signup/index" options={{ headerShown: false }} />
-      <Stack.Screen name="signup/otp" options={{ headerShown: false }} />
-      <Stack.Screen name="signup/userInformation" options={{ headerShown: false }} />
-      <Stack.Screen name="signup/chooseUser" options={{ headerShown: false }} />
-      <Stack.Screen name="signup/welcome" options={{ headerShown: false }} />
-      <Stack.Screen name="forgotPassword/index" options={{ headerShown: false }} />
-      <Stack.Screen name="forgotPassword/otp" options={{ headerShown: false }} />
-      <Stack.Screen name="forgotPassword/resetPassword" options={{ headerShown: false }} />
-      <Stack.Screen name="forgotPassword/recovered" options={{ headerShown: false }} />
-      {/* <Stack.Screen name="screens/login/signingoogle" options={{ headerShown: false }} /> */}
-      {authenticated ? (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      ) : (
-        <Stack.Screen name="startScreen/index" options={{ headerShown: false }} />
-      )}
-    </Stack>
+    <ThemeProvider>
+        <ThemeContext.Consumer>
+          {({ isDarkMode }) => (
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                cardStyle: { backgroundColor: isDarkMode ? CustomDarkTheme.colors.background : CustomDefaultTheme.colors.background },
+              }}
+            >
+              <Stack.Screen name="index" options={{ headerShown: false }} />
+              <Stack.Screen name="login/index" options={{ headerShown: false }} />
+              <Stack.Screen name="signup/index" options={{ headerShown: false }} />
+              <Stack.Screen name="signup/otp" options={{ headerShown: false }} />
+              <Stack.Screen name="signup/userInformation" options={{ headerShown: false }} />
+              <Stack.Screen name="signup/chooseUser" options={{ headerShown: false }} />
+              <Stack.Screen name="signup/welcome" options={{ headerShown: false }} />
+              <Stack.Screen name="forgotPassword/index" options={{ headerShown: false }} />
+              <Stack.Screen name="forgotPassword/otp" options={{ headerShown: false }} />
+              <Stack.Screen name="forgotPassword/resetPassword" options={{ headerShown: false }} />
+              <Stack.Screen name="forgotPassword/recovered" options={{ headerShown: false }} />
+              <Stack.Screen name="error/internetConnection" options={{ headerShown: false }} />
+              <Stack.Screen name="error/server" options={{ headerShown: false }} />
+              {/* <Stack.Screen name="screens/login/signingoogle" options={{ headerShown: false }} /> */}
+              {authenticated ? (
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              ) : (
+                <Stack.Screen name="startScreen/index" options={{ headerShown: false }} />
+              )}
+            </Stack>
+            )}
+      </ThemeContext.Consumer>
+    </ThemeProvider>
   );
 }
 

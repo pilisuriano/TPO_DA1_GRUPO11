@@ -2,6 +2,7 @@ import User from "../models/user.model.js"
 import Otp from "../models/otp.model.js";
 import otpGenerator from "otp-generator";
 import { generateToken } from "../utils/generateToken.js"
+import passport from "../config/passport.js";
 
 export const signup = async (req, res) => {
   try {
@@ -164,3 +165,17 @@ export const resetPassword = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 }
+
+// Método para manejar el inicio de sesión con Google
+export const googleAuth = passport.authenticate('google', { scope: ['profile', 'email'] });
+
+export const googleAuthCallback = [
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    // Generar un token JWT
+    const token = jwt.sign({ userId: req.user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Redirigir al usuario después de un inicio de sesión exitoso
+    res.redirect(`/?token=${token}`); // Redirige a la ruta de tu componente 'home' con el token
+  }
+];

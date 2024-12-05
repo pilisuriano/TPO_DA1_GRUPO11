@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, {useContext} from "react";
 import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView, ToastAndroid, FlatList, TouchableOpacity, Platform, StatusBar, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,8 +7,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import Toolbar from "@/components/Toolbar";
 import { useTranslation } from 'react-i18next';
-import * as FileSystem from "expo-file-system"; // Importar para manejar archivos
-
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 const CreatePost = () => {
   const router = useRouter()
@@ -17,6 +16,7 @@ const CreatePost = () => {
   const [media, setMedia] = useState([]);
   const [locationPlace, setLocationPlace] = useState("");
   const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
   const isButtonEnabled = title.trim() !== '' && media.length != 0;
   const { postCreated, loading, error } = useSelector((state) => state.post);
@@ -32,54 +32,38 @@ const CreatePost = () => {
     try {
       dispatch(resetError());
       const imagesBase64 = media.map((item) => `data:image/jpeg;base64,${item.base64}`);
-      const videoBase64 = media.map((item) => `data:video/mp4;base64,${item.base64}`);
       const locationData = { ...locationCoordinates, placeName: locationPlace }
-      dispatch(createUserPost({ title, location: locationData, images: imagesBase64 || videoBase64}));
-    
+      dispatch(createUserPost({ title, location: locationData, images: imagesBase64 }));
       // dispatch(createUserPost({ title: title, location: locationData, images: [`data:image/jpeg;base64,${image}`] }));
     } catch (err) {
       console.error("Error during post creation:", err);
       ToastAndroid.show('Hubo un error al publicarel post. Por favor intentelo de nuevo.', ToastAndroid.LONG)
     }
   };
- 
-  const convertVideoToBase64 = async (uri) => {
-    try {
-      // Leer el archivo del video como binario en base64
-      const videoBase64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      return videoBase64;
-    } catch (error) {
-      console.error('Error reading video file:', error);
-      return null;
-    }
-  };
+
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       quality: 0.5,
       base64: true,
     });
 
     if (!result.canceled) {
-      const selectedMedia = await Promise.all(result.assets.map(async (asset) => {
-        if (asset.type === 'video') {
-          // Convertir video a base64
-          const videoBase64 = await convertVideoToBase64(asset.uri);
-          return { uri: asset.uri, type: 'video', base64: videoBase64 };
-        } else {
-          // Si es imagen, ya tiene base64
-          return { uri: asset.uri, type: 'image', base64: asset.base64 };
-        }
+      // setImage(result.assets[0].base64); // Llama a la función de subida con la imagen en base64
+      // Agrega las imágenes seleccionadas al array `media`
+      const selectedMedia = result.assets.map((asset) => ({
+        uri: asset.uri,
+        base64: asset.base64
       }));
       setMedia((prev) => [...prev, ...selectedMedia]); // Concatenar con imágenes existentes
     }
+
   };
   const removeMedia = (index) => {
     setMedia((prev) => prev.filter((_, i) => i !== index));
   };
+
 
   useEffect(() => {
     if (postCreated) {
@@ -96,14 +80,14 @@ const CreatePost = () => {
   }
 
   return (
-    <View style={[styles.post]}>
-      <Toolbar title="Post" />
+    <View style={[styles.post, { backgroundColor: theme.colors.background }]}>
+      <Toolbar title={t('createPost')} />
       {loading ? (<View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#B5432A" />
       </View>) : (
         <>
-          <Text style={[styles.labelInputs, styles.selectMedia]}>{t('images')}</Text>
-          <View style={[styles.background]}>
+          <Text style={[styles.labelInputs, styles.selectMedia, { color: theme.colors.text }]}>{t('images')}</Text>
+          <View style={[styles.background, { backgroundColor: theme.colors.background }]}>
             <Pressable onPress={pickMedia}>
               <Image style={[styles.icon]} source={require("../../assets/images/addGalery.png")} />
             </Pressable>
@@ -124,10 +108,10 @@ const CreatePost = () => {
             />
           </View>
 
-          <Text style={[styles.labelInputs]}>{t('title')}</Text>
-          <View style={[styles.pie]}>
+          <Text style={[styles.labelInputs, { color: theme.colors.text }]}>{t('title')}</Text>
+          <View style={[styles.pie, { backgroundColor: theme.colors.background }]}>
             <TextInput
-              style={styles.inputAreaText}
+              style={[styles.inputAreaText, { color: theme.colors.text }]}
               multiline={true}
               numberOfLines={3}
               value={title}
@@ -135,10 +119,10 @@ const CreatePost = () => {
             />
           </View>
 
-          <Text style={[styles.labelInputs]}>{t('location')}</Text>
-          <View style={[styles.pie]}>
+          <Text style={[styles.labelInputs, { color: theme.colors.text }]}>{t('location')}</Text>
+          <View style={[styles.pie, { backgroundColor: theme.colors.background }]}>
             <TextInput
-              style={styles.inputAreaText}
+              style={[styles.inputAreaText, { color: theme.colors.text }]}
               multiline={true}
               numberOfLines={2}
               value={locationPlace}
@@ -181,7 +165,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputAreaText: {
-    opacity: 0.5,
     fontFamily: 'Poppins-Medium',
     fontWeight: "500",
     borderRadius: 8,
@@ -226,7 +209,6 @@ const styles = StyleSheet.create({
   labelInputs: {
     color: "#00000",
     textAlign: 'left',
-    opacity: 0.7,
     fontSize: 14,
     marginTop: 10,
     fontFamily: 'Poppins-Medium',
@@ -302,11 +284,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  thumbnailText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "bold"
   },
 });
 

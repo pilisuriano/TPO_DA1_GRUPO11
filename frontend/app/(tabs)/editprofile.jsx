@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Pressable, Image, Modal } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserData, resetError, fetchUserProfile } from '../../src/features/users/userSlice';
@@ -6,7 +6,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar correctamente
-
+import { ThemeContext } from '../../src/context/ThemeContext'; // Importar el contexto de tema
 
 const EDITPROFILE = () => {
 	const dispatch = useDispatch();
@@ -23,6 +23,7 @@ const EDITPROFILE = () => {
 	const [selectedCover, setSelectedCover] = useState(null);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalVisible2, setModalVisible2] = useState(false);
+	const { theme } = useContext(ThemeContext);
 
 	const handleUpdateProfile = () => {
 		const userId = route.params?.userId; // Asegúrate de que route.params no sea undefined
@@ -121,8 +122,8 @@ const EDITPROFILE = () => {
 	};
 
 	return (
-    		<View style={styles.editProfile}>
-      			<Text style={[styles.miPerfil, styles.miPerfilTypo]}>{t('myProfile')}</Text>
+    		<View style={[styles.editProfile, { backgroundColor: theme.colors.background }]}>
+      			<Text style={[styles.miPerfil, styles.miPerfilTypo, { color: theme.colors.text }]}>{t('myProfile')}</Text>
       			<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
         				<Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
       			</Pressable>
@@ -132,31 +133,31 @@ const EDITPROFILE = () => {
 							<Image style={styles.profileImage} source={{ uri: profileImage }} />
 						) : (
 							<View style={styles.profileImagePlaceholder}>
-							<Text style={styles.profileImagePlaceholderText}>{t('Add Photo')}</Text>
+							<Text style={[styles.profileImagePlaceholderText, { color: theme.colors.text }]}>{t('Add Photo')}</Text>
 							</View>
 						)}
 						<Pressable style={styles.cameraIconContainer} onPress={pickMedia}>
 							<Icon name="camera-alt" size={24} color="#fff" />
 						</Pressable>
 					</View>
-      			<Text style={[styles.martinSurez, styles.miNombreTypo]}>{user.fullName}</Text>
-				<Text style={styles.nombreCompleto}>{t('fullName')}</Text>
+      			<Text style={[styles.martinSurez, styles.miNombreTypo, { color: theme.colors.text }]}>{user.fullName}</Text>
+				<Text style={[styles.nombreCompleto, { color: theme.colors.text }]}>{t('fullName')}</Text>
 				<TextInput
-					style={[styles.input]}
+					style={[styles.input, { color: theme.colors.text }]}
 					placeholder={t('fullName')}
 					value={fullName}
 					onChangeText={setFullName}
 				/>
-				<Text style={styles.nombreCompleto}>{t('gender')}</Text>
+				<Text style={[styles.nombreCompleto, { color: theme.colors.text }]}>{t('gender')}</Text>
 				<TextInput
-					style={[styles.input]}
+					style={[styles.input, { color: theme.colors.text }]}
 					placeholder={t('gender')}
 					value={gender}
 					onChangeText={setGender}
 				/>
-				<Text style={styles.nombreCompleto}>{t('profileDescription')}</Text>
+				<Text style={[styles.nombreCompleto, { color: theme.colors.text }]}>{t('profileDescription')}</Text>
 				<TextInput
-					style={[styles.input]}
+					style={[styles.input, { color: theme.colors.text }]}
 					placeholder={t('profileDescription')}
 					value={profileDescription}
 					onChangeText={setProfileDescription}
@@ -175,8 +176,8 @@ const EDITPROFILE = () => {
 					setModalVisible(!modalVisible);
 					}}
 				>
-					<View style={styles.modalView}>
-					<Text style={styles.modalText}>{t('ConfirmImage')}</Text>
+					<View style={[styles.modalView, { backgroundColor: theme.colors.background }]}>
+					<Text style={[styles.modalText, { color: theme.colors.text }]}>{t('ConfirmImage')}</Text>
 					{selectedImage && (
 						<Image style={styles.modalImage} source={{ uri: selectedImage }} />
 					)}
@@ -194,8 +195,8 @@ const EDITPROFILE = () => {
 					setModalVisible2(!modalVisible2);
 					}}
 				>
-					<View style={styles.modalView}>
-					<Text style={styles.modalText}>{t('ConfirmCover')}</Text>
+					<View style={[styles.modalView, { backgroundColor: theme.colors.background }]}>
+					<Text style={[styles.modalText, { color: theme.colors.text }]}>{t('ConfirmCover')}</Text>
 					{selectedCover && (
 						<Image style={styles.modalImage} source={{ uri: selectedCover }} />
 					)}
@@ -210,7 +211,7 @@ const EDITPROFILE = () => {
 					<Image style={styles.coverImage} source={{ uri: user.coverImage }} />
 					) : (
 					<View style={styles.coverImagePlaceholder}>
-						<Text style={styles.coverImagePlaceholderText}>{t('Add Cover Photo')}</Text>
+						<Text style={[styles.coverImagePlaceholderText, { color: theme.colors.text }]}>{t('Add Cover Photo')}</Text>
 					</View>
 					)}
 					<Pressable style={styles.cameraIconContainer2} onPress={pickCover}>
