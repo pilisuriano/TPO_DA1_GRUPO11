@@ -24,6 +24,7 @@ const Post = ({ post }) => {
   const { theme } = useContext(ThemeContext);
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const [isMuted, setIsMuted] = useState(true); // Estado local para controlar si el video está silenciado
   if (!post || !post.media || !post.media.length) {
     return null;
   }
@@ -33,7 +34,9 @@ const Post = ({ post }) => {
     const { width, height } = event.nativeEvent.layout;
     setContainerSize({ width, height });
   };
-
+  const handleVideoPress = () => {
+    setIsMuted(!isMuted); // Cambiar el estado de isMuted al hacer tap en el video
+  };
   return (
     <View style={[styles.elInicio, { backgroundColor: theme.colors.background }]}>
       <View style={[styles.postContainer, { backgroundColor: theme.colors.background }]}>
@@ -56,19 +59,21 @@ const Post = ({ post }) => {
               overflow: 'hidden',
             }}>
             {post.media[0]?.type === 'video' ? (
-              <Video
-                source={{ uri: post.media[0]?.url }}
-                rate={1.0}
-                volume={1.0}
-                isMuted={false}
-                resizeMode="contain"
-                shouldPlay
-                isLooping
-                style={{
-                  width: containerSize.width,
-                  height: 185,
-                }}
-              />
+              <Pressable onPress={handleVideoPress}>
+                <Video
+                  source={{ uri: post.media[0]?.url }}
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={isMuted}
+                  resizeMode="contain"
+                  shouldPlay
+                  isLooping
+                  style={{
+                    width: containerSize.width,
+                    height: 185,
+                  }}
+                />
+              </Pressable>
             ) : (
               <ImageModal
                 resizeMode='contain'
@@ -160,7 +165,7 @@ const renderItem = ({ item }) => {
         source={{ uri: item.url }}
         rate={1.0}
         volume={1.0}
-        isMuted={false}
+        isMuted={true}
         resizeMode="contain"
         shouldPlay
         isLooping
