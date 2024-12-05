@@ -7,7 +7,7 @@ import { fetchUserProfile } from './../../src/features/users/userSlice';
 import { useTranslation } from 'react-i18next';
 import { useRouter } from "expo-router";
 import { ThemeContext } from '../../src/context/ThemeContext'; // Importar el contexto de tema
-
+import { Video } from 'expo-av'; 
 
 const MYPROFILE = () => {
   const navigation = useNavigation();
@@ -51,15 +51,31 @@ const MYPROFILE = () => {
   }
 
   const renderItem = ({ item }) => {
-    // Extraer la primera URL de 'media'
-    const firstMedia = item.media && item.media.length > 0 ? item.media[0].url : null;
-
+    // Extraer el primer elemento de 'media'
+    const firstMedia = item.media && item.media.length > 0 ? item.media[0] : null;
+  
+    // Determinar si es un video (por ejemplo, comprobando la extensión)
+    const isVideo = firstMedia && firstMedia.url && firstMedia.url.endsWith('.mp4'); // Ajusta según el tipo de archivo de tus videos
+  
     return (
       <View style={styles.itemContainer}>
         {firstMedia ? (
-          <Image source={{ uri: firstMedia }} style={styles.postImage} />
+          isVideo ? (
+            // Si es un video, utiliza el componente Video de expo-av
+            <Video
+              source={{ uri: firstMedia.url }}
+              style={styles.postImage} // Usar el mismo estilo para imágenes y videos
+              resizeMode="cover" // Ajuste del video para cubrir el contenedor
+              shouldPlay={false} // No comienza a reproducir automáticamente (puedes cambiarlo a `true` si quieres que el video se reproduzca automáticamente)
+              isLooping={false} // Si quieres que el video se repita, establece esto en `true`
+              useNativeControls={true} // Muestra los controles nativos de reproducción
+            />
+          ) : (
+            // Si no es un video, muestra la imagen
+            <Image source={{ uri: firstMedia.url }} style={styles.postImage} />
+          )
         ) : (
-          <Text style={styles.noImageText}>No image</Text>
+          <Text style={styles.noImageText}>No media</Text>
         )}
       </View>
     );
