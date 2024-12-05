@@ -115,7 +115,7 @@ const MYPROFILE = () => {
           </View>
 
           {/* boton editar perfil */}
-          <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('editarpost')} >
+          <Pressable style={styles.editProfileButton} onPress={() => navigation.navigate('editprofile')} >
             <Text style={[styles.editProfileText, styles.nivel4Typo]}>{t('editProfile')}</Text>
           </Pressable>
 
