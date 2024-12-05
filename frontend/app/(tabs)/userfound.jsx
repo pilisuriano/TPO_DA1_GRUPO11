@@ -11,17 +11,16 @@ const USUARIOENCONTRADO = () => {
     const navigation = useNavigation();
 	const route = useRoute();
 	const {user} = route.params;
-	//const { user, posts, loading, error } = useSelector((state) => state.user);
 	const dispatch = useDispatch();
 	const { t } = useTranslation();
 	const {posts, loading, error} = useSelector((state) => state.user);
 	const { theme } = useContext(ThemeContext);
 
 
-	/*useEffect(() => {
+	useEffect(() => {
 		const fetchUser = async () => {
 		  try {
-			const response = await axios.get(`api/users/${userId}`);
+			const response = await axios.get(`api/users/${user._id}`);
 			setUser(response.data);
 		  } catch (err) {
 			setError(err.message);
@@ -31,11 +30,11 @@ const USUARIOENCONTRADO = () => {
 		};
 	
 		fetchUser();
-	  }, [userId]);*/
+	  }, [user._id]);
 
-	  /*useEffect(() => {
-		dispatch(fetchAnotherUserProfile(userId));
-	  }, [dispatch, userId]);*/
+	  useEffect(() => {
+		dispatch(fetchAnotherUserProfile(user._id));
+	  }, [dispatch, user._id]);
 
 	  useFocusEffect(
 		React.useCallback(() => {
