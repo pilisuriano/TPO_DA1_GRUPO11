@@ -1,14 +1,21 @@
 import React, { useContext, useState } from 'react';
-import { Image, StyleSheet, Text, Pressable, View, ActivityIndicator, useColorScheme, Switch } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { Image, StyleSheet, Text, Pressable, View, ActivityIndicator, useColorScheme, Switch, ToastAndroid, Modal, Platform, StatusBar } from "react-native";
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../i18n';
 import { ThemeContext } from '../../src/context/ThemeContext.js'; // Importar el contexto de tema
+import { useDispatch } from 'react-redux';
+import { logoutUser } from '@/src/features/auth/auth.slice';
+import { deleteAuthToken } from '@/src/services/secureStore';
+import api from '@/src/services/api';
+import Toolbar from '@/components/Toolbar';
 
 const CONFIGURACIONES = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const colorScheme = useColorScheme();
+  const [modalVisible, setModalVisible] = useState(false);
   const [isEnglish, setIsEnglish] = useState(i18n.language === 'en');
   const { isDarkMode, theme, toggleTheme } = useContext(ThemeContext); // Consumir del contexto
 
@@ -22,21 +29,54 @@ const CONFIGURACIONES = () => {
     toggleTheme(value);  // Utilizamos toggleTheme desde el contexto
   };
 
+  const handleLogout = async () => {
+    try {
+      dispatch(logoutUser());
+      await deleteAuthToken()
+      navigation.dispatch(CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'login/index' }]
+      }))
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await api.delete('/users/me');
+      if (response.status === 200) {
+        dispatch(logoutUser());
+        await deleteAuthToken()
+        setModalVisible(!modalVisible)
+        navigation.dispatch(CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'startScreen/index' }]
+        }))
+      } else {
+        setModalVisible(!modalVisible)
+        ToastAndroid.show(t('error'), ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <View style={[styles.configuraciones, { backgroundColor: theme.colors.background }]}>
-      <Text style={[styles.configuracin, { color: theme.colors.text }]}>{t('settings')}</Text>
+      <Toolbar title={t('settings')} />
+      {/* <Text style={[styles.configuracin, { color: theme.colors.text }]}>{t('settings')}</Text>
       <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('perfil')}>
         <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
-      </Pressable>
-      <Pressable style={[styles.rectangleParent, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
+      </Pressable> */}
+      {/* <Pressable style={[styles.rectangleParent, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
         <View style={[styles.groupChild, styles.groupLayout]} />
         <Text style={[styles.cerrarSesin, styles.cerrarSesinTypo]}>{t('logout')}</Text>
       </Pressable>
       <Pressable style={[styles.rectangleGroup, styles.rectangleLayout]} onPress={() => navigation.navigate('index')}>
         <View style={[styles.groupItem, styles.groupLayout]} />
         <Text style={[styles.eliminarCuenta, styles.cerrarSesinTypo]}>{t('deleteAccount')}</Text>
-      </Pressable>
+      </Pressable> */}
       <Text style={[styles.activarModoOscuro, styles.cambiarIdiomaTypo, { color: theme.colors.text }]}>{t('darkMode')}</Text>
       <View style={styles.switchContainer}>
         <Switch
@@ -66,10 +106,95 @@ const CONFIGURACIONES = () => {
       <Pressable style={[styles.iconlylightOutlinearrowL1, styles.iconlylightPosition]} onPress={() => navigation.navigate('favoritos')}>
         <Image style={[styles.icon, styles.iconLayout]} resizeMode="cover" source={require("../../assets/images/Arrow---Right-2.png")} />
       </Pressable>
+
+
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => { setModalVisible(!modalVisible) }}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{t('deleteAccountModalText')}</Text>
+            <View style={styles.buttonsModalView}>
+              <Pressable
+                style={[styles.button, styles.buttonAccept]}
+                onPress={handleDeleteAccount}>
+                <Text style={styles.textStyle}>{t('deleteAccountModalAccept')}</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.button, styles.buttonClose]}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={styles.textStyle}>{t('deleteAccountModalDismiss')}</Text>
+              </Pressable>
+            </View>
+
+          </View>
+        </View>
+      </Modal>
+      <View style={styles.footerContainer}>
+        <Button text={t('logout')} type='third' onPress={handleLogout} />
+        <Button text={t('deleteAccount')} onPress={() => setModalVisible(true)} />
+      </View>
     </View>);
 };
 
 const styles = StyleSheet.create({
+  // Modal
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonsModalView: {
+    flexDirection: 'row'
+  },
+  button: {
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    elevation: 2,
+    marginHorizontal: 20
+  },
+  buttonAccept: {
+    backgroundColor: '#B5432A',
+  },
+  buttonClose: {
+    backgroundColor: '#006175',
+  },
+  textStyle: {
+    color: 'white',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  // Screen
+  footerContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 65,
+    width: '100%',
+    justifyContent: 'flex-end'
+  },
   blackBase21Position: {
     width: 390,
     left: 0,
@@ -259,11 +384,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   configuraciones: {
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight + 26 : 26,
     backgroundColor: "#fff",
     flex: 1,
     height: 844,
     overflow: "hidden",
-    width: "100%"
+    width: "100%",
+    paddingHorizontal: 30,
   }
 });
 
