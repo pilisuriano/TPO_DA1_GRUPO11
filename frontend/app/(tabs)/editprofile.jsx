@@ -37,7 +37,7 @@ const EDITPROFILE = () => {
 	};
 
 	const handleUpdatePicture = async () => {
-		const userId = route.params?.userId; // Asegúrate de que route.params no sea undefined
+		const userId = route.params?.userId;
 		if (!userId) {
 		  console.error('User ID is missing');
 		  return;
@@ -50,7 +50,7 @@ const EDITPROFILE = () => {
 	};
 
 	const handleUpdateCover = async () => {
-		const userId = route.params?.userId; // Asegúrate de que route.params no sea undefined
+		const userId = route.params?.userId;
 		if (!userId) {
 		  console.error('User ID is missing');
 		  return;

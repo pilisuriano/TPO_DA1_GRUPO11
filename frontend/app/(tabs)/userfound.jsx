@@ -6,142 +6,163 @@ import { useTranslation } from 'react-i18next';
 import { fetchAnotherUserProfile } from "../../src/features/users/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ThemeContext } from '../../src/context/ThemeContext';
+import { Video } from 'expo-av';
 
 const USUARIOENCONTRADO = () => {
-	const navigation = useNavigation();
-	const route = useRoute();
-	const {user} = route.params;
-	const dispatch = useDispatch();
-	const { t } = useTranslation();
-	const { posts, loading, error } = useSelector((state) => state.user);
-	const { theme } = useContext(ThemeContext);
+    const navigation = useNavigation();
+    const route = useRoute();
+    const {user} = route.params;
+    //const { user, posts, loading, error } = useSelector((state) => state.user);
+    const dispatch = useDispatch();
+    const { t } = useTranslation();
+    const {posts, loading, error} = useSelector((state) => state.user);
+    const { theme } = useContext(ThemeContext);
+ 
+ 
+    /*useEffect(() => {
+        const fetchUser = async () => {
+          try {
+            const response = await axios.get(`api/users/${userId}`);
+            setUser(response.data);
+          } catch (err) {
+            setError(err.message);
+          } finally {
+            setLoading(false);
+          }
+        };
+   
+        fetchUser();
+      }, [userId]);*/
+ 
+      /*useEffect(() => {
+        dispatch(fetchAnotherUserProfile(userId));
+      }, [dispatch, userId]);*/
+ 
+      useFocusEffect(
+        React.useCallback(() => {
+          dispatch(fetchAnotherUserProfile(user._id)); // Obtener el perfil y posts del usuario
+        }, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
+      );
+ 
+      /*useFocusEffect(
+        React.useCallback(() => {
+          dispatch(fetchAnotherUserProfile()); // Obtener el perfil y posts del usuario
+        }, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
+      );*/
+ 
+      useEffect(() => {
+        console.log('User:', user);
+        console.log('Posts:', posts);
+      }, [user, posts]);
+   
+    //   if (loading) {
+    //     return <ActivityIndicator size="large" color="#0000ff" />;
+    //   }
+   
+      if (error) {
+        return <Text style={styles.errorText}>Error: {error}</Text>;
+      }
+   
+ 
+      if (loading) {
+        return (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#bb4426" />
+          </View>
+        );
+      }
+   
+      if (!user) {
+        return (
+          <View style={styles.loadingContainer}>
+            <Text>{t('userNotFound')}</Text>
+          </View>
+        );
+      }
+ 
+	  const renderItem = ({ item }) => {
+        // Extraer el primer elemento de 'media'
+        const firstMedia = item.media && item.media.length > 0 ? item.media[0] : null;
+     
+        // Determinar si es un video (por ejemplo, comprobando la extensión)
+        const isVideo = firstMedia && firstMedia.url && firstMedia.url.endsWith('.mp4'); // Ajusta según el tipo de archivo de tus videos
+     
+        return (
+          <View style={styles.itemContainer}>
+            {firstMedia ? (
+              isVideo ? (
+                // Si es un video, utiliza el componente Video de expo-av
+                <Video
+                  source={{ uri: firstMedia.url }}
+                  style={styles.postImage}
+                  resizeMode="cover"
+                  shouldPlay={false}
+                  isLooping={false}
+                  useNativeControls={true}
+                />
+              ) : (
+                <Image source={{ uri: firstMedia.url }} style={styles.postImage} />
+              )
+            ) : (
+              <Text style={styles.noImageText}>No media</Text>
+            )}
+          </View>
+        );
+      };
+      const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+ 
+ 
+    return (
 
-
-	useEffect(() => {
-		const fetchUser = async () => {
-		  try {
-			const response = await axios.get(`api/users/${user._id}`);
-			setUser(response.data);
-		  } catch (err) {
-			setError(err.message);
-		  } finally {
-			setLoading(false);
-		  }
-		};
-	
-		fetchUser();
-	  }, [user._id]);
-
-	  useEffect(() => {
-		dispatch(fetchAnotherUserProfile(user._id));
-	  }, [dispatch, user._id]);
-
-	  useFocusEffect(
-		React.useCallback(() => {
-			dispatch(fetchAnotherUserProfile(user._id)); // Obtener el perfil y posts del usuario
-		}, [dispatch]) // Solo se vuelve a ejecutar cuando se enfoca la página
-	);
-
-
-	useEffect(() => {
-		console.log('User:', user);
-		console.log('Posts:', posts);
-	}, [user, posts]);
-
-	if (loading) {
-		return <ActivityIndicator size="large" color="#0000ff" />;
-	}
-
-	if (error) {
-		return <Text style={styles.errorText}>Error: {error}</Text>;
-	}
-
-
-	if (loading) {
-		return (
-			<View style={styles.loadingContainer}>
-				<ActivityIndicator size="large" color="#bb4426" />
-			</View>
-		);
-	}
-
-	if (!user) {
-		return (
-			<View style={styles.loadingContainer}>
-				<Text>{t('userNotFound')}</Text>
-			</View>
-		);
-	}
-
-	const renderItem = ({ item }) => {
-		// Extraer la primera URL de 'media'
-		const firstMedia = item.media && item.media.length > 0 ? item.media[0].url : null;
-
-		return (
-			<View style={styles.itemContainer}>
-				{firstMedia ? (
-					<Image source={{ uri: firstMedia }} style={styles.postImage} />
-				) : (
-					<Text style={styles.noImageText}>No image</Text>
-				)}
-			</View>
-		);
-	};
-
-	const sortedPosts = user.posts.slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-
-	return (
-		
-		<View style={[styles.usuarioEncontrado, { backgroundColor: theme.colors.background }]}>
-			{user ? (
-				<>
-					<Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
-					<Text style={[styles.perfil, styles.perfilTypo, { color: theme.colors.text }]}>{t('profile')}</Text>
-					<Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('search')}>
-						<Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
-					</Pressable>
-					<View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-						{user ? (
-							<FlatList
-								data={sortedPosts}
-								renderItem={renderItem}
-								keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
-								numColumns={3} // Tres columnas fijas
-								contentContainerStyle={styles.list}
-								ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
-							/>
-						) : (
-							<Text style={[styles.errorText, { color: theme.colors.text }]}>{t('userNotFound')}</Text>
-						)}
-						{error && <Text style={styles.errorText}>{error}</Text>}
-					</View>
-					{user && (
-						<>
-							<Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
-							<Text style={[styles.martinPerez, styles.perfilTypo, { color: theme.colors.text }]}>{user.fullName}</Text>
-							<Text style={[styles.posts, { color: theme.colors.text }]}>{t('posts')}</Text>
-							<Text style={[styles.imAPostive, styles.seguirTypo, { color: theme.colors.text }]}>{user.description}</Text>
-							<Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
-							<Text style={[styles.text, styles.textTypo, { color: theme.colors.text }]}>{user.posts.length}</Text>
-							<Text style={[styles.text1, styles.textTypo, { color: theme.colors.text }]}>{user.following}</Text>
-							<Text style={[styles.k, styles.textTypo, { color: theme.colors.text }]}>{user.followers}</Text>
-							<View style={[styles.lineView, styles.lineViewLayout]} />
-							<Text style={[styles.posts1, styles.posts1Typo, { color: theme.colors.text }]}>{t('posts')}</Text>
-							<Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
-								<Text style={[styles.posts1Typo, { color: theme.colors.text }]}>{t('following')}</Text>
-							</Pressable>
-							<Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
-								<Text style={[styles.posts1Typo, { color: theme.colors.text }]}>{t('followers')}</Text>
-							</Pressable>
-						</>
-					)}
-				</>
-			) : (
-				<Text style={styles.errorText}>User not found</Text>
-			)}
-		</View>
-	);
+            <View style={[styles.usuarioEncontrado, { backgroundColor: theme.colors.background }]}>
+          {user ? (
+            <>
+                <Image style={styles.unsplash4Qfycgpc4cIcon} resizeMode="cover" source={{ uri: user.coverImage }} />
+                <Text style={[styles.perfil, styles.perfilTypo, { color: theme.colors.text }]}>{t('profile')}</Text>
+            <Pressable style={styles.iconlylightOutlinearrowL} onPress={() => navigation.navigate('search')}>
+              <Image style={[styles.icon]} resizeMode="cover" source={require("../../assets/images/Arrow---Left-2.png")} />
+            </Pressable>
+            <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+                {user ? (
+                  <FlatList
+                    data={sortedPosts}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item._id ? item._id.toString() : ''} // Identificador único de cada post
+                    numColumns={3} // Tres columnas fijas
+                    contentContainerStyle={styles.list}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />} // Separación entre los ítems
+                  />
+                ) : (
+                  <Text style={[styles.errorText, { color: theme.colors.text }]}>{t('userNotFound')}</Text>
+                )}
+                {error && <Text style={styles.errorText}>{error}</Text>}
+              </View>
+      {user && (
+                    <>
+              <Image style={styles.unsplashp5bobf0xjuaIcon} resizeMode="cover" source={{ uri: user.profileImage }} />
+              <Text style={[styles.martinPerez, styles.perfilTypo, { color: theme.colors.text }]}>{user.fullName}</Text>
+              <Text style={[styles.posts, { color: theme.colors.text }]}>{t('posts')}</Text>
+              <Text style={[styles.imAPostive, styles.seguirTypo, { color: theme.colors.text }]}>{user.description}</Text>
+              <Image style={styles.lineIcon} resizeMode="cover" source={require("../../assets/images/Line 10.png")} />
+              <Text style={[styles.text, styles.textTypo, { color: theme.colors.text }]}>{user.posts.length}</Text>
+              <Text style={[styles.text1, styles.textTypo, { color: theme.colors.text }]}>{user.following}</Text>
+              <Text style={[styles.k, styles.textTypo, { color: theme.colors.text }]}>{user.followers}</Text>
+              <View style={[styles.lineView, styles.lineViewLayout]} />
+              <Text style={[styles.posts1, styles.posts1Typo, { color: theme.colors.text }]}>{t('posts')}</Text>
+              <Pressable style={[styles.siguiendo, styles.postsPosition]} onPress={() => navigation.navigate('seguidos')}>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text }]}>{t('following')}</Text>
+              </Pressable>
+              <Pressable style={[styles.seguidores, styles.postsPosition]} onPress={() => navigation.navigate('seguidores')}>
+                <Text style={[styles.posts1Typo, { color: theme.colors.text }]}>{t('followers')}</Text>
+              </Pressable>
+                    </>
+                )}
+        </>
+        ) : (
+          <Text style={styles.errorText}>User not found</Text>
+        )}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
