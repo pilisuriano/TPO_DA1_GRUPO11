@@ -18,21 +18,6 @@ const Search = () => {
 	const { t } = useTranslation();
 	const { theme } = useContext(ThemeContext);
 
-	/*const handleSearch = () => {
-		if (query.trim() === "") {
-		  dispatch(clearUsers());
-		} else {
-		  dispatch(fetchSearchUsers(query));
-		}
-	  };
-	
-	  useEffect(() => {
-		if (query.trim() === "") {
-		  dispatch(clearUsers());
-		} else {
-		  handleSearch();
-		}
-	  }, [query]);*/
 
 	  const handleSearch = () => {
 		if (query.trim() === "") {
@@ -50,25 +35,6 @@ const Search = () => {
 
 
   	return (
-    		/*<View style={styles.buscarUsuario2}>
-      			<Pressable style={styles.wrapper} onPress={()=>{}}>
-        				<Image style={[styles.icon, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Group 12.png")} />
-      			</Pressable>
-      			<View style={styles.buscarUsuario2Child} />
-      			<Image style={[styles.iconlybrokensearch, styles.iconLayout1]} resizeMode="cover" source={require("../../assets/images/Search.png")}/>
-      			<Text style={styles.martinPerez}>Martin Perez</Text>
-      			<Image style={styles.marca3Icon} resizeMode="cover" source={require("../../assets/images/Marca 2.png")}/>
-      			<Image style={[styles.unsplashsibvworyqs0Icon, styles.unsplashymoIconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_sibVwORYqs0.png")} />
-      			<Image style={[styles.unsplashkipqvvtoc1sIcon, styles.unsplashymoIconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_KIPqvvTOC1s.png")} />
-      			<Image style={[styles.unsplashwnolnjo7ts8Icon, styles.unsplashymoIconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_WNoLnJo7tS8.png")} />
-      			<Text style={[styles.martinPerezGomez, styles.martinTypo]}>Martin Perez Gomez</Text>
-      			<Pressable style={[styles.unsplashymoYcN2oParent, styles.unsplashymoIconLayout]} onPress={() => navigation.navigate('userfound')}>
-        				<Image style={[styles.unsplashymoYcN2oIcon, styles.unsplashymoIconLayout]} resizeMode="cover" source={require("../../assets/images/unsplash_ymo_yC_N_2o.png")} />
-        				<Text style={[styles.martinPerez1, styles.martinTypo]}>Martin Perez</Text>
-      			</Pressable>
-      			<Text style={[styles.martinPerez2, styles.martinTypo]}>Martin Perez</Text>
-      			<Text style={[styles.martinPerezGutierrez, styles.martinTypo]}>Martin Perez Gutierrez</Text>
-    		</View>);*/
 			<View style={[styles.container, { backgroundColor: theme.colors.background }]}>
 				<Toolbar title={t('searchusr')} />
 					<TextInput

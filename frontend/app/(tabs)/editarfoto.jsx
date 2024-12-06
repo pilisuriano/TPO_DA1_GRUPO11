@@ -1,14 +1,13 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import {Image, StyleSheet, Text, View, Pressable, TextInput, Alert, Modal, Button, ActivityIndicator} from "react-native";
-import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import React, { useContext, useEffect, useState } from "react";
+import {Image, StyleSheet, Text, View, Pressable, TextInput, Alert, Modal, Button} from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import * as ImagePicker from 'expo-image-picker';
-import { fetchUserPosts, updatePostData } from "../../src/features/posts/postSlice";
+import { updatePostData } from "../../src/features/posts/postSlice";
 import { useDispatch } from "react-redux";
 import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar correctamente
 import { ThemeContext } from '../../src/context/ThemeContext';
-import { fetchUserProfile } from "@/src/features/users/userSlice";
-
+import { Video } from 'expo-av';
 
 const EDITARPOST = () => {
     const navigation = useNavigation();
@@ -18,8 +17,8 @@ const EDITARPOST = () => {
 	const { postId, media, title: initialTitle, location: initialLocation } = route.params || {};
 	const [title, setTitle] = useState(initialTitle || '');
 	const [location, setLocation] = useState(initialLocation || '');
+	const [postMedia, setPostMedia] = useState(media || null);
 	const [modalVisible, setModalVisible] = useState(false);
-	const [postImage, setPostImage] = useState(Array.isArray(media) ? media : []);
 	const { theme } = useContext(ThemeContext);
 
 
@@ -31,40 +30,12 @@ const EDITARPOST = () => {
 		// Aquí puedes usar el postId para obtener los detalles del post o realizar otras acciones
 	}, [postId, media,title,initialLocation]);
 
-	useFocusEffect(
-		useCallback(() => {
-		  // Código que se ejecuta cada vez que la pantalla se enfoca
-		  const fetchPostDetails = async () => {
-			try {
-			  const userProfile = await dispatch(fetchUserProfile()).unwrap();
-			  const postDetails = userProfile.posts.find(post => post._id === postId);
-			  if (postDetails) {
-				setTitle(postDetails.title);
-				setLocation(postDetails.location.placeName);
-				setPostImage(postDetails.media);
-			  } else {
-				console.error('Post not found');
-			  }
-			} catch (error) {
-			  console.error('Failed to fetch post details:', error);
-			}
-		  };
-	
-		  fetchPostDetails();
-	
-		  return () => {
-			// Código que se ejecuta cuando la pantalla se desenfoca
-			console.log('Screen is unfocused');
-		  };
-		}, [dispatch, postId])
-	  );
-
 	const handleUpdatePost = async () => {
 		try {
 		  const postData = {
 			title,
 			location: { ...initialLocation, placeName: location },
-			media: postImage,
+			media: postMedia,
 		  };
 		  await dispatch(updatePostData({ postId, postData })).unwrap();
 		  Alert.alert('Success', 'Post updated successfully');
@@ -76,14 +47,14 @@ const EDITARPOST = () => {
 	
 	  const pickMedia = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
-			mediaTypes: ImagePicker.MediaTypeOptions.Images,
+			mediaTypes: ImagePicker.MediaTypeOptions.All,
 			allowsMultipleSelection: true,
 			quality: 0.5,
 			base64: true,
 		});
 
 		if (!result.canceled) {
-			setPostImage([...postImage, ...result.assets.map(asset => ({ url: asset.uri, type: 'image' }))]);
+			setPostMedia(result.assets[0]);
 			setModalVisible(true);
 		}
 	};
@@ -93,7 +64,6 @@ const EDITARPOST = () => {
 	};
 
 	const cancelImage = () => {
-		setPostImage(null);
 		setModalVisible(false);
 	};
 
@@ -118,9 +88,23 @@ const EDITARPOST = () => {
 						value={location.placeName}
 						onChangeText={setLocation}
 					/>
-				  {postImage && postImage.length > 0 ? (
-						postImage.map((image, index) => (
-						<Image key={index} source={{ uri: image.url }} style={[styles.unsplashig7vn6okgneIcon, styles.rectangleViewLayout]} />
+				  {postMedia && postMedia.length > 0 ? (
+						postMedia.map((media, index) => (
+							media.type === 'video' ? (
+								<Video
+								  key={index}
+								  source={{ uri: media.uri }}
+								  rate={1.0}
+								  volume={1.0}
+								  isMuted={true}
+								  resizeMode="contain"
+								  shouldPlay={false}
+								  isLooping
+								  style={styles.media}
+								/>
+							  ) : (
+								<Image key={index} source={{ uri: media.uri }} style={[styles.unsplashig7vn6okgneIcon, styles.rectangleViewLayout]} />
+							  )
 						))
 					) : (
 						<Text style={styles.noImageText}>No image</Text>
@@ -153,9 +137,22 @@ const EDITARPOST = () => {
 					}}
 				>
 					<View style={styles.modalView}>
-					<Text style={styles.modalText}>{t('Confirm Image')}</Text>
-					{postImage && (
-						<Image style={styles.modalImage} source={{ uri: postImage }} />
+					<Text style={styles.modalText}>{t('Confirm Media')}</Text>
+					{postMedia && (
+						postMedia.type === 'video' ? (
+							<Video
+							  source={{ uri: postMedia.uri }}
+							  rate={1.0}
+							  volume={1.0}
+							  isMuted={true}
+							  resizeMode="contain"
+							  shouldPlay={false}
+							  isLooping
+							  style={styles.modalMedia}
+							/>
+						  ) : (
+							<Image style={styles.modalMedia} source={{ uri: postMedia.uri }} />
+						  )
 					)}
 					<View style={styles.modalButtons}>
 						<Button title={t('Cancel')} onPress={cancelImage} />
@@ -326,7 +323,7 @@ const styles = StyleSheet.create({
     		top: 0
   	},
   	actualizarPost: {
-    		left: 93
+    		left: 110
   	},
   	rectangleParent: {
     		top: 603,
@@ -334,7 +331,7 @@ const styles = StyleSheet.create({
     		height: 49
   	},
   	eliminarPost: {
-    		left: 102
+    		left: 70
   	},
   	rectangleGroup: {
     		top: 665,
@@ -424,7 +421,36 @@ const styles = StyleSheet.create({
     		width: "100%",
     		height: 844,
     		overflow: "hidden"
-  	}
+  	},
+	modalView: {
+		margin: 20,
+		backgroundColor: 'white',
+		borderRadius: 20,
+		padding: 35,
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+		  width: 0,
+		  height: 2,
+		},
+		shadowOpacity: 0.25,
+		shadowRadius: 4,
+		elevation: 5,
+	  },
+	  modalText: {
+		marginBottom: 15,
+		textAlign: 'center',
+	  },
+	  modalMedia: {
+		width: 300,
+		height: 300,
+		marginBottom: 15,
+	  },
+	  modalButtons: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		width: '100%',
+	  },
 });
 
 export default EDITARPOST;

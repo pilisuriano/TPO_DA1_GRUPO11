@@ -13,12 +13,19 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { transformDate } from '../../src/utils/dateUtils';
 import { ThemeContext } from '../../src/context/ThemeContext';
+import { Video } from 'expo-av';
+import { addFavorite, removeFavorite } from '@/src/features/favorites/favorites.slice';
+import { addLike, removeLike } from '@/src/features/likes/likes.slice';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
 const Post = ({ post }) => {
+  const navigation = useNavigation();
   const { theme } = useContext(ThemeContext);
   const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
+  const [isMuted, setIsMuted] = useState(true); // Estado local para controlar si el video está silenciado
   if (!post || !post.media || !post.media.length) {
     return null;
   }
@@ -28,81 +35,135 @@ const Post = ({ post }) => {
     const { width, height } = event.nativeEvent.layout;
     setContainerSize({ width, height });
   };
-
+  const handleVideoPress = () => {
+    setIsMuted(!isMuted);
+  };
   return (
     <View style={[styles.elInicio, { backgroundColor: theme.colors.background }]}>
-    <View style={[styles.postContainer, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.header}>
-        <Image source={post.userId.profileImage ? { uri: post.userId.profileImage } : require("../../assets/images/Profile.png")} style={styles.profilePic} />
-        <View style={styles.headerInfo}>
-          <Text style={[styles.name, { color: theme.colors.text }]}>{post.userId.fullName}</Text>
-          <Text style={[styles.details, { color: theme.colors.text }]}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
-          <Text style={[styles.cancunMexico, styles.chrisUilFlexBox, { color: theme.colors.text }]}>{post.location.placeName}</Text>
+      <View style={[styles.postContainer, { backgroundColor: theme.colors.background }]}>
+        <View style={styles.header}>
+          <Image source={post.userId.profileImage ? { uri: post.userId.profileImage } : require("../../assets/images/Profile.png")} style={styles.profilePic} />
+          <View style={styles.headerInfo}>
+            <Text style={[styles.name, { color: theme.colors.text }]}>{post.userId.fullName}</Text>
+            <Text style={[styles.details, { color: theme.colors.text }]}>{transformDate(post.createdAt, i18n.language)}  ·   { }</Text>
+            {post.location?.placeName ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 5 }}>
+                <MaterialIcons name='location-pin' color='black' />
+                <Text style={[{ color: theme.colors.text }]}>{post.location?.placeName ? post.location.placeName : ""}</Text>
+              </View>
+            ) : (
+              <></>
+            )}
+
+          </View>
         </View>
-      </View>
-      {post.media.length === 1 ? (
-        <View
-          onLayout={handleLayout}
-          style={{
-            width: "100%",
-            borderRadius: 10,
-            borderColor: '#000000',
-            borderWidth: 1,
-            overflow: 'hidden', // Asegúrate de que no haya desbordes
-          }}>
-          <ImageModal
-            resizeMode='contain'
-            imageBackgroundColor='#f0f0f0'
-            source={{ uri: post.media[0]?.url }}
+        {post.media.length === 1 ? (
+          <View
+            onLayout={handleLayout}
             style={{
-              width: containerSize.width,
-              height: 185,
+              width: "100%",
+              borderRadius: 10,
+              borderColor: '#000000',
+              borderWidth: 1,
+              overflow: 'hidden',
+            }}>
+            {post.media[0]?.type === 'video' ? (
+              <Pressable onPress={handleVideoPress}>
+                <Video
+                  source={{ uri: post.media[0]?.url }}
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={isMuted}
+                  resizeMode="contain"
+                  shouldPlay
+                  isLooping
+                  style={{
+                    width: containerSize.width,
+                    height: 185,
+                  }}
+                />
+              </Pressable>
+            ) : (
+              <ImageModal
+                resizeMode='contain'
+                imageBackgroundColor='#f0f0f0'
+                source={{ uri: post.media[0]?.url }}
+                style={{
+                  width: containerSize.width,
+                  height: 185,
+                }}
+              />
+            )}
+          </View>
+
+        ) : (
+          <Carousel
+            autoPlayInterval={1200}
+            width={width - 10}
+            height={250}
+            data={post.media}
+            pagingEnabled={true}
+            autoPlayReverse={false}
+            snapEnabled={true}
+            loop={false}
+            style={{
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
+            mode='parallax'
+            modeConfig={{
+              parallaxScrollingScale: 0.8,
+              parallaxScrollingOffset: 90
+            }}
+            renderItem={renderItem}
           />
-        </View>
+        )}
 
-      ) : (
-        <Carousel
-          autoPlayInterval={1200}
-          width={width - 10}
-          height={250}
-          data={post.media}
-          pagingEnabled={true}
-          autoPlayReverse={false}
-          snapEnabled={true}
-          loop={false}
-          style={{
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          mode='parallax'
-          modeConfig={{
-            parallaxScrollingScale: 0.8,
-            parallaxScrollingOffset: 90
-          }}
-          renderItem={renderItem}
-        />
-      )}
+        <View style={styles.footer}>
+          <Text style={[styles.comment, { color: theme.colors.text }]}>{post.title}</Text>
+          <View style={styles.reactions}>
+            {post.isLiked ? (
+              <TouchableOpacity style={styles.iconContainer} onPress={() => dispatch(removeLike(post._id))}>
+                <Icon name="heart" size={20} color="red" />
+                <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.likes}</Text>
+              </TouchableOpacity>) : (
+              <TouchableOpacity style={styles.iconContainer} onPress={() => dispatch(addLike(post._id))}>
+                <Icon name="heart-o" size={20} />
+                <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.likes}</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('postpublicado', { postId: post._id })}>
+              <Icon name="comment" size={20} color="gray" />
+              <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.comments.length}</Text>
+            </TouchableOpacity>
+            {/* favorites */}
+            {post.isFavorite ? (
+              <TouchableOpacity style={[styles.iconContainer, styles.favoriteIconToggle]} onPress={() => dispatch(removeFavorite(post._id))}>
+                <Image style={[styles.favoriteIcon]} source={require("../../assets/images/isFavorite.png")} />
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity style={[styles.iconContainer, styles.favoriteIconToggle]} onPress={() => dispatch(addFavorite(post._id))}>
+                <Image style={[styles.favoriteIcon]} source={require("../../assets/images/favorite.png")} />
+              </TouchableOpacity>
+            )}
 
-      <View style={styles.footer}>
-        <Text style={[styles.comment, { color: theme.colors.text }]}>{post.title}</Text>
-        <View style={styles.reactions}>
-          <TouchableOpacity style={styles.iconContainer}>
-            <Icon name="heart" size={20} color="red" />
-            <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.likes}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.iconContainer}>
-            <Icon name="comment" size={20} color="gray" />
-            <Text style={[styles.reactionText, { color: theme.colors.text }]}>{post.comments.length}</Text>
-          </TouchableOpacity>
-        </View>
-        <View>
-          <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{post.comments.length != 0 ? post.comments.length : t('noCom')}</Text>
+          </View>
+          <View>
+            {post.comments.length > 0 ? (
+              <TouchableOpacity style={styles.iconContainer} onPress={() => navigation.navigate('postpublicado', { postId: post._id })}>
+                <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('hasComments')}</Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity onPress={() => navigation.navigate('postpublicado', { postId: post._id })}>
+                <Text style={[styles.cantComentarios, { color: theme.colors.text }]}>{t('noCom')}</Text>
+              </TouchableOpacity>
+            )}
+
+          </View>
         </View>
       </View>
-    </View>
-    </View>
+    </View >
   )
 };
 
@@ -110,18 +171,37 @@ const renderItem = ({ item }) => {
 
   return (
 
-    <ImageModal
-      resizeMode='contain'
-      imageBackgroundColor='#f0f0f0'
-      style={{
-        width: 360,
-        height: 250,
-        borderRadius: 10,
-        borderColor: '#000000',
-        borderWidth: 1,
-      }}
-      source={{ uri: item.url }}
-    />
+    item.type === 'video' ? (
+      <Video
+        source={{ uri: item.url }}
+        rate={1.0}
+        volume={1.0}
+        isMuted={true}
+        resizeMode="contain"
+        shouldPlay
+        isLooping
+        style={{
+          width: 360,
+          height: 250,
+          borderRadius: 10,
+          borderColor: '#000000',
+          borderWidth: 1,
+        }}
+      />
+    ) : (
+      <ImageModal
+        resizeMode='contain'
+        imageBackgroundColor='#f0f0f0'
+        style={{
+          width: 360,
+          height: 250,
+          borderRadius: 10,
+          borderColor: '#000000',
+          borderWidth: 1,
+        }}
+        source={{ uri: item.url }}
+      />
+    )
 
   );
 }
@@ -178,7 +258,7 @@ const Ad = ({ post }) => {
           </View>
         </View>
       </View>
-      </View>
+    </View>
   )
 }
 
@@ -256,7 +336,7 @@ const Home = () => {
       {/* Barra de búsqueda */}
       <View style={[styles.containerInicio, { backgroundColor: theme.colors.background }]}>
         <Image style={[styles.memento]} source={require("../../assets/images/Marca 2.png")} />
-        <View style={[styles.searchBar,{ backgroundColor: theme.colors.background }]}>
+        <View style={[styles.searchBar, { backgroundColor: theme.colors.background }]}>
           <TextInput
             style={[styles.searchInput, styles.bringToFront]}
             placeholder={t('search')}
@@ -333,7 +413,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Poppins-Medium",
     color: "#000",
-    left: 200,
   },
   header: {
     flexDirection: 'row',
@@ -350,7 +429,6 @@ const styles = StyleSheet.create({
   },
   name: {
     fontWeight: 'bold',
-    top: 15,
   },
   headerInfo: {
     flex: 1,
@@ -359,7 +437,6 @@ const styles = StyleSheet.create({
   },
   details: {
     color: 'gray',
-    top:15,
   },
   bringToFront: {
     position: 'absolute',
@@ -382,11 +459,17 @@ const styles = StyleSheet.create({
   reactions: {
     flexDirection: 'row',
   },
-
+  favoriteIconToggle: {
+    marginLeft: 'auto'
+  },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginRight: 20,
+  },
+  favoriteIcon: {
+    width: 16,
+    height: 16
   },
   reactionText: {
     marginLeft: 5,

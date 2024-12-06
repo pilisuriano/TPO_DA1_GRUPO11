@@ -9,6 +9,7 @@
   "profile": "Profile",
   "noNewPost": "No new posts",
   "posts": "Posts",
+  "profilePostsStat": "Posts",
   "description": "Description",
   "level": "Level",
   "followers": "Followers",
@@ -16,6 +17,7 @@
   "editProfile": "Edit Profile",
   "editPosts": "Edit Posts",
   "noUsersFound": "No users found.",
+  "profileNotFound": "User not found",
   "createPost": "Create Post",
   "title": "Title",
   "location": "Location",
@@ -35,6 +37,7 @@
   "web": "Our website",
   "visit": "Visit us: ",
   "noCom": "No comments yet",
+  "hasComments": "See comments",
   "noPost": "No posts to visualize yet",
   "search": "Search users...",
   "searchusr": "Search for users",
@@ -48,5 +51,13 @@
   "confirm": "Confirm",
   "cancel": "Cancel",
   "ConfirmImage": "Confirm Picture",
-  "ConfirmCover": "Confirm Cover"
+  "ConfirmCover": "Confirm Cover",
+  "error": "An error occurred",
+  "deleteAccountModalText": "Are you sure you want to delete your account?",
+  "deleteAccountModalAccept": "Yes",
+  "deleteAccountModalDismiss": "No",
+  "userDoesNotHaveFollowers": "You don't have followers.",
+  "userDoesNotHaveFollowing": "You don't have users that you follow.",
+  "userDoesNotHaveFavorites": "You don't have favorite posts.",
+  "writeComment": "Write a comment..."
 }

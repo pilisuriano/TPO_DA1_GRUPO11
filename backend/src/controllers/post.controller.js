@@ -1,6 +1,9 @@
 import cloudinary from '../utils/cloudinaryConfig.js';
 import Post from '../models/post.model.js';
 import User from '../models/user.model.js'; 
+import Like from '../models/like.model.js';
+import Favorite from '../models/favorite.model.js';
+import Comment from '../models/comment.model.js';
 
 export const createPost = async (req, res) => {
 
@@ -67,15 +70,16 @@ export const getPost = async (req, res) => {
     const { postId } = req.params;
 
     const post = await Post.findById(postId)
+      .populate("userId", "fullName profileImg")
       .populate({
         path: "comments",
-        select: "userId content createdAt",
+        select: "userId text createdAt",
+        options: { sort: { createdAt: -1 } },
         populate: {
           path: "userId",
           select: "fullName profileImg",
         },
       })
-      .populate("userId", "fullName profileImg");
 
     if (!post) {
       return res.status(404).json({ error: "Post not found" });
@@ -143,6 +147,123 @@ export const deletePost = async (req, res) => {
     await User.findByIdAndUpdate(userId, { $pull: { posts: postId } });
 
     res.status(200).json({ message: `Post with ID: ${postId} deleted` });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const addComment = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { text } = req.body;
+    const userId = req.user._id;
+
+    if (!text || text.trim().length === 0) {
+      return res.status(400).json({ message: 'Content is required' });
+    }
+
+    const newComment = new Comment({
+      userId,
+      postId,
+      text
+    });
+
+    await newComment.save();
+    await Post.findByIdAndUpdate(postId, {
+      $push: { comments: newComment._id }
+    });
+
+    res.status(201).json({
+      message: 'Comment added successfully',
+      comment: {
+        _id: newComment._id,
+        userId,
+        postId,
+        text: newComment.text,
+        createdAt: newComment.createdAt
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const addFavorite = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const existingFavorite = await Favorite.findOne({ postId, userId });
+    if (existingFavorite) {
+      return res.status(400).json({ message: 'You have already added this post to favorites' });
+    }
+
+    const newFavorite = new Favorite({
+      postId,
+      userId
+    });
+    await newFavorite.save();
+    await Post.findByIdAndUpdate(postId, { $inc: { favorites: 1 } });
+
+    return res.status(200).json({ message: 'Post added to favorites successfully' });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const deleteFavorite = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+    
+    const existingFavorite = await Favorite.findOne({ postId, userId });
+    if (!existingFavorite) {
+      return res.status(400).json({ message: 'You have not added this post to favorites' });
+    }
+    await Favorite.deleteOne({ postId, userId });
+    await Post.findByIdAndUpdate(postId, { $inc: { favorites: -1 } });
+
+    return res.status(200).json({ message: 'Favorite removed successfully' });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const addLike = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const existingLike = await Like.findOne({ postId, userId });
+    if (existingLike) {
+      return res.status(400).json({ message: 'You have already liked this post' });
+    }
+
+    const newLike = new Like({ postId, userId });
+    await newLike.save();
+
+    await Post.findByIdAndUpdate(postId, { $inc: { likes: 1 } });
+
+    return res.status(200).json({ message: 'Like added successfully' });
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export const removeLike = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const existingLike = await Like.findOne({ postId, userId });
+    if (!existingLike) {
+      return res.status(400).json({ message: 'You have not liked this post' });
+    }
+
+    await Like.deleteOne({ postId, userId });
+    await Post.findByIdAndUpdate(postId, { $inc: { likes: -1 } });
+
+    return res.status(200).json({ message: 'Like removed successfully' });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
