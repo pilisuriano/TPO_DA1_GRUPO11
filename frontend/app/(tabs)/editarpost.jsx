@@ -101,6 +101,11 @@ const EDITARPOST = () => {
 };
 
 const styles = StyleSheet.create({
+	postImage: {
+		width: '100%',
+		height: 200, // Ajusta según lo necesites
+		backgroundColor: 'black',
+	},
 	videoWrapper: {
 		position: 'relative',
 		width: '100%',

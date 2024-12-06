@@ -3,8 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
+//import * as Location from "expo-location";
+//import MapView, { Marker } from "react-native-maps";
 import { createUserPost, resetError } from "../../src/features/posts/postSlice";
 import { ThemeContext } from '../../src/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -30,7 +30,7 @@ const CreatePost = () => {
   const { postCreated, error } = useSelector((state) => state.post);
 
   // Request location permission
-  useEffect(() => {
+  /*useEffect(() => {
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -47,7 +47,7 @@ const CreatePost = () => {
       const data = await response.json();
       setLocationPlace(data.display_name);
     })();
-  }, []);
+  }, []);*/
 
   const handleCreatePost = () => {
     try {
@@ -169,9 +169,7 @@ const CreatePost = () => {
             />
           </View>
 
-          {/* Mapa con marcador para seleccionar ubicación */}
-           {/* Mapa con marcador para seleccionar ubicación */}
-           <MapView
+           {/*<MapView
             style={styles.map}
             region={{
               latitude: locationCoordinates.latitude,
@@ -194,7 +192,7 @@ const CreatePost = () => {
             }}
           >
             <Marker coordinate={locationCoordinates} />
-          </MapView>
+          </MapView>*/}
 
           <View>
             <TouchableOpacity

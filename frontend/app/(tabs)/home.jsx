@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { transformDate } from '../../src/utils/dateUtils';
 import { ThemeContext } from '../../src/context/ThemeContext';
+import { useFocusEffect } from '@react-navigation/native';
 import { Video } from 'expo-av';
 import { addFavorite, removeFavorite } from '@/src/features/favorites/favorites.slice';
 import { addLike, removeLike } from '@/src/features/likes/likes.slice';
@@ -288,6 +289,12 @@ const Home = () => {
   const { t } = useTranslation();
   const { theme } = useContext(ThemeContext);
 
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(getTimeline());
+    }, [dispatch])
+  );
 
   useEffect(() => {
     dispatch(getTimeline());
