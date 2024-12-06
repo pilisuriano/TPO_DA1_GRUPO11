@@ -1,108 +1,69 @@
-import React, { useState, useEffect, useContext } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Platform, StatusBar, FlatList, Pressable, Image, ScrollView } from "react-native";
+import React, {useContext} from "react";
+import { Image, StyleSheet, Text, Pressable, View, TextInput, Alert, ScrollView, ToastAndroid, FlatList, TouchableOpacity, Platform, StatusBar, ActivityIndicator } from "react-native";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "expo-router";
-import * as ImagePicker from "expo-image-picker";
-import * as Location from "expo-location";
-import MapView, { Marker } from "react-native-maps";
 import { createUserPost, resetError } from "../../src/features/posts/postSlice";
-import { ThemeContext } from '../../src/context/ThemeContext';
-import { useTranslation } from 'react-i18next';
+import * as ImagePicker from "expo-image-picker";
+import { useRouter } from "expo-router";
 import Toolbar from "@/components/Toolbar";
-import * as FileSystem from "expo-file-system"; // Importar para manejar archivos
-//import { ScrollView } from "react-native-gesture-handler";
+import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../../src/context/ThemeContext';
 
 const CreatePost = () => {
-  const router = useRouter();
+  const router = useRouter()
   const dispatch = useDispatch();
-  const { theme } = useContext(ThemeContext);
-  const { t } = useTranslation();
-
-  const [title, setTitle] = useState("");
+  const [title, setTitle] = useState("")
   const [media, setMedia] = useState([]);
   const [locationPlace, setLocationPlace] = useState("");
-  const [locationCoordinates, setLocationCoordinates] = useState({
-    latitude: -34.6037,
-    longitude: -58.3816,
-  });
-  const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
+  const { theme } = useContext(ThemeContext);
 
-  const { postCreated, error } = useSelector((state) => state.post);
-
-  // Request location permission
-  useEffect(() => {
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        alert('Permission to access location was denied');
-        return;
-      }
-      const location = await Location.getCurrentPositionAsync({});
-      setLocationCoordinates({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-      // Fetch the location name using reverse geocoding
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.coords.latitude}&lon=${location.coords.longitude}`);
-      const data = await response.json();
-      setLocationPlace(data.display_name);
-    })();
-  }, []);
+  const isButtonEnabled = title.trim() !== '' && media.length != 0;
+  const { postCreated, loading, error } = useSelector((state) => state.post);
+  const locationCoordinates = {
+    coordinates: {
+      latitude: "",
+      longitude: ""
+    },
+    placeId: ""
+  }
 
   const handleCreatePost = () => {
     try {
       dispatch(resetError());
       const imagesBase64 = media.map((item) => `data:image/jpeg;base64,${item.base64}`);
-      const videoBase64 = media.map((item) => `data:video/mp4;base64,${item.base64}`);
-
-      const locationData = {placeName: locationPlace, coordinates: locationCoordinates };
-      dispatch(createUserPost({ title, location: locationData, images: imagesBase64 || videoBase64 }));
+      const locationData = { ...locationCoordinates, placeName: locationPlace }
+      dispatch(createUserPost({ title, location: locationData, images: imagesBase64 }));
+      // dispatch(createUserPost({ title: title, location: locationData, images: [`data:image/jpeg;base64,${image}`] }));
     } catch (err) {
       console.error("Error during post creation:", err);
       ToastAndroid.show('Hubo un error al publicarel post. Por favor intentelo de nuevo.', ToastAndroid.LONG)
     }
   };
-  const convertVideoToBase64 = async (uri) => {
-    try {
-      // Leer el archivo del video como binario en base64
-      const videoBase64 = await FileSystem.readAsStringAsync(uri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      return videoBase64;
-    } catch (error) {
-      console.error('Error reading video file:', error);
-      return null;
-    }
-  };
 
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsMultipleSelection: true,
       quality: 0.5,
       base64: true,
     });
 
     if (!result.canceled) {
-      const selectedMedia = await Promise.all(result.assets.map(async (asset) => {
-        if (asset.type === 'video') {
-          // Convertir video a base64
-          const videoBase64 = await convertVideoToBase64(asset.uri);
-          return { uri: asset.uri, type: 'video', base64: videoBase64 };
-        } else {
-          // Si es imagen, ya tiene base64
-          return { uri: asset.uri, type: 'image', base64: asset.base64 };
-        }
+      // setImage(result.assets[0].base64); // Llama a la función de subida con la imagen en base64
+      // Agrega las imágenes seleccionadas al array `media`
+      const selectedMedia = result.assets.map((asset) => ({
+        uri: asset.uri,
+        base64: asset.base64
       }));
-      setMedia((prev) => [...prev, ...selectedMedia]);
+      setMedia((prev) => [...prev, ...selectedMedia]); // Concatenar con imágenes existentes
     }
-  };
 
+  };
   const removeMedia = (index) => {
     setMedia((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const isButtonEnabled = title.trim() !== '' && media.length !== 0;
 
   useEffect(() => {
     if (postCreated) {
@@ -111,21 +72,21 @@ const CreatePost = () => {
       resetError()
     }
   }, [postCreated]);
+
   const resetValues = () => {
     setTitle("")
     setMedia([])
     setLocationPlace("")
   }
-  
 
   return (
-    <ScrollView style={[styles.post, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.post, { backgroundColor: theme.colors.background }]}>
       <Toolbar title={t('createPost')} />
-      {loading ? (
+      {loading ? (<View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#B5432A" />
-      ) : (
+      </View>) : (
         <>
-          <Text style={[styles.labelInputs, { color: theme.colors.text }]}>{t('images')}</Text>
+          <Text style={[styles.labelInputs, styles.selectMedia, { color: theme.colors.text }]}>{t('images')}</Text>
           <View style={[styles.background, { backgroundColor: theme.colors.background }]}>
             <Pressable onPress={pickMedia}>
               <Image style={[styles.icon]} source={require("../../assets/images/addGalery.png")} />
@@ -169,61 +130,26 @@ const CreatePost = () => {
             />
           </View>
 
-          {/* Mapa con marcador para seleccionar ubicación */}
-           {/* Mapa con marcador para seleccionar ubicación */}
-           <MapView
-            style={styles.map}
-            region={{
-              latitude: locationCoordinates.latitude,
-              longitude: locationCoordinates.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            onPress={(event) => {
-              const { latitude, longitude } = event.nativeEvent.coordinate;
-              setLocationCoordinates({
-                latitude,
-                longitude,
-              });
-
-              // Fetch the location name using reverse geocoding
-              fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`)
-                .then(response => response.json())
-                .then(data => setLocationPlace(data.display_name))
-                .catch(error => console.error('Error fetching location name:', error));
-            }}
-          >
-            <Marker coordinate={locationCoordinates} />
-          </MapView>
-
           <View>
             <TouchableOpacity
               style={[styles.postButton, { opacity: isButtonEnabled ? 1 : 0.6 }]}
               disabled={!isButtonEnabled}
-              onPress={handleCreatePost}
-            >
+              onPress={handleCreatePost}>
               <Text style={styles.buttonText}>{t('createPost')}</Text>
             </TouchableOpacity>
           </View>
         </>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
-
 const styles = StyleSheet.create({
-  map: {
-    width: "100%",
-    height: 150,
-    marginVertical: 20,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   buttonText: {
     fontSize: 18,
     fontFamily: 'Poppins-SemiBold',
@@ -233,7 +159,7 @@ const styles = StyleSheet.create({
   postButton: {
     backgroundColor: '#B5432A',
     borderRadius: 8,
-    marginBottom: 70,
+    marginTop: 36,
     paddingVertical: 12,
     width: "100%",
     alignItems: 'center',
@@ -251,11 +177,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginTop: 10,
     alignItems: "center"
-  },
-  thumbnailText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "bold"
   },
   thumbnail: {
     width: 100,

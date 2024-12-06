@@ -73,17 +73,17 @@ export default function basetab() {
           href: null, }}
       />
       <Tabs.Screen
-        name="following"
+        name="seguidos"
         options={{
           href: null, }}
       />
       <Tabs.Screen
-        name="followers"
+        name="seguidores"
         options={{
           href: null, }}
       />
       <Tabs.Screen
-        name="favorites"
+        name="favoritos"
         options={{
           href: null, }}
       />

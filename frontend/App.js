@@ -6,11 +6,10 @@ import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/
 import { createStackNavigator } from '@react-navigation/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
-import StartScreen from './app/startScreen/index';
+import StartScreen from './app/screens/StartScreen'; // Asegúrate de que la ruta sea correcta
 import store from './src/store/store'
 import { CustomDefaultTheme, CustomDarkTheme } from './src/themes'; // Importar los temas personalizados
 import { ThemeProvider, ThemeContext } from './src/context/ThemeContext'; // Importar el contexto de tema
-import useNetworkListener from './hooks/useNetworkListener.js';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -22,7 +21,6 @@ export default function App() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-  useNetworkListener();
 
   const { isDarkMode } = useContext(ThemeContext); // Usa useContext para obtener isDarkMode
 
@@ -55,7 +53,7 @@ export default function App() {
                 <Stack.Screen name="forgotPassword/otp" options={{ headerShown: false }} />
                 <Stack.Screen name="forgotPassword/resetPassword" options={{ headerShown: false }} />
                 <Stack.Screen name="forgotPassword/recovered" options={{ headerShown: false }} />
-                <Stack.Screen name="error/internetConnection" component={InternetConnectionError} options={{ headerShown: false }} />
+                <Stack.Screen name="error/internetConnection" options={{ headerShown: false }} />
                 <Stack.Screen name="error/server" options={{ headerShown: false }} />
                 {authenticated ? (
                   <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

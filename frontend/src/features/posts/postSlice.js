@@ -1,14 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createPost, getUserPosts, updatePost, getPost, addComment } from '../../features/posts/api';
+import { createPost, getUserPosts, updatePost} from '../../features/posts/api';
 
 const initialState = {
   posts: [], // Agregar para almacenar publicaciones del usuario
   postCreated: false,
   loading: false,
   error: null,
-  selectedPost: null,
-  selectedPostLoading: false,
-  selectedPostError: null,
 };
 
 
@@ -47,27 +44,6 @@ export const updatePostData = createAsyncThunk(
       return rejectWithValue(error.message);
     }
   }
-);
-
-export const getUserPost = createAsyncThunk('posts/getPost', async (postId, thunkAPI) => {
-  try {
-    const response = await getPost(postId);
-    return response;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error);
-  }
-}
-);
-
-export const addUserComment = createAsyncThunk('posts/addComment', async ({ postId, comment }, thunkAPI) => {
-  try {
-    const response = await addComment(postId, comment);
-    console.log(response)
-    return response;
-  } catch (error) {
-    return thunkAPI.rejectWithValue(error);
-  }
-}
 );
 
 const postSlice = createSlice({
@@ -122,39 +98,6 @@ const postSlice = createSlice({
       .addCase(updatePostData.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-      .addCase(getUserPost.pending, (state) => {
-        state.selectedPostLoading = true;
-        state.selectedPostError = null;
-        state.selectedPost = null;
-      })
-      .addCase(getUserPost.fulfilled, (state, action) => {
-        state.selectedPostLoading = false;
-        state.selectedPost = action.payload;
-      })
-      .addCase(getUserPost.rejected, (state, action) => {
-        state.selectedPostLoading = false;
-        state.selectedPostError = action.payload;
-        state.selectedPost = null;
-      })
-      // Add comment to post
-      .addCase(addUserComment.pending, (state) => {
-        state.selectedPostLoading = true;
-        state.selectedPostError = null;
-      })
-      .addCase(addUserComment.fulfilled, (state, action) => {
-        state.selectedPostLoading = false;
-
-        const { comment } = action.payload;
-        const post = state.selectedPost;
-
-        if (post && post._id === comment.postId) {
-          post.comments = [...post.comments, comment];
-        }
-      })
-      .addCase(addUserComment.rejected, (state, action) => {
-        state.selectedPostLoading = false;
-        state.selectedPostError = action.payload;
       });
   },
 });

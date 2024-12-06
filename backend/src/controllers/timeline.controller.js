@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 import Follower from '../models/follower.model.js';
 import Post from '../models/post.model.js';
-import Like from '../models/like.model.js';
-import Favorite from '../models/favorite.model.js';
 
 export const getTimeline = async (req, res) => {
   try {
@@ -50,22 +48,16 @@ export const getTimeline = async (req, res) => {
       .populate('userId', 'fullName profileImage')
       .lean();
 
-    // Obtengo likes y favoritos del usuario
-    const likedPosts = await Like.find({ userId }).select('postId');
-    const favoritePosts = await Favorite.find({ userId }).select('postId');
-
-    const likedPostIds = new Set(likedPosts.map(like => like.postId.toString()));
-    const favoritePostIds = new Set(favoritePosts.map(favorite => favorite.postId.toString()));
-
+    // Añado valores isLiked y isFavorite a cada post, por ahora por defecto en false
     const postsWithFlags = posts.map(post => ({
       ...post,
-      isLiked: likedPostIds.has(post._id.toString()),
-      isFavorite: favoritePostIds.has(post._id.toString()),
+      isLiked: false,
+      isFavorite: false,
       type: "post"
     }));
 
     // Obtengo ads
-    const adsResponse = await fetch(process.env.URL_ENDPOINT_ADS);
+    const adsResponse = await fetch(process.env.URL_ENDPOINT_ADS); // Reemplaza con la URL correcta
     const ads = await adsResponse.json();
     const adsWithType = ads.map(ad => ({
       ...ad,

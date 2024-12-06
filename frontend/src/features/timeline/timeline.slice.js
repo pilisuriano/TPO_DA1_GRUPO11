@@ -1,7 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getInitialTimeline, getNewerPosts, getOlderPosts } from './api.js';
-import { addFavorite, removeFavorite } from '../favorites/favorites.slice.js';
-import { addLike, removeLike } from '../likes/likes.slice.js';
 
 const initialState = {
   posts: [],
@@ -130,38 +128,6 @@ const timelineSlice = createSlice({
         state.loading = false;
         state.error = action.payload
       })
-      // Escuchar addFavorite
-      .addCase(addFavorite.fulfilled, (state, action) => {
-        const postId = action.payload;
-        const post = state.posts.find((post) => post._id === postId);
-        if (post) {
-          post.isFavorite = true;
-        }
-      })
-      // Escuchar removeFavorite
-      .addCase(removeFavorite.fulfilled, (state, action) => {
-        const postId = action.payload;
-        const post = state.posts.find((post) => post._id === postId);
-        if (post) {
-          post.isFavorite = false;
-        }
-      })
-      .addCase(addLike.fulfilled, (state, action) => {
-        const postId = action.payload;
-        const post = state.posts.find((post) => post._id === postId);
-        if (post) {
-          post.isLiked = true;
-          post.likes += 1;
-        }
-      })
-      .addCase(removeLike.fulfilled, (state, action) => {
-        const postId = action.payload;
-        const post = state.posts.find((post) => post._id === postId);
-        if (post) {
-          post.isLiked = false;
-          post.likes -= 1;
-        }
-      });
   },
 });
 

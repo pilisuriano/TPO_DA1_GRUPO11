@@ -1,29 +1,27 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Slot, useRouter } from 'expo-router';
-import { getAuthToken } from '@/src/services/secureStore';
+import { useSelector } from 'react-redux';
 
 export default function AppEntry() {
   const router = useRouter();
+  const authenticated = useSelector((state) => state.auth.authenticated);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = await getAuthToken();
-        if (token) {
-          // Redirige a Home si hay un token
-          router.replace('/(tabs)/home');
-        } else {
-          // Redirige a Login si no hay token
-          router.replace('/startScreen');
-        }
-      } catch (error) {
-        console.error('Error fetching token:', error);
+    if (authenticated !== undefined) {
+      setIsInitialized(true);
+    }
+  }, [authenticated]);
+
+  useEffect(() => {
+    if (isInitialized) {
+      if (authenticated) {
+        router.replace('/(tabs)/home');
+      } else {
         router.replace('/startScreen');
       }
-    };
-
-    checkAuth();
-  }, []);
+    }
+  }, [isInitialized, authenticated]);
 
   return null;
 }
